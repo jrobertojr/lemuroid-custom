@@ -49,6 +49,11 @@ class LibretroDBMetadataProvider(private val ovgdbManager: LibretroDBManager) :
                 "(Aftermarket",
                 "(Unl)",
                 "(Pirate",
+                "(Alt",
+                "[tr ",
+                "[T-",
+                "[h",
+                "[t ",
             )
         private val SYSTEM_FOLDER_ALIASES =
             mapOf(
@@ -280,7 +285,11 @@ class LibretroDBMetadataProvider(private val ovgdbManager: LibretroDBManager) :
             .lowercase(Locale.ROOT)
             .split(Regex("[^a-z0-9]+"))
             .map { TOKEN_NORMALIZATIONS[it] ?: it }
-            .filter { it.length >= 2 && it !in STOP_WORDS && it !in EXTRA_TAG_WORDS }
+            .filter {
+                (it.length >= 2 || (it.isNotEmpty() && it.all { ch -> ch.isDigit() })) &&
+                    it !in STOP_WORDS &&
+                    it !in EXTRA_TAG_WORDS
+            }
     }
 
     private fun scoreCandidate(

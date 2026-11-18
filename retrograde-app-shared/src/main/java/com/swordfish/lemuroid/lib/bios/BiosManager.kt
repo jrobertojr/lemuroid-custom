@@ -1,11 +1,16 @@
 package com.swordfish.lemuroid.lib.bios
 
+import android.content.Context
+import android.net.Uri
+import android.provider.DocumentsContract
 import com.swordfish.lemuroid.common.files.safeDelete
 import com.swordfish.lemuroid.common.kotlin.associateByNotNull
 import com.swordfish.lemuroid.common.kotlin.writeToFile
+import com.swordfish.lemuroid.lib.R
 import com.swordfish.lemuroid.lib.library.SystemCoreConfig
 import com.swordfish.lemuroid.lib.library.SystemID
 import com.swordfish.lemuroid.lib.library.db.entity.Game
+import com.swordfish.lemuroid.lib.preferences.SharedPreferencesHelper
 import com.swordfish.lemuroid.lib.storage.DirectoriesManager
 import com.swordfish.lemuroid.lib.storage.StorageFile
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +18,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.io.InputStream
+import java.util.Locale
 
 class BiosManager(private val directoriesManager: DirectoriesManager) {
     private val crcLookup = SUPPORTED_BIOS.associateByNotNull { it.externalCRC32 }
@@ -99,9 +105,122 @@ class BiosManager(private val directoriesManager: DirectoriesManager) {
 
     private fun normalizeTimestamp(timestamp: Long) = (timestamp / 1000) * 1000
 
+    suspend fun resolveMissingBiosFromCustomFolder(
+        context: Context,
+        missingFiles: List<String>,
+    ) = withContext(Dispatchers.IO) {
+        if (missingFiles.isEmpty()) return@withContext
+        val treeUri = getCustomBiosFolderUri(context) ?: return@withContext
+
+        val targetByLowerName = mutableMapOf<String, String>()
+        for (missing in missingFiles) {
+            targetByLowerName[missing.lowercase(Locale.ROOT)] = missing
+            SUPPORTED_BIOS
+                .firstOrNull { it.libretroFileName.equals(missing, ignoreCase = true) }
+                ?.let { bios ->
+                    bios.externalName?.let { extName ->
+                        targetByLowerName[extName.lowercase(Locale.ROOT)] = bios.libretroFileName
+                    }
+                }
+        }
+
+        copyMatchingBiosFromSafTree(context, treeUri, targetByLowerName)
+    }
+
+    suspend fun syncArcadeBiosFromCustomFolder(context: Context) =
+        withContext(Dispatchers.IO) {
+            val treeUri = getCustomBiosFolderUri(context) ?: return@withContext
+            val systemDir = directoriesManager.getSystemDirectory()
+            val targetByLowerName =
+                ARCADE_BIOS_FILES
+                    .filter { !File(systemDir, it).exists() }
+                    .associateBy { it.lowercase(Locale.ROOT) }
+
+            if (targetByLowerName.isEmpty()) return@withContext
+            copyMatchingBiosFromSafTree(context, treeUri, targetByLowerName)
+        }
+
+    private fun getCustomBiosFolderUri(context: Context): Uri? {
+        val prefKey = context.getString(R.string.pref_key_external_bios_folder)
+        val prefs = SharedPreferencesHelper.getLegacySharedPreferences(context)
+        val folderString = prefs.getString(prefKey, null) ?: return null
+        return runCatching { Uri.parse(folderString) }.getOrNull()
+    }
+
+    private fun copyMatchingBiosFromSafTree(
+        context: Context,
+        treeUri: Uri,
+        targetByLowerName: Map<String, String>,
+    ) {
+        val remaining = targetByLowerName.toMutableMap()
+        val directoryDocumentIds = mutableListOf<String>()
+        DocumentsContract.getTreeDocumentId(treeUri)?.let { directoryDocumentIds.add(it) }
+
+        val projection =
+            arrayOf(
+                DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                DocumentsContract.Document.COLUMN_MIME_TYPE,
+            )
+
+        val systemDir = directoriesManager.getSystemDirectory()
+
+        while (directoryDocumentIds.isNotEmpty() && remaining.isNotEmpty()) {
+            val currentDocId = directoryDocumentIds.removeAt(0)
+            val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri, currentDocId)
+
+            runCatching {
+                context.contentResolver.query(childrenUri, projection, null, null, null)?.use { cursor ->
+                    while (cursor.moveToNext() && remaining.isNotEmpty()) {
+                        val docId = cursor.getString(0) ?: continue
+                        val displayName = cursor.getString(1) ?: continue
+                        val mimeType = cursor.getString(2)
+
+                        if (mimeType == DocumentsContract.Document.MIME_TYPE_DIR) {
+                            directoryDocumentIds.add(docId)
+                        } else {
+                            val lowerName = displayName.lowercase(Locale.ROOT)
+                            val destFileName = remaining.remove(lowerName) ?: continue
+                            val docUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, docId)
+                            val destFile = File(systemDir, destFileName)
+                            runCatching {
+                                context.contentResolver.openInputStream(docUri)?.use { input ->
+                                    input.writeToFile(destFile)
+                                    Timber.i("Copied BIOS from custom folder: $displayName -> ${destFile.path}")
+                                }
+                            }.onFailure { e ->
+                                Timber.e(e, "Failed to copy BIOS $displayName from custom folder")
+                            }
+                        }
+                    }
+                }
+            }.onFailure { e ->
+                Timber.e(e, "Failed to traverse custom BIOS folder: $childrenUri")
+            }
+        }
+    }
+
     data class BiosInfo(val detected: List<Bios>, val notDetected: List<Bios>)
 
     companion object {
+        private val ARCADE_BIOS_FILES =
+            listOf(
+                "neogeo.zip",
+                "pgm.zip",
+                "skns.zip",
+                "decocass.zip",
+                "isgsm.zip",
+                "midssio.zip",
+                "nmk004.zip",
+                "bubsys.zip",
+                "cchip.zip",
+                "namcoc69.zip",
+                "namcoc70.zip",
+                "namcoc75.zip",
+                "qsound.zip",
+                "ym2608.zip",
+                "hiscore.dat",
+            )
         private val SUPPORTED_BIOS =
             listOf(
                 Bios(

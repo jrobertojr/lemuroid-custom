@@ -141,9 +141,9 @@ fun SecondaryAnalogRight() {
 
 context(PadKitScope, LayoutRadialSecondaryDialsScope)
 @Composable
-fun SecondaryButtonCoin() {
+fun SecondaryButtonCoin(position: Int = 0) {
     LemuroidControlButton(
-        modifier = Modifier.radialPosition(120f),
+        modifier = Modifier.radialPosition(120f - 30f * position),
         id = Id.Key(KeyEvent.KEYCODE_BUTTON_SELECT),
         icon = R.drawable.button_coin,
     )

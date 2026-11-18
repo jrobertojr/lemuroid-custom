@@ -79,7 +79,7 @@ class TVGamesFragment : VerticalGridSupportFragment() {
                 if (item is Game) {
                     val multiDisc = multiDiscMap[item.id]
                     if (multiDisc != null) {
-                        val discNames = multiDisc.discs.map { it.title }.toTypedArray()
+                        val discNames = multiDisc.discs.map { multiDisc.itemLabel(it) }.toTypedArray()
                         AlertDialog.Builder(requireContext())
                             .setTitle(multiDisc.folderName)
                             .setItems(discNames) { _, which ->

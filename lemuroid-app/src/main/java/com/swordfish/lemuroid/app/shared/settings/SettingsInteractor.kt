@@ -14,6 +14,10 @@ class SettingsInteractor(
         StorageFrameworkPickerLauncher.pickFolder(context)
     }
 
+    fun changeBiosFolder() {
+        StorageFrameworkPickerLauncher.pickBiosFolder(context)
+    }
+
     fun resetAllSettings() {
         SharedPreferencesHelper.getLegacySharedPreferences(context).edit().clear().apply()
         SharedPreferencesHelper.getSharedPreferences(context).edit().clear().apply()

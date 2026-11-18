@@ -50,6 +50,7 @@ fun SettingsScreen(
         RomsSettings(
             state = state,
             onChangeFolder = { viewModel.changeLocalStorageFolder() },
+            onChangeBiosFolder = { viewModel.changeBiosFolder() },
             indexingInProgress = indexingInProgress,
             scanInProgress = scanInProgress,
         )
@@ -196,12 +197,14 @@ private fun GeneralSettings() {
 private fun RomsSettings(
     state: SettingsViewModel.State,
     onChangeFolder: () -> Unit,
+    onChangeBiosFolder: () -> Unit,
     indexingInProgress: Boolean,
     scanInProgress: Boolean,
 ) {
     val context = LocalContext.current
 
     val currentDirectory = state.currentDirectory
+    val currentBiosDirectory = state.currentBiosDirectory
     val emptyDirectory = stringResource(R.string.none)
 
     val currentDirectoryName =
@@ -211,11 +214,24 @@ private fun RomsSettings(
             }.getOrNull() ?: emptyDirectory
         }
 
+    val currentBiosDirectoryName =
+        remember(state.currentBiosDirectory) {
+            runCatching {
+                DocumentFile.fromTreeUri(context, Uri.parse(currentBiosDirectory))?.name
+            }.getOrNull() ?: emptyDirectory
+        }
+
     LemuroidCardSettingsGroup(title = { Text(text = stringResource(id = R.string.roms)) }) {
         LemuroidSettingsMenuLink(
             title = { Text(text = stringResource(id = R.string.directory)) },
             subtitle = { Text(text = currentDirectoryName) },
             onClick = { onChangeFolder() },
+            enabled = !indexingInProgress,
+        )
+        LemuroidSettingsMenuLink(
+            title = { Text(text = stringResource(id = R.string.bios_directory)) },
+            subtitle = { Text(text = currentBiosDirectoryName) },
+            onClick = { onChangeBiosFolder() },
             enabled = !indexingInProgress,
         )
         if (scanInProgress) {

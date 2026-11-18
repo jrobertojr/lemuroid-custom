@@ -3,6 +3,9 @@
     <string name="local_storage">Armazenamento local</string>
     <string name="controller_arcade_4">Padrão (4 botões)</string>
     <string name="controller_arcade_6">Padrão (6 botões)</string>
+    <string name="controller_arcade_analog_4">Analógico (4 botões)</string>
+    <string name="controller_arcade_analog_6">Analógico (6 botões)</string>
+    <string name="controller_arcade_racing">Corrida (Volante)</string>
     <string name="controller_genesis_3">Padrão (3 botões)</string>
     <string name="controller_genesis_6">Padrão (6 botões)</string>
     <string name="controller_default">Padrão</string>

@@ -11,8 +11,8 @@ import com.swordfish.lemuroid.app.shared.settings.SettingsInteractor
 import com.swordfish.lemuroid.lib.savesync.SaveSyncManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class SettingsViewModel(
@@ -39,6 +39,7 @@ class SettingsViewModel(
 
     data class State(
         val currentDirectory: String = "",
+        val currentBiosDirectory: String = "",
         val isSaveSyncSupported: Boolean = false,
     )
 
@@ -46,14 +47,30 @@ class SettingsViewModel(
 
     val directoryScanInProgress = PendingOperationsMonitor(context).isDirectoryScanInProgress()
 
-    val uiState =
+    private val romsDirectoryFlow =
         sharedPreferences.getString(context.getString(com.swordfish.lemuroid.lib.R.string.pref_key_extenral_folder))
             .asFlow()
             .flowOn(Dispatchers.IO)
-            .stateIn(viewModelScope, SharingStarted.Lazily, "")
-            .map { State(it, saveSyncManager.isSupported()) }
+
+    private val biosDirectoryFlow =
+        sharedPreferences.getString(context.getString(com.swordfish.lemuroid.lib.R.string.pref_key_external_bios_folder))
+            .asFlow()
+            .flowOn(Dispatchers.IO)
+
+    val uiState =
+        combine(romsDirectoryFlow, biosDirectoryFlow) { romsDir, biosDir ->
+            State(
+                currentDirectory = romsDir,
+                currentBiosDirectory = biosDir,
+                isSaveSyncSupported = saveSyncManager.isSupported(),
+            )
+        }.stateIn(viewModelScope, SharingStarted.Lazily, State())
 
     fun changeLocalStorageFolder() {
         settingsInteractor.changeLocalStorageFolder()
+    }
+
+    fun changeBiosFolder() {
+        settingsInteractor.changeBiosFolder()
     }
 }

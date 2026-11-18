@@ -224,6 +224,47 @@ object ControllerConfigs {
                 ),
         )
 
+    val FB_NEO_ANALOG_4 =
+        ControllerConfig(
+            "analog_4",
+            R.string.controller_arcade_analog_4,
+            TouchControllerID.ARCADE_ANALOG_4,
+            mergeDPADAndLeftStickEvents = true,
+            tiltConfigurations =
+                listOf(
+                    TILT_CONFIGURATION_DISABLED,
+                    TILT_CONFIGURATION_ANALOG_LEFT,
+                ),
+        )
+
+    val FB_NEO_ANALOG_6 =
+        ControllerConfig(
+            "analog_6",
+            R.string.controller_arcade_analog_6,
+            TouchControllerID.ARCADE_ANALOG_6,
+            mergeDPADAndLeftStickEvents = true,
+            tiltConfigurations =
+                listOf(
+                    TILT_CONFIGURATION_DISABLED,
+                    TILT_CONFIGURATION_ANALOG_LEFT,
+                ),
+        )
+
+    val FB_NEO_RACING =
+        ControllerConfig(
+            "racing",
+            R.string.controller_arcade_racing,
+            TouchControllerID.ARCADE_RACING,
+            mergeDPADAndLeftStickEvents = false,
+            tiltConfigurations =
+                listOf(
+                    TILT_CONFIGURATION_DISABLED,
+                    TILT_CONFIGURATION_ANALOG_LEFT,
+                    TILT_CONFIGURATION_CROSS,
+                    TILT_CONFIGURATION_L_R,
+                ),
+        )
+
     val MAME_2003_4 =
         ControllerConfig(
             "default_4",
@@ -247,6 +288,47 @@ object ControllerConfigs {
                 listOf(
                     TILT_CONFIGURATION_DISABLED,
                     TILT_CONFIGURATION_CROSS,
+                ),
+        )
+
+    val MAME_2003_ANALOG_4 =
+        ControllerConfig(
+            "analog_4",
+            R.string.controller_arcade_analog_4,
+            TouchControllerID.ARCADE_ANALOG_4,
+            mergeDPADAndLeftStickEvents = true,
+            tiltConfigurations =
+                listOf(
+                    TILT_CONFIGURATION_DISABLED,
+                    TILT_CONFIGURATION_ANALOG_LEFT,
+                ),
+        )
+
+    val MAME_2003_ANALOG_6 =
+        ControllerConfig(
+            "analog_6",
+            R.string.controller_arcade_analog_6,
+            TouchControllerID.ARCADE_ANALOG_6,
+            mergeDPADAndLeftStickEvents = true,
+            tiltConfigurations =
+                listOf(
+                    TILT_CONFIGURATION_DISABLED,
+                    TILT_CONFIGURATION_ANALOG_LEFT,
+                ),
+        )
+
+    val MAME_2003_RACING =
+        ControllerConfig(
+            "racing",
+            R.string.controller_arcade_racing,
+            TouchControllerID.ARCADE_RACING,
+            mergeDPADAndLeftStickEvents = false,
+            tiltConfigurations =
+                listOf(
+                    TILT_CONFIGURATION_DISABLED,
+                    TILT_CONFIGURATION_ANALOG_LEFT,
+                    TILT_CONFIGURATION_CROSS,
+                    TILT_CONFIGURATION_L_R,
                 ),
         )
 

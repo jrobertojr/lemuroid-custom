@@ -6,6 +6,12 @@ import com.swordfish.touchinput.radial.layouts.Arcade4Left
 import com.swordfish.touchinput.radial.layouts.Arcade4Right
 import com.swordfish.touchinput.radial.layouts.Arcade6Left
 import com.swordfish.touchinput.radial.layouts.Arcade6Right
+import com.swordfish.touchinput.radial.layouts.ArcadeAnalog4Left
+import com.swordfish.touchinput.radial.layouts.ArcadeAnalog4Right
+import com.swordfish.touchinput.radial.layouts.ArcadeAnalog6Left
+import com.swordfish.touchinput.radial.layouts.ArcadeAnalog6Right
+import com.swordfish.touchinput.radial.layouts.ArcadeRacingLeft
+import com.swordfish.touchinput.radial.layouts.ArcadeRacingRight
 import com.swordfish.touchinput.radial.layouts.Atari2600Left
 import com.swordfish.touchinput.radial.layouts.Atari2600Right
 import com.swordfish.touchinput.radial.layouts.Atari7800Left
@@ -72,6 +78,9 @@ enum class TouchControllerID {
     GG,
     ARCADE_4,
     ARCADE_6,
+    ARCADE_ANALOG_4,
+    ARCADE_ANALOG_6,
+    ARCADE_RACING,
     LYNX,
     ATARI7800,
     PCE,
@@ -196,6 +205,24 @@ enum class TouchControllerID {
                     Config(
                         { modifier, settings -> Arcade6Left(modifier, settings) },
                         { modifier, settings -> Arcade6Right(modifier, settings) },
+                    )
+
+                ARCADE_ANALOG_4 ->
+                    Config(
+                        { modifier, settings -> ArcadeAnalog4Left(modifier, settings) },
+                        { modifier, settings -> ArcadeAnalog4Right(modifier, settings) },
+                    )
+
+                ARCADE_ANALOG_6 ->
+                    Config(
+                        { modifier, settings -> ArcadeAnalog6Left(modifier, settings) },
+                        { modifier, settings -> ArcadeAnalog6Right(modifier, settings) },
+                    )
+
+                ARCADE_RACING ->
+                    Config(
+                        { modifier, settings -> ArcadeRacingLeft(modifier, settings) },
+                        { modifier, settings -> ArcadeRacingRight(modifier, settings) },
                     )
 
                 LYNX ->

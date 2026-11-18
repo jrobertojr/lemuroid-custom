@@ -28,6 +28,7 @@ import com.swordfish.lemuroid.lib.library.CoreID
 import com.swordfish.lemuroid.lib.library.GameSystem
 import com.swordfish.lemuroid.lib.library.LemuroidLibrary
 import com.swordfish.lemuroid.lib.library.SystemCoreConfig
+import com.swordfish.lemuroid.lib.library.SystemID
 import com.swordfish.lemuroid.lib.library.db.RetrogradeDatabase
 import com.swordfish.lemuroid.lib.library.db.entity.Game
 import com.swordfish.lemuroid.lib.migration.DesmumeMigrationHandler
@@ -85,9 +86,17 @@ class GameLoader(
 
                 emit(LoadingState.LoadingGame)
 
-                val missingBiosFiles = biosManager.getMissingBiosFiles(systemCoreConfig, game)
+                var missingBiosFiles = biosManager.getMissingBiosFiles(systemCoreConfig, game)
+                if (missingBiosFiles.isNotEmpty()) {
+                    biosManager.resolveMissingBiosFromCustomFolder(appContext, missingBiosFiles)
+                    missingBiosFiles = biosManager.getMissingBiosFiles(systemCoreConfig, game)
+                }
                 if (missingBiosFiles.isNotEmpty()) {
                     throw GameLoaderException(GameLoaderError.MissingBiosFiles(missingBiosFiles))
+                }
+
+                if (system.id == SystemID.FBNEO || system.id == SystemID.MAME2003PLUS) {
+                    biosManager.syncArcadeBiosFromCustomFolder(appContext)
                 }
 
                 val gameFiles =

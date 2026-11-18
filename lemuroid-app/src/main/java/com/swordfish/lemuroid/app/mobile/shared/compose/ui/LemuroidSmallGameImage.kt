@@ -1,5 +1,6 @@
 package com.swordfish.lemuroid.app.mobile.shared.compose.ui
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.swordfish.lemuroid.app.shared.covers.CoverFallbackInterceptor
 import com.swordfish.lemuroid.app.shared.covers.CoverUtils
 import com.swordfish.lemuroid.lib.library.db.entity.Game
 
@@ -52,6 +54,7 @@ fun LemuroidSmallGameImage(
         model =
             ImageRequest.Builder(LocalContext.current)
                 .data(currentUrl)
+                .setHeader(CoverFallbackInterceptor.HEADER_GAME_FILENAME, Uri.encode(game.fileName))
                 .build(),
         contentDescription = game.displayName(),
         modifier =

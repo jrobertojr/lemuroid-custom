@@ -87,35 +87,48 @@ fun GamesScreen(
     }
 
     selectedMultiDisc?.let { group ->
-        AlertDialog(
-            onDismissRequest = { selectedMultiDisc = null },
-            title = { Text(text = group.folderName) },
-            text = {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    group.discs.forEachIndexed { index, disc ->
-                        if (index > 0) {
-                            HorizontalDivider()
-                        }
-                        Text(
-                            text = disc.title,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        selectedMultiDisc = null
-                                        onGameClick(disc)
-                                    }
-                                    .padding(vertical = 14.dp),
-                        )
-                    }
-                }
+        GroupedGameSelectionDialog(
+            group = group,
+            onSelect = { selected ->
+                selectedMultiDisc = null
+                onGameClick(selected)
             },
-            confirmButton = {
-                TextButton(onClick = { selectedMultiDisc = null }) {
-                    Text(text = stringResource(android.R.string.cancel))
-                }
-            },
+            onDismiss = { selectedMultiDisc = null },
         )
     }
+}
+
+@Composable
+internal fun GroupedGameSelectionDialog(
+    group: GroupedGameEntry.MultiDisc,
+    onSelect: (Game) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = group.folderName) },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                group.discs.forEachIndexed { index, disc ->
+                    if (index > 0) {
+                        HorizontalDivider()
+                    }
+                    Text(
+                        text = group.itemLabel(disc),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { onSelect(disc) }
+                                .padding(vertical = 14.dp),
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(android.R.string.cancel))
+            }
+        },
+    )
 }

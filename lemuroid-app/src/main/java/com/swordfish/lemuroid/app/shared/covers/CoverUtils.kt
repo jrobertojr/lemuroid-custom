@@ -1,6 +1,7 @@
 package com.swordfish.lemuroid.app.shared.covers
 
 import android.content.Context
+import android.net.Uri
 import android.widget.ImageView
 import coil.ImageLoader
 import coil.disk.DiskCache
@@ -23,6 +24,7 @@ object CoverUtils {
 
         imageView.load(game.displayCoverUrl(), imageView.context.imageLoader) {
             val fallbackDrawable = getFallbackDrawable(game)
+            setHeader(CoverFallbackInterceptor.HEADER_GAME_FILENAME, Uri.encode(game.fileName))
             fallback(fallbackDrawable)
             error(fallbackDrawable)
         }

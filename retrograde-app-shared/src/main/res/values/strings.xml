@@ -4,6 +4,9 @@
 
     <string name="controller_arcade_4">Default (4 buttons)</string>
     <string name="controller_arcade_6">Default (6 buttons)</string>
+    <string name="controller_arcade_analog_4">Analog (4 buttons)</string>
+    <string name="controller_arcade_analog_6">Analog (6 buttons)</string>
+    <string name="controller_arcade_racing">Racing (Steering Wheel)</string>
 
     <string name="controller_genesis_3">Default (3 buttons)</string>
     <string name="controller_genesis_6">Default (6 buttons)</string>

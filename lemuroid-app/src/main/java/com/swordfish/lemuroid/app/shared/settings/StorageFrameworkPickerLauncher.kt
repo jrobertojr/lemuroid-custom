@@ -51,13 +51,14 @@ class StorageFrameworkPickerLauncher : RetrogradeActivity() {
 
         if (requestCode == REQUEST_CODE_PICK_FOLDER && resultCode == Activity.RESULT_OK) {
             val sharedPreferences = SharedPreferencesHelper.getLegacySharedPreferences(this)
-            val preferenceKey = getString(com.swordfish.lemuroid.lib.R.string.pref_key_extenral_folder)
+            val romsKey = getString(com.swordfish.lemuroid.lib.R.string.pref_key_extenral_folder)
+            val preferenceKey = intent.getStringExtra(EXTRA_PREFERENCE_KEY) ?: romsKey
 
             val currentValue: String? = sharedPreferences.getString(preferenceKey, null)
             val newValue = resultData?.data
 
             if (newValue != null && newValue.toString() != currentValue) {
-                updatePersistableUris(newValue)
+                updatePersistableUris(newValue, preferenceKey)
 
                 sharedPreferences.edit().apply {
                     this.putString(preferenceKey, newValue.toString())
@@ -65,15 +66,26 @@ class StorageFrameworkPickerLauncher : RetrogradeActivity() {
                 }
             }
 
-            startLibraryIndexWork()
+            if (preferenceKey == romsKey) {
+                startLibraryIndexWork()
+            }
         }
         finish()
     }
 
-    private fun updatePersistableUris(uri: Uri) {
+    private fun updatePersistableUris(
+        uri: Uri,
+        updatedPreferenceKey: String,
+    ) {
+        val sharedPreferences = SharedPreferencesHelper.getLegacySharedPreferences(this)
+        val romsKey = getString(com.swordfish.lemuroid.lib.R.string.pref_key_extenral_folder)
+        val biosKey = getString(com.swordfish.lemuroid.lib.R.string.pref_key_external_bios_folder)
+        val otherKey = if (updatedPreferenceKey == biosKey) romsKey else biosKey
+        val otherUri = sharedPreferences.getString(otherKey, null)?.let { runCatching { Uri.parse(it) }.getOrNull() }
+
         contentResolver.persistedUriPermissions
             .filter { it.isReadPermission }
-            .filter { it.uri != uri }
+            .filter { it.uri != uri && it.uri != otherUri }
             .forEach {
                 contentResolver.releasePersistableUriPermission(
                     it.uri,
@@ -90,9 +102,21 @@ class StorageFrameworkPickerLauncher : RetrogradeActivity() {
 
     companion object {
         private const val REQUEST_CODE_PICK_FOLDER = 1
+        private const val EXTRA_PREFERENCE_KEY = "extra_preference_key"
 
         fun pickFolder(context: Context) {
             context.startActivity(Intent(context, StorageFrameworkPickerLauncher::class.java))
+        }
+
+        fun pickBiosFolder(context: Context) {
+            val intent =
+                Intent(context, StorageFrameworkPickerLauncher::class.java).apply {
+                    putExtra(
+                        EXTRA_PREFERENCE_KEY,
+                        context.getString(com.swordfish.lemuroid.lib.R.string.pref_key_external_bios_folder),
+                    )
+                }
+            context.startActivity(intent)
         }
     }
 }
