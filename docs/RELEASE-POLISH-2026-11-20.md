@@ -1,6 +1,7 @@
 # Lemuroid Custom — Polimento visual e menus
 
 - Nove temas revisados; CineArcade e Distrito Arcade substituem os nomes visíveis anteriores, preservando as escolhas salvas.
+- Correção final: gabinete Arcade centralizado pela altura real da malha na vitrine, preservando a base usada no quarto/anel.
 - 48 modelos low poly originais para consoles e mídias, UV pixel art 16 bits, atlas compartilhado e ambientes 3D revistos. Fontes Blender e procedência incluídas no repositório.
 - Renderização GL orientada por vsync/lifecycle, decoração conforme os três modos, capas com tamanho limitado, consultas canceláveis e fallback para capa quando a prévia falha.
 - Preservadas as regras de núcleo e desempenho por jogo/sistema, seleção automática, molduras configuráveis, X e confirmação de saída.

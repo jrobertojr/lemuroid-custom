@@ -430,9 +430,27 @@ class Hardware3DRenderer(
         val assetContext = context ?: return null
         if (systemId.isBlank()) return null
         val parts = loadBlenderL3dFromAssets(assetContext, "media_$systemId") ?: return null
+        // Room models rest on y=0; the showcase camera looks at the object's centre.
+        var bottom = Float.POSITIVE_INFINITY
+        var top = Float.NEGATIVE_INFINITY
+        parts.forEach { part ->
+            repeat(part.vertexCount) { vertex ->
+                val y = part.vertexBuffer.get(vertex * 8 + 1)
+                bottom = minOf(bottom, y)
+                top = maxOf(top, y)
+            }
+        }
+        val centerY = (bottom + top) * 0.5f
         return parts.mapIndexed { index, part ->
+            val centeredVertices = ByteBuffer.allocateDirect(part.vertexCount * 8 * 4)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer()
+            repeat(part.vertexCount * 8) { offset ->
+                val value = part.vertexBuffer.get(offset)
+                centeredVertices.put(if (offset % 8 == 1) value - centerY else value)
+            }
+            centeredVertices.position(0)
             MeshPart(
-                vertexBuffer = part.vertexBuffer,
+                vertexBuffer = centeredVertices,
                 vertexCount = part.vertexCount,
                 color = part.color,
                 useTexture = index == parts.lastIndex,
