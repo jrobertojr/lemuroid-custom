@@ -1,5 +1,8 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
+
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
@@ -33,6 +36,9 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,10 +66,10 @@ import com.swordfish.lemuroid.lib.library.db.entity.Game
 
 const val ROCKSTAR_GRID_COLUMNS = 3
 
-private val RockstarInk = Color(0xFF090A0E)
-private val RockstarPanelDark = Color(0xFF14161D)
-private val RockstarGold = Color(0xFFF5A623)
-private val RockstarVicePink = Color(0xFFFF2A85)
+private val RockstarInk = Color(0xFF10151C)
+private val RockstarPanelDark = Color(0xFF1A222C)
+private val RockstarGold = Color(0xFFFFBD59)
+private val RockstarVicePink = Color(0xFF65D9C4)
 private val RockstarMint = Color(0xFF2CE6A6)
 private val RockstarCream = Color(0xFFF7F2E7)
 
@@ -87,18 +93,19 @@ fun RockstarTVLayout(
     onConfirmGame: (GroupedGameEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val safeIndex = if (games.isEmpty()) 0 else selectedIndex.coerceIn(0, games.lastIndex)
     val selectedEntry = games.getOrNull(safeIndex)
     val gridState = rememberLazyGridState()
 
     LaunchedEffect(safeIndex, games.size) {
         if (games.isNotEmpty() && safeIndex in games.indices) {
-            gridState.animateScrollToItem(safeIndex)
+            if (motion.animatedScroll) gridState.animateScrollToItem(safeIndex) else gridState.scrollToItem(safeIndex)
         }
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        // GTA / Vice City & San Andreas Comic-Panel Urban Backdrop
+        // Original urban editorial backdrop
         RockstarComicBackdrop(modifier = Modifier.fillMaxSize())
 
         Row(
@@ -108,7 +115,7 @@ fun RockstarTVLayout(
                     .padding(horizontal = 22.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            // LEFT PANEL (42%): GTA Comic-Panel Hero Poster & Mission Briefing
+            // LEFT PANEL (42%): Urban poster and game details
             RockstarMissionHero(
                 entry = selectedEntry,
                 systemTitle = systemTitle,
@@ -144,7 +151,7 @@ fun RockstarTVLayout(
                         border = BorderStroke(2.dp, RockstarInk),
                     ) {
                         Text(
-                            text = "MISSION SELECT • ${systemTitle.uppercase()}",
+                            text = "DISTRITO ARCADE • ${systemTitle.uppercase()}",
                             color = RockstarInk,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Black,
@@ -153,7 +160,7 @@ fun RockstarTVLayout(
                         )
                     }
                     Text(
-                        text = "\$${(games.size * 1000).toString().padStart(6, '0')}",
+                        text = "${games.size} JOGOS",
                         color = RockstarMint,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Black,
@@ -251,9 +258,9 @@ private fun RockstarMissionHero(
     totalCount: Int,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val context = LocalContext.current
     val game = entry?.rockstarGame
-    val wantedStars = if (game?.isFavorite == true) 5 else 3
 
     Surface(
         modifier = modifier,
@@ -269,26 +276,23 @@ private fun RockstarMissionHero(
                     .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            // Top comic header: WANTED LEVEL stars + index
+            // Top comic header: Actual favorite state and selection index
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                    for (star in 1..5) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = null,
-                            tint = if (star <= wantedStars) RockstarGold else Color.White.copy(alpha = 0.2f),
-                            modifier = Modifier.size(18.dp),
-                        )
-                    }
-                }
                 Text(
-                    text = "MISSION #$selectedPosition/$totalCount",
+                    text = if (game?.isFavorite == true) "★ FAVORITO" else "SUA COLEÇÃO",
+                    color = RockstarGold,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.8.sp,
+                )
+                Text(
+                    text = "JOGO $selectedPosition DE $totalCount",
                     color = RockstarVicePink,
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Black,
                     fontFamily = FontFamily.Monospace,
                 )
@@ -310,18 +314,20 @@ private fun RockstarMissionHero(
                     } else {
                         null
                     }
-                if (activeUrl != null) {
+                var mediaFailed by remember(activeUrl) { mutableStateOf(false) }
+                if (activeUrl != null && !mediaFailed) {
                     Crossfade(
                         targetState = activeUrl,
-                        animationSpec = tween(420),
+                        animationSpec = tween(motion.mediaMillis),
                         label = "rockstar_snap",
                     ) { url ->
                         AsyncImage(
                             model =
                                 ImageRequest.Builder(context)
                                     .data(url)
-                                    .crossfade(true)
+                                    .crossfade(false)
                                     .build(),
+                            onError = { mediaFailed = true },
                             contentDescription = game?.title,
                             contentScale = ContentScale.Fit,
                             modifier = Modifier.fillMaxSize(),
@@ -384,7 +390,7 @@ private fun RockstarMissionHero(
                         Text(
                             text = "MISSION BRIEFING // ${systemTitle.uppercase()}",
                             color = RockstarGold,
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Black,
                             fontFamily = FontFamily.Monospace,
                         )
@@ -412,15 +418,16 @@ private fun RockstarMissionCard(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
+    val motion = LocalFrontendMotion.current
     val game = entry.rockstarGame
     val scale by animateFloatAsState(
         targetValue = if (isSelected) 1.04f else 1.0f,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = tween(motion.focusMillis),
         label = "rockstar_card_scale",
     )
     val frameColor by animateColorAsState(
         targetValue = if (isSelected) RockstarGold else RockstarInk,
-        animationSpec = tween(150),
+        animationSpec = tween(motion.focusMillis),
         label = "rockstar_card_border",
     )
 
@@ -469,7 +476,7 @@ private fun RockstarMissionCard(
                         Text(
                             text = "PLAY",
                             color = Color.White,
-                            fontSize = 9.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Black,
                             modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp),
                         )
@@ -492,7 +499,7 @@ private fun RockstarMissionCard(
             Text(
                 text = game.title.uppercase(),
                 color = if (isSelected) RockstarGold else RockstarCream,
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 fontWeight = if (isSelected) FontWeight.Black else FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

@@ -2,6 +2,7 @@ package com.swordfish.lemuroid.app.mobile.shared.compose.ui
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.GLUtils
@@ -20,6 +21,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfile
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -44,12 +46,16 @@ fun Console3DShowcaseView(
     modifier: Modifier = Modifier,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val renderer = remember { Console3DRenderer(initialSystemKey = systemKey) }
+    val appContext = LocalContext.current.applicationContext
+    val profile = rememberFrontend3DProfile()
+    val renderer = remember { Console3DRenderer(initialSystemKey = systemKey, appContext = appContext) }
     var glSurfaceViewRef by remember { mutableStateOf<GLSurfaceView?>(null) }
 
     LaunchedEffect(systemKey) {
         renderer.updateConsole(systemKey)
     }
+    LaunchedEffect(profile) { renderer.setSpinning(profile != PerformanceProfile.PERFORMANCE) }
+    Bind3DFrameClock(glSurfaceViewRef, listOf(systemKey, profile))
 
     DisposableEffect(lifecycleOwner, glSurfaceViewRef) {
         val observer =
@@ -75,7 +81,7 @@ fun Console3DShowcaseView(
                 setEGLConfigChooser(8, 8, 8, 8, 16, 0)
                 preserveEGLContextOnPause = true
                 setRenderer(renderer)
-                renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+                renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
                 glSurfaceViewRef = this
             }
         },
@@ -107,12 +113,15 @@ fun LocadoraRing3DView(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val appContext = LocalContext.current.applicationContext
+    val profile = rememberFrontend3DProfile()
     val renderer = remember { LocadoraRing3DRenderer(appContext, consoleKeys, selectedIndex) }
     var glSurfaceViewRef by remember { mutableStateOf<GLSurfaceView?>(null) }
 
     LaunchedEffect(consoleKeys, selectedIndex) {
         renderer.updateState(consoleKeys, selectedIndex)
     }
+    LaunchedEffect(profile) { renderer.setSpinning(profile != PerformanceProfile.PERFORMANCE) }
+    Bind3DFrameClock(glSurfaceViewRef, listOf(consoleKeys, selectedIndex, profile))
 
     DisposableEffect(lifecycleOwner, glSurfaceViewRef) {
         val observer =
@@ -138,7 +147,7 @@ fun LocadoraRing3DView(
                 setEGLConfigChooser(8, 8, 8, 8, 16, 0)
                 preserveEGLContextOnPause = true
                 setRenderer(renderer)
-                renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+                renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
                 glSurfaceViewRef = this
             }
         },
@@ -170,12 +179,15 @@ fun ConsoleRoom3DView(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val appContext = LocalContext.current.applicationContext
+    val profile = rememberFrontend3DProfile()
     val renderer = remember { ConsoleRoom3DRenderer(appContext, consoleKeys, selectedIndex) }
     var glSurfaceViewRef by remember { mutableStateOf<GLSurfaceView?>(null) }
 
     LaunchedEffect(consoleKeys, selectedIndex) {
         renderer.updateState(consoleKeys, selectedIndex)
     }
+    LaunchedEffect(profile) { renderer.setSpinning(profile != PerformanceProfile.PERFORMANCE) }
+    Bind3DFrameClock(glSurfaceViewRef, listOf(consoleKeys, selectedIndex, profile))
 
     DisposableEffect(lifecycleOwner, glSurfaceViewRef) {
         val observer =
@@ -201,7 +213,7 @@ fun ConsoleRoom3DView(
                 setEGLConfigChooser(8, 8, 8, 8, 16, 0)
                 preserveEGLContextOnPause = true
                 setRenderer(renderer)
-                renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+                renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
                 glSurfaceViewRef = this
             }
         },
@@ -232,26 +244,20 @@ fun ConsoleRoom3DView(
  */
 class Console3DRenderer(
     initialSystemKey: String = "snes",
+    private val appContext: Context? = null,
 ) : GLSurfaceView.Renderer {
     private val stateLock = Any()
 
     @Volatile
-    private var pendingSystemKey: String = normalizeKey(initialSystemKey)
+    private var pendingSystemKey: String = canonicalRoomKey(initialSystemKey)
+
+    @Volatile private var spinning: Boolean = true
+    fun setSpinning(value: Boolean) { spinning = value }
 
     private var activeSystemKey: String? = null
     private var meshDirty: Boolean = true
 
-    private var programId: Int = 0
-    private var aPositionLoc: Int = -1
-    private var aNormalLoc: Int = -1
-    private var uMVPMatrixLoc: Int = -1
-    private var uModelMatrixLoc: Int = -1
-    private var uColorLoc: Int = -1
-    private var uShininessLoc: Int = -1
-    private var uSpecStrengthLoc: Int = -1
-    private var uEmissiveLoc: Int = -1
-    private var uCameraPosLoc: Int = -1
-
+    private val assetProgram = GlProgramHelper(appContext)
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
     private val modelMatrix = FloatArray(16)
@@ -263,13 +269,14 @@ class Console3DRenderer(
     private var lastFrameNanos: Long = 0L
 
     private var meshParts: List<MeshPart> = emptyList()
+    private var assetCenterY = 0f
     private var activeCameraSpec: CameraSpec = CameraSpec(pitchX = 24f, cameraZ = 3.15f, cameraY = 0.08f)
 
     /**
      * Thread-safely requests a switch to another console mesh without recreating the EGL context.
      */
     fun updateConsole(systemKey: String) {
-        val normalized = normalizeKey(systemKey)
+        val normalized = canonicalRoomKey(systemKey)
         synchronized(stateLock) {
             if (pendingSystemKey != normalized) {
                 pendingSystemKey = normalized
@@ -289,20 +296,10 @@ class Console3DRenderer(
         GLES20.glCullFace(GLES20.GL_BACK)
         GLES20.glFrontFace(GLES20.GL_CCW)
 
-        programId = createProgram(VERTEX_SHADER, FRAGMENT_SHADER)
-        aPositionLoc = GLES20.glGetAttribLocation(programId, "aPosition")
-        aNormalLoc = GLES20.glGetAttribLocation(programId, "aNormal")
-        uMVPMatrixLoc = GLES20.glGetUniformLocation(programId, "uMVPMatrix")
-        uModelMatrixLoc = GLES20.glGetUniformLocation(programId, "uModelMatrix")
-        uColorLoc = GLES20.glGetUniformLocation(programId, "uColor")
-        uShininessLoc = GLES20.glGetUniformLocation(programId, "uShininess")
-        uSpecStrengthLoc = GLES20.glGetUniformLocation(programId, "uSpecStrength")
-        uEmissiveLoc = GLES20.glGetUniformLocation(programId, "uEmissive")
-        uCameraPosLoc = GLES20.glGetUniformLocation(programId, "uCameraPos")
-
         synchronized(stateLock) {
             meshDirty = true
         }
+        assetProgram.init()
         lastFrameNanos = System.nanoTime()
     }
 
@@ -330,7 +327,18 @@ class Console3DRenderer(
         }
 
         if (rebuildMesh) {
-            meshParts = buildMeshForConsole(targetKey)
+            meshParts = loadConsoleMesh(appContext, targetKey)
+            var minY = Float.POSITIVE_INFINITY
+            var maxY = Float.NEGATIVE_INFINITY
+            meshParts.forEach { part ->
+                val stride = if (part.hasUV) FLOATS_PER_VERTEX_UV else FLOATS_PER_VERTEX
+                for (vertex in 0 until part.vertexCount) {
+                    val y = part.vertexBuffer.get(vertex * stride + 1)
+                    minY = kotlin.math.min(minY, y)
+                    maxY = kotlin.math.max(maxY, y)
+                }
+            }
+            assetCenterY = if (minY.isFinite() && maxY.isFinite()) (minY + maxY) * 0.5f else 0f
             activeCameraSpec = resolveCameraSpec(targetKey)
             activeSystemKey = targetKey
         }
@@ -342,7 +350,7 @@ class Console3DRenderer(
         val dt = ((now - lastFrameNanos) / 1_000_000_000.0f).coerceIn(0f, 0.05f)
         lastFrameNanos = now
 
-        angleY = (angleY + dt * 46f) % 360f
+        if (spinning) angleY = (angleY + dt * 30f) % 360f
 
         val aspectComp = if (viewportAspect < 0.9f) 0.9f / viewportAspect else 1f
         val cameraZ = activeCameraSpec.cameraZ * aspectComp
@@ -366,34 +374,12 @@ class Console3DRenderer(
         Matrix.setIdentityM(modelMatrix, 0)
         Matrix.rotateM(modelMatrix, 0, activeCameraSpec.pitchX, 1f, 0f, 0f)
         Matrix.rotateM(modelMatrix, 0, angleY, 0f, 1f, 0f)
+        Matrix.translateM(modelMatrix, 0, 0f, -assetCenterY, 0f)
         Matrix.multiplyMM(mvpMatrix, 0, vpMatrix, 0, modelMatrix, 0)
 
-        GLES20.glUseProgram(programId)
-        GLES20.glUniformMatrix4fv(uMVPMatrixLoc, 1, false, mvpMatrix, 0)
-        GLES20.glUniformMatrix4fv(uModelMatrixLoc, 1, false, modelMatrix, 0)
-        GLES20.glUniform3f(uCameraPosLoc, 0f, cameraY, cameraZ)
-
-        GLES20.glEnableVertexAttribArray(aPositionLoc)
-        GLES20.glEnableVertexAttribArray(aNormalLoc)
-
-        for (part in meshParts) {
-            val buf = part.vertexBuffer
-            if (part.vertexCount <= 0 || buf.limit() < FLOATS_PER_VERTEX) continue
-            buf.position(0)
-            GLES20.glVertexAttribPointer(aPositionLoc, 3, GLES20.GL_FLOAT, false, STRIDE_BYTES, buf)
-            buf.position(3)
-            GLES20.glVertexAttribPointer(aNormalLoc, 3, GLES20.GL_FLOAT, false, STRIDE_BYTES, buf)
-
-            GLES20.glUniform4fv(uColorLoc, 1, part.color, 0)
-            GLES20.glUniform1f(uShininessLoc, part.shininess)
-            GLES20.glUniform1f(uSpecStrengthLoc, part.specStrength)
-            GLES20.glUniform1f(uEmissiveLoc, part.emissive)
-
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, part.vertexCount)
-        }
-
-        GLES20.glDisableVertexAttribArray(aPositionLoc)
-        GLES20.glDisableVertexAttribArray(aNormalLoc)
+        assetProgram.beginFrame(0f, cameraY, cameraZ)
+        assetProgram.drawParts(meshParts, modelMatrix, mvpMatrix)
+        assetProgram.endFrame()
     }
 
     // -------------------------------------------------------------------------
@@ -432,7 +418,7 @@ private fun loadConsoleMesh(
     return buildMeshForConsole(key)
 }
 
-private fun loadBlenderL3dFromAssets(
+internal fun loadBlenderL3dFromAssets(
     context: Context,
     canonicalKey: String,
 ): List<MeshPart>? =
@@ -459,7 +445,9 @@ private fun loadBlenderL3dFromAssets(
             val specStrength = bb.float
             val emissive = bb.float
             val vertexCount = bb.int
+            if (vertexCount <= 0 || vertexCount > 36_000 || vertexCount % 3 != 0) return null
             val floatCount = vertexCount * floatsPerVert
+            if (bb.remaining() < floatCount * 4) return null
             val direct =
                 ByteBuffer.allocateDirect(floatCount * 4)
                     .order(ByteOrder.nativeOrder())
@@ -467,6 +455,7 @@ private fun loadBlenderL3dFromAssets(
             val tmp = FloatArray(floatCount)
             for (i in 0 until floatCount) {
                 tmp[i] = bb.float
+                if (!tmp[i].isFinite()) return null
             }
             direct.put(tmp)
             direct.position(0)
@@ -482,7 +471,7 @@ private fun loadBlenderL3dFromAssets(
                 ),
             )
         }
-        parts.takeIf { it.isNotEmpty() }
+        parts.takeIf { it.isNotEmpty() && !bb.hasRemaining() }
     }.getOrNull()
 
 private fun buildMeshForConsole(key: String): List<MeshPart> {
@@ -1352,7 +1341,7 @@ private fun buildMeshForConsole(key: String): List<MeshPart> {
     // Geometry & Shader Helpers
     // -------------------------------------------------------------------------
 
-    private data class MeshPart(
+    internal data class MeshPart(
         val vertexBuffer: FloatBuffer,
         val vertexCount: Int,
         val color: FloatArray,
@@ -1805,8 +1794,24 @@ private fun buildMeshForConsole(key: String): List<MeshPart> {
                         rawV = -py * uvScale
                     }
                 }
-                val lu = (((rawU % 1f) + 1f) % 1f).coerceIn(0.03f, 0.97f)
-                val lv = (((rawV % 1f) + 1f) % 1f).coerceIn(0.03f, 0.97f)
+                var lu = (((rawU % 1f) + 1f) % 1f).coerceIn(0.03f, 0.97f)
+                var lv = (((rawV % 1f) + 1f) % 1f).coerceIn(0.03f, 0.97f)
+                if (atlasTile >= 4) {
+                    val faceStart = (v / 6) * 6
+                    var minU = Float.POSITIVE_INFINITY; var maxU = Float.NEGATIVE_INFINITY
+                    var minV = Float.POSITIVE_INFINITY; var maxV = Float.NEGATIVE_INFINITY
+                    for (fv in faceStart until kotlin.math.min(faceStart + 6, vertCount)) {
+                        val fi = fv * FLOATS_PER_VERTEX
+                        val fu = if (ay >= ax && ay >= az) data[fi] else if (ax >= az) data[fi + 2] else data[fi]
+                        val fvv = if (ay >= ax && ay >= az) data[fi + 2] else -data[fi + 1]
+                        minU = kotlin.math.min(minU, fu); maxU = kotlin.math.max(maxU, fu)
+                        minV = kotlin.math.min(minV, fvv); maxV = kotlin.math.max(maxV, fvv)
+                    }
+                    val uPos = if (ay >= ax && ay >= az) px else if (ax >= az) pz else px
+                    val vPos = if (ay >= ax && ay >= az) pz else -py
+                    lu = 0.03f + 0.94f * ((uPos - minU) / (maxU - minU).coerceAtLeast(0.001f))
+                    lv = 0.03f + 0.94f * ((vPos - minV) / (maxV - minV).coerceAtLeast(0.001f))
+                }
                 out[dst] = px
                 out[dst + 1] = py
                 out[dst + 2] = pz
@@ -1952,7 +1957,24 @@ private const val FRAGMENT_SHADER = """
  *   Row 0: [0] 90s Wood Wall Paneling | [1] Oak Floor Planks | [2] Retro Carpet Rug | [3] Hardware Pixel Grain
  *   Row 1: [4] CRT Pixel Game Screen  | [5] Retro Game Poster| [6] Moonlit Window   | [7] Neon Arcade Marquee
  */
-private fun createPixelArtAtlasTexture(): Int {
+internal fun createPixelArtAtlasTexture(context: Context? = null): Int {
+    val atlas = context?.let {
+        runCatching { it.assets.open("textures/pixel_atlas_v2.png").use { stream ->
+            BitmapFactory.decodeStream(stream)
+        } }.getOrNull()
+    }
+    if (atlas != null) {
+        val ids = IntArray(1)
+        GLES20.glGenTextures(1, ids, 0)
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, ids[0])
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST)
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST)
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, atlas, 0)
+        atlas.recycle()
+        return ids[0]
+    }
     val w = 256
     val h = 256
     val pixels = IntArray(w * h)
@@ -2078,7 +2100,7 @@ private fun createPixelArtAtlasTexture(): Int {
 // Shared Multi-Object OpenGL ES 2.0 Program Helper (UV Pixel-Art Atlas Enabled)
 // =============================================================================
 
-private class GlProgramHelper {
+private class GlProgramHelper(private val context: Context? = null) {
     private var programId: Int = 0
     private var atlasTextureId: Int = 0
     private var aPositionLoc: Int = -1
@@ -2108,7 +2130,7 @@ private class GlProgramHelper {
         uCameraPosLoc = GLES20.glGetUniformLocation(programId, "uCameraPos")
         uTextureLoc = GLES20.glGetUniformLocation(programId, "uTexture")
         uUseTextureLoc = GLES20.glGetUniformLocation(programId, "uUseTexture")
-        atlasTextureId = createPixelArtAtlasTexture()
+        atlasTextureId = createPixelArtAtlasTexture(context)
     }
 
     fun beginFrame(
@@ -2179,11 +2201,13 @@ private class LocadoraRing3DRenderer(
     initialSelectedIndex: Int,
 ) : GLSurfaceView.Renderer {
     private val stateLock = Any()
-    private var consoleKeys: List<String> = initialConsoleKeys.map { normalizeKey(it) }
+    @Volatile private var spinning: Boolean = true
+    fun setSpinning(value: Boolean) { spinning = value }
+    private var consoleKeys: List<String> = initialConsoleKeys.map { canonicalRoomKey(it) }
     private var targetSelectedIndex: Int =
         if (consoleKeys.isEmpty()) 0 else initialSelectedIndex.coerceIn(0, consoleKeys.lastIndex)
 
-    private val program = GlProgramHelper()
+    private val program = GlProgramHelper(appContext)
     private val meshCache = HashMap<String, List<MeshPart>>()
     private var pedestalParts: List<MeshPart> = emptyList()
 
@@ -2207,7 +2231,7 @@ private class LocadoraRing3DRenderer(
         newConsoleKeys: List<String>,
         newSelectedIndex: Int,
     ) {
-        val normalized = newConsoleKeys.map { normalizeKey(it) }
+        val normalized = newConsoleKeys.map { canonicalRoomKey(it) }
         val clamped = if (normalized.isEmpty()) 0 else newSelectedIndex.coerceIn(0, normalized.lastIndex)
         synchronized(stateLock) {
             consoleKeys = normalized
@@ -2282,7 +2306,7 @@ private class LocadoraRing3DRenderer(
                 val smoothFactor = 1f - exp(-dt * 8.5f)
                 currentPhase = ((currentPhase + delta * smoothFactor) % count + count) % count
             }
-            selectedSpinDeg = (selectedSpinDeg + dt * 42f) % 360f
+            if (spinning) selectedSpinDeg = (selectedSpinDeg + dt * 30f) % 360f
         }
 
         val aspectComp = if (viewportAspect < 1.0f) 1.0f / viewportAspect else 1f
@@ -2318,6 +2342,7 @@ private class LocadoraRing3DRenderer(
             val z = cos(angleRad).toFloat() * RING_RADIUS
 
             val isSelected = i == selIdx
+            if (!isSelected && cos(angleRad) < -0.20) continue
             val normScale = consoleRingNormScale(key)
             val scale = (if (isSelected) 1.30f else 0.85f) * normScale
             val y = if (isSelected) -0.45f else -0.64f
@@ -2477,6 +2502,7 @@ private fun canonicalRoomKey(key: String): String =
     when (normalizeKey(key)) {
         "fbneo", "mame2003plus", "arcade" -> "arcade"
         "genesis", "md" -> "md"
+        "scd", "segacd" -> "segacd"
         else -> normalizeKey(key)
     }
 
@@ -2485,12 +2511,14 @@ private class ConsoleRoom3DRenderer(
     initialConsoleKeys: List<String>,
     initialSelectedIndex: Int,
 ) : GLSurfaceView.Renderer {
+    @Volatile private var spinning: Boolean = true
+    fun setSpinning(value: Boolean) { spinning = value }
     private val stateLock = Any()
     private var consoleKeys: List<String> = initialConsoleKeys.map { canonicalRoomKey(it) }
     private var targetSelectedIndex: Int =
         if (consoleKeys.isEmpty()) 0 else initialSelectedIndex.coerceIn(0, consoleKeys.lastIndex)
 
-    private val program = GlProgramHelper()
+    private val program = GlProgramHelper(appContext)
     private val meshCache = HashMap<String, List<MeshPart>>()
     private var roomParts: List<MeshPart> = emptyList()
     private var pedestalPlateParts: List<MeshPart> = emptyList()
@@ -2571,7 +2599,7 @@ private class ConsoleRoom3DRenderer(
         if (lastFrameNanos == 0L) lastFrameNanos = now
         val dt = ((now - lastFrameNanos) / 1_000_000_000.0f).coerceIn(0f, 0.05f)
         lastFrameNanos = now
-        swayTimeSec += dt
+        if (spinning) swayTimeSec += dt
 
         val activeKey = keys.getOrNull(selIdx) ?: "snes"
         val targetStation =
@@ -2623,11 +2651,16 @@ private class ConsoleRoom3DRenderer(
 
         // 3. Draw EVERY Lemuroid console from Blender .l3d assets, resting flush on its shelf/floor!
         for (station in ALL_ROOM_STATIONS) {
+            if (station.key != activeKey) {
+                val sx = station.x - camX; val sz = station.z - camZ
+                val fx = lookX - camX; val fz = lookZ - camZ
+                if (sx * fx + sz * fz < -0.5f) continue
+            }
             val parts = meshCache.getOrPut(station.key) { loadConsoleMesh(appContext, station.key) }
             val isSelected = station.key == activeKey
-            val liftY = if (isSelected && station.key != "arcade") 0.045f + sin(swayTimeSec * 2.2f) * 0.015f else 0f
+            val liftY = if (spinning && isSelected && station.key != "arcade") 0.045f + sin(swayTimeSec * 2.2f) * 0.015f else 0f
             val scale = station.scale * if (isSelected) 1.08f else 1.0f
-            val rotY = station.rotY + if (isSelected && station.key != "arcade") sin(swayTimeSec * 1.4f) * 6f else 0f
+            val rotY = station.rotY + if (spinning && isSelected && station.key != "arcade") sin(swayTimeSec * 1.4f) * 6f else 0f
 
             Matrix.setIdentityM(modelMatrix, 0)
             Matrix.translateM(modelMatrix, 0, station.x, station.y + liftY, station.z)
@@ -2659,11 +2692,11 @@ private class ConsoleRoom3DRenderer(
 
     private fun buildEnclosedRetroBedroomMesh(): List<MeshPart> {
         val parts = mutableListOf<MeshPart>()
-        val floorWood = argbToFloat4(0xFF6A452B.toInt())
-        val woodWall90s = argbToFloat4(0xFF7B4E2E.toInt()) // Warm 90s wood paneling (like Reference Photo 2!)
+        val floorWood = argbToFloat4(0xFFD2C1A5.toInt())
+        val woodWall90s = argbToFloat4(0xFFB6A48B.toInt()) // Warm 90s wood paneling (like Reference Photo 2!)
         val ceilingDark = argbToFloat4(0xFF1F1A26.toInt())
-        val woodLight = argbToFloat4(0xFF8B5A36.toInt())
-        val woodDark = argbToFloat4(0xFF4D2E1B.toInt())
+        val woodLight = argbToFloat4(0xFFCBB79C.toInt())
+        val woodDark = argbToFloat4(0xFF94806B.toInt())
         val darkMetal = argbToFloat4(0xFF1F222A.toInt())
         val silver = argbToFloat4(0xFFC4CBD4.toInt())
         val white = argbToFloat4(0xFFFFFFFF.toInt())
@@ -2687,7 +2720,7 @@ private class ConsoleRoom3DRenderer(
         // Cozy Retro Carpet Rug in front of CRT TV (Tile 2 — SNES & PS1 sit on it like Photos 1 & 2!)
         val rug = MeshBuilder()
         rug.addBox(0f, -1.375f, -1.35f, 5.6f, 0.045f, 3.6f)
-        parts += rug.toPart(argbToFloat4(0xFF9E5A78.toInt()), shininess = 10f, specStrength = 0.06f, atlasTile = 2, uvScale = 0.35f)
+        parts += rug.toPart(argbToFloat4(0xFFB5C9C3.toInt()), shininess = 10f, specStrength = 0.06f, atlasTile = 2, uvScale = 0.35f)
 
         // 2. NORTH WALL — SPACIOUS 1-CONSOLE-PER-CUBBY OPEN RACK (x in [-5.35, +3.75], ZERO overlap!)
         val furnitureDark = MeshBuilder()
@@ -2738,7 +2771,12 @@ private class ConsoleRoom3DRenderer(
 
         // Big Classic Sony Trinitron CRT TV centered on North Rack (x = -0.80, z = -5.18, behind consoles!)
         val crtBody = MeshBuilder()
-        crtBody.addBox(-0.80f, 0.38f, -5.22f, 1.62f, 1.36f, 0.72f)
+        crtBody.addBox(-0.80f, 0.38f, -5.28f, 1.70f, 1.36f, 0.84f)
+        // Recessed 4:3 glass surrounded by a deep, solid bezel.
+        crtBody.addBox(-0.80f, 0.97f, -4.82f, 1.62f, 0.10f, 0.08f)
+        crtBody.addBox(-0.80f, -0.13f, -4.82f, 1.62f, 0.14f, 0.08f)
+        crtBody.addBox(-1.55f, 0.42f, -4.82f, 0.10f, 1.00f, 0.08f)
+        crtBody.addBox(-0.05f, 0.42f, -4.82f, 0.10f, 1.00f, 0.08f)
         crtBody.addBox(-0.80f, 0.38f, -5.66f, 1.02f, 0.86f, 0.20f)
         // Boombox on West Desk
         crtBody.addBox(-5.65f, -0.14f, -1.75f, 0.34f, 0.44f, 0.88f)
@@ -2802,12 +2840,14 @@ fun RetroCrtTv3DView(
     modifier: Modifier = Modifier,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val renderer = remember { RetroCrtTv3DRenderer(initialChannelIndex = channelIndex) }
+    val appContext = LocalContext.current.applicationContext
+    val renderer = remember { RetroCrtTv3DRenderer(initialChannelIndex = channelIndex, appContext = appContext) }
     var glSurfaceViewRef by remember { mutableStateOf<GLSurfaceView?>(null) }
 
     LaunchedEffect(channelIndex) {
         renderer.updateChannel(channelIndex)
     }
+    Bind3DFrameClock(glSurfaceViewRef, channelIndex)
 
     DisposableEffect(lifecycleOwner, glSurfaceViewRef) {
         val observer =
@@ -2832,7 +2872,7 @@ fun RetroCrtTv3DView(
                 setEGLContextClientVersion(2)
                 setEGLConfigChooser(8, 8, 8, 8, 16, 0)
                 setRenderer(renderer)
-                renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+                renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
                 glSurfaceViewRef = this
             }
         },
@@ -2852,14 +2892,14 @@ fun RetroCrtTv3DView(
 
 private class RetroCrtTv3DRenderer(
     initialChannelIndex: Int,
+    private val appContext: Context? = null,
 ) : GLSurfaceView.Renderer {
     private val stateLock = Any()
     private var targetChannelIndex: Int = initialChannelIndex
     private var currentDialAngleDeg: Float = (initialChannelIndex * 32f) % 360f
     private var lastFrameNanos: Long = 0L
 
-    private val program = GlProgramHelper()
-    private var atlasTextureId: Int = 0
+    private val program = GlProgramHelper(appContext)
     private var staticBodyParts: List<MeshPart> = emptyList()
     private var vhfKnobParts: List<MeshPart> = emptyList()
     private var uhfKnobParts: List<MeshPart> = emptyList()
@@ -2885,7 +2925,6 @@ private class RetroCrtTv3DRenderer(
         GLES20.glDepthFunc(GLES20.GL_LEQUAL)
         GLES20.glDisable(GLES20.GL_CULL_FACE)
         program.init()
-        atlasTextureId = createPixelArtAtlasTexture()
         staticBodyParts = buildCrtTvStaticBody()
         vhfKnobParts = buildRotaryKnobMesh()
         uhfKnobParts = buildRotaryKnobMesh()

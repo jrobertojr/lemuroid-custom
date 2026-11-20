@@ -1,5 +1,8 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
+
 import android.view.KeyEvent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -419,7 +422,7 @@ private fun LocadoraConsoleNameplateCard(
                         Text(
                             text = "$position / $total",
                             color = LocadoraGoldSoft,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(horizontal = 9.dp, vertical = 2.dp),
                         )

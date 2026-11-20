@@ -1,0 +1,11 @@
+{
+  "origin": "OpenAI host-native image_gen tool",
+  "generated_date": "2026-11-20",
+  "generation_id": "exec-d56bb08a-85db-47ee-8e3d-fdbf0340288d",
+  "source_sha256": "f94d0144d1cc1aeb4bd66f7d2ca45afdb5ab4994e497aafe112f2fdfe62697d3",
+  "purpose": "Original 16-bit pixel-art UV atlas for low-poly console models and environments",
+  "layout": "4 columns x 2 rows: walnut wall, oak floor, teal carpet, neutral ABS; CRT scene, original poster, moonlit window, amber marquee",
+  "prompt": "Production-ready square flat UV texture atlas, strict 4x2 equal cells without gaps; crisp 16-bit console pixel art, restrained colors, no antialiasing, no text/logos/copyrighted game imagery. Quiet top-row materials, original geometric lower-row decoration; orthographic bitmap, not perspective concept art. See docs/ART-DIRECTION-POLISH.md for the complete prompt.",
+  "normalization": "Blender 5.2 nearest 512x512 sampling; RGB565 color grid; PNG storage. Runtime uses GL_NEAREST/CLAMP_TO_EDGE.",
+  "rights": "Original AI-assisted artwork created for this project; no third-party bitmap samples or logos. No assertion of exclusive rights to AI-generated output."
+}

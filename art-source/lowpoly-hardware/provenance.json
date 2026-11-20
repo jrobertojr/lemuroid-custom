@@ -1,0 +1,21 @@
+{
+  "tool": "Blender 5.2.2 LTS",
+  "generator": "tools/art/build_lowpoly_hardware.py",
+  "generator_sha256": "be62827c83feb5e2e84224fcabaea4697bd4aa1c868176344a39f410953f8f81",
+  "geometry": "Original procedural meshes; no external mesh or logo assets imported.",
+  "atlas": "lemuroid-app/src/main/assets/textures/pixel_atlas_v2.png",
+  "atlas_sha256": "9bced46097a3d796f59fe4fa666551a8596c1e8b1c7c35302ddd9cc5d71525a6",
+  "blend_sha256": "fa70bacf22626e96ce83bcb3f38c26b2523de8516435ade68c67e82354c69310",
+  "references": [
+    "https://careers.nintendo.com/our-history/",
+    "https://www.nintendo.com/en-gb/Hardware/Nintendo-History/Nintendo-History-625945.html",
+    "https://www.sony.com/en/SonyInfo/CorporateInfo/History/SonyHistory/2-09.html"
+  ],
+  "renders": {
+    "console-contact-sheet.png": "7a4b46e1ce2ef1b4308b1c10475024a5676ca9e357e4dee7ef2348c0d159e16d",
+    "console-sheet-1.png": "3a6c37a001370eff29fa9ae9238403e08ab60297b586360c6e0ed58dcd408800",
+    "console-sheet-2.png": "859a4fef710524b610ed9c369051f2f9b60a4c506468c19f18f624606d7b9233",
+    "media-sheet-1.png": "2d5280f66f782ca464615b6492ed0b040749ddddf7ea9bf730bc22d4d6284849",
+    "media-sheet-2.png": "61be6071f9d6f7536d62ab1ec985eca9cd3b1cff2a672a5ac2b62b0574b01136"
+  }
+}

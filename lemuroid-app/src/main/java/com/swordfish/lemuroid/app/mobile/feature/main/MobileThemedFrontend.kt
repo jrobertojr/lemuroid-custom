@@ -1,5 +1,9 @@
 package com.swordfish.lemuroid.app.mobile.feature.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.displayName
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendMotion
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
 import android.content.res.Configuration
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
@@ -146,6 +150,21 @@ fun MobileThemedFrontend(
     onOpenSearch: () -> Unit,
     onRescan: () -> Unit,
 ) {
+    androidx.compose.runtime.CompositionLocalProvider(
+        LocalFrontendMotion provides rememberFrontendMotion(),
+    ) {
+        MobileThemedFrontendContent(retrogradeDb, gameInteractor, onOpenSettings, onOpenSearch, onRescan)
+    }
+}
+
+@Composable
+private fun MobileThemedFrontendContent(
+    retrogradeDb: RetrogradeDatabase,
+    gameInteractor: GameInteractor,
+    onOpenSettings: () -> Unit,
+    onOpenSearch: () -> Unit,
+    onRescan: () -> Unit,
+) {
     val backDispatcher = androidx.activity.compose.LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -215,17 +234,18 @@ private fun MobilePortraitThemedFrontend(
     onOpenSearch: () -> Unit,
     onRescan: () -> Unit,
 ) {
+    val motion = LocalFrontendMotion.current
     val theme = LocalFrontendTheme.current
     val context = LocalContext.current
     val gameDao = remember(retrogradeDb) { retrogradeDb.gameDao() }
 
-    val systemCounts by gameDao.selectSystemsWithCount().collectAsState(initial = emptyList())
+    val systemCounts by remember(gameDao) { gameDao.selectSystemsWithCount() }.collectAsState(initial = emptyList())
     val systemIds = remember(systemCounts) { systemCounts.map { it.systemId } }
     val allGames by remember(systemIds) {
         if (systemIds.isEmpty()) flowOf(emptyList()) else gameDao.selectBySystemsList(systemIds)
     }.collectAsState(initial = emptyList())
-    val recentGames by gameDao.selectFirstUnfavoriteRecents(12).collectAsState(initial = emptyList())
-    val favoriteGames by gameDao.selectFirstFavorites(20).collectAsState(initial = emptyList())
+    val recentGames by remember(gameDao) { gameDao.selectFirstUnfavoriteRecents(12) }.collectAsState(initial = emptyList())
+    val favoriteGames by remember(gameDao) { gameDao.selectFirstFavorites(20) }.collectAsState(initial = emptyList())
 
     val groupedAll = remember(allGames) { MultiDiscGrouper.group(allGames) }
     val groupedRecents = remember(recentGames) { MultiDiscGrouper.group(recentGames) }
@@ -392,11 +412,11 @@ private fun MobilePortraitThemedFrontend(
             selectedGame?.let { TVGameMetadataHelper.screenshotGalleryUrlsFor(it) } ?: emptyList()
         }
     var screenshotIdx by remember(selectedGame?.id) { mutableIntStateOf(0) }
-    LaunchedEffect(selectedGame?.id, screenshots.size) {
+    LaunchedEffect(selectedGame?.id, screenshots.size, motion.slideshowMillis) {
         screenshotIdx = 0
-        if (screenshots.size > 1) {
+        if (screenshots.size > 1 && motion.slideshowMillis > 0L) {
             while (true) {
-                delay(3500L)
+                delay(motion.slideshowMillis)
                 screenshotIdx = (screenshotIdx + 1) % screenshots.size
             }
         }
@@ -803,7 +823,7 @@ private fun MobileNetflixPortrait(
                     if (activeUrl != null) {
                         Crossfade(targetState = activeUrl, label = "nf_mob_hero") { url ->
                             AsyncImage(
-                                model = ImageRequest.Builder(context).data(url).crossfade(true).build(),
+                                model = ImageRequest.Builder(context).data(url).crossfade(false).build(),
                                 contentDescription = heroGame.title,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize(),
@@ -832,7 +852,7 @@ private fun MobileNetflixPortrait(
                     ) {
                         Text(
                             text = "N  SÉRIE • ${systemTitle.uppercase()}",
-                            color = Color(0xFFE50914),
+                            color = Color(0xFFF04F5E),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Black,
                             letterSpacing = 1.2.sp,
@@ -916,7 +936,7 @@ private fun MobileNetflixPortrait(
                             if (row.isTopTen) {
                                 Text(
                                     text = "${idx + 1}",
-                                    color = Color(0xFFE50914),
+                                    color = Color(0xFFF04F5E),
                                     fontSize = 44.sp,
                                     fontWeight = FontWeight.Black,
                                     modifier = Modifier.padding(end = 2.dp),
@@ -1007,7 +1027,7 @@ private fun MobileRetroTubePortrait(
                     if (activeUrl != null) {
                         Crossfade(targetState = activeUrl, label = "crt_mob") { url ->
                             AsyncImage(
-                                model = ImageRequest.Builder(context).data(url).crossfade(true).build(),
+                                model = ImageRequest.Builder(context).data(url).crossfade(false).build(),
                                 contentDescription = selectedGame.title,
                                 contentScale = ContentScale.Fit,
                                 modifier = Modifier.fillMaxSize(),
@@ -1026,7 +1046,7 @@ private fun MobileRetroTubePortrait(
                     }
                     Text(
                         text = "CH ${(selectedIndex + 1).toString().padStart(2, '0')}",
-                        color = Color(0xFF39FF14),
+                        color = Color(0xFF9ADF8D),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace,
@@ -1051,7 +1071,7 @@ private fun MobileRetroTubePortrait(
         MobilePlayActionStrip(
             game = selectedGame,
             description = description,
-            accentColor = Color(0xFF39FF14),
+            accentColor = Color(0xFF9ADF8D),
             onPlay = onPlaySelected,
             onToggleFavorite = onToggleFavorite,
         )
@@ -1066,7 +1086,7 @@ private fun MobileRetroTubePortrait(
                 Surface(
                     shape = RoundedCornerShape(6.dp),
                     color = if (isSelected) Color(0xFF1B3B1E) else Color(0xCC101412),
-                    border = BorderStroke(1.dp, if (isSelected) Color(0xFF39FF14) else Color.White.copy(alpha = 0.08f)),
+                    border = BorderStroke(1.dp, if (isSelected) Color(0xFF9ADF8D) else Color.White.copy(alpha = 0.08f)),
                     modifier = Modifier.fillMaxWidth().clickable { onSelectOrPlay(index) },
                 ) {
                     Row(
@@ -1075,7 +1095,7 @@ private fun MobileRetroTubePortrait(
                     ) {
                         Text(
                             text = "CH ${(index + 1).toString().padStart(2, '0')}",
-                            color = if (isSelected) Color(0xFF39FF14) else Color(0xFFFFB74D),
+                            color = if (isSelected) Color(0xFF9ADF8D) else Color(0xFFFFB74D),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace,
@@ -1112,6 +1132,7 @@ private fun MobileLocadoraShelfPortrait(
     onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val context = LocalContext.current
     val safeSelectedIdx = if (games.isEmpty()) 0 else selectedIndex.coerceIn(0, games.lastIndex)
     val selectedGame = games.getOrNull(safeSelectedIdx)?.mobileGame ?: return
@@ -1136,7 +1157,7 @@ private fun MobileLocadoraShelfPortrait(
                 if (activeUrl != null) {
                     Crossfade(targetState = activeUrl, label = "loc_mob_snap") { url ->
                         AsyncImage(
-                            model = ImageRequest.Builder(context).data(url).crossfade(true).build(),
+                            model = ImageRequest.Builder(context).data(url).crossfade(false).build(),
                             contentDescription = selectedGame.title,
                             contentScale = ContentScale.Fit,
                             modifier = Modifier.fillMaxSize(),
@@ -1202,7 +1223,7 @@ private fun MobileLocadoraShelfPortrait(
                             val isSelected = globalIdx == selectedIndex
                             val rotation by animateFloatAsState(
                                 targetValue = if (isSelected) 0f else 18f,
-                                animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                                animationSpec = tween(motion.focusMillis),
                                 label = "mob_spine_rot",
                             )
                             Surface(
@@ -1275,13 +1296,11 @@ private fun MobileShowcaseAndGridPortrait(
     val context = LocalContext.current
     val safeSelectedIdx = if (games.isEmpty()) 0 else selectedIndex.coerceIn(0, games.lastIndex)
     val selectedGame = games.getOrNull(safeSelectedIdx)?.mobileGame ?: return
-    val infiniteTransition = rememberInfiniteTransition(label = "mob_vinyl")
-    val vinylAngle by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(tween(4800, easing = LinearEasing), RepeatMode.Restart),
-        label = "mob_vinyl_angle",
-    )
+    val vinylAngle by if (theme == FrontendTheme.THRASH_METAL) {
+        rememberFrontendLoop(durationMillis = 4800)
+    } else {
+        androidx.compose.runtime.rememberUpdatedState(0f)
+    }
 
     Column(
         modifier = modifier.padding(horizontal = 12.dp),
@@ -1352,7 +1371,7 @@ private fun MobileShowcaseAndGridPortrait(
                             if (activeUrl != null) {
                                 Crossfade(targetState = activeUrl, label = "mob_snap") { url ->
                                     AsyncImage(
-                                        model = ImageRequest.Builder(context).data(url).crossfade(true).build(),
+                                        model = ImageRequest.Builder(context).data(url).crossfade(false).build(),
                                         contentDescription = selectedGame.title,
                                         contentScale = ContentScale.Fit,
                                         modifier = Modifier.fillMaxSize(),
@@ -1369,17 +1388,12 @@ private fun MobileShowcaseAndGridPortrait(
                 Column(modifier = Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.SpaceBetween) {
                     Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                         if (theme == FrontendTheme.ROCKSTAR) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                                val stars = if (selectedGame.isFavorite) 5 else 3
-                                for (s in 1..5) {
-                                    Icon(
-                                        Icons.Filled.Star,
-                                        null,
-                                        tint = if (s <= stars) Color(0xFFF5A623) else Color.White.copy(alpha = 0.2f),
-                                        modifier = Modifier.size(14.dp),
-                                    )
-                                }
-                            }
+                            Text(
+                                text = if (selectedGame.isFavorite) "★ FAVORITO" else "DISTRITO ARCADE",
+                                color = Color(0xFFFFBD59),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
                         }
                         Text(
                             text = selectedGame.title,
@@ -1424,7 +1438,7 @@ private fun MobileShowcaseAndGridPortrait(
                                 Icon(
                                     if (selectedGame.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                                     null,
-                                    tint = if (selectedGame.isFavorite) Color(0xFFFF2A85) else Color.White,
+                                    tint = if (selectedGame.isFavorite) Color(0xFFFF75B5) else Color.White,
                                     modifier = Modifier.size(16.dp),
                                 )
                             }
@@ -1533,7 +1547,7 @@ private fun MobilePlayActionStrip(
                     Icon(
                         if (game.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         null,
-                        tint = if (game.isFavorite) Color(0xFFFF2A85) else Color.White,
+                        tint = if (game.isFavorite) Color(0xFFFF75B5) else Color.White,
                         modifier = Modifier.size(18.dp),
                     )
                 }
@@ -1600,24 +1614,16 @@ private fun MobileThemeBackdrop(theme: FrontendTheme) {
 
 private fun mobileThemeAccent(theme: FrontendTheme): Color =
     when (theme) {
-        FrontendTheme.NETFLIX -> Color(0xFFE50914)
+        FrontendTheme.NETFLIX -> Color(0xFFF04F5E)
         FrontendTheme.LOCADORA -> Color(0xFFFFC107)
         FrontendTheme.CONSOLE -> Color(0xFF00C2FF)
-        FrontendTheme.TV -> Color(0xFF39FF14)
+        FrontendTheme.TV -> Color(0xFF9ADF8D)
         FrontendTheme.RETRO_80_90 -> Color(0xFF00F0FF)
-        FrontendTheme.ROCKSTAR -> Color(0xFFF5A623)
+        FrontendTheme.ROCKSTAR -> Color(0xFFFFBD59)
         FrontendTheme.THRASH_METAL -> Color(0xFFFF5252)
         FrontendTheme.THREE_D, FrontendTheme.DEFAULT -> Color(0xFF00E5FF)
     }
 
+@Composable
 private fun mobileThemeHeader(theme: FrontendTheme, systemTitle: String): String =
-    when (theme) {
-        FrontendTheme.NETFLIX -> "NETFLIX • $systemTitle"
-        FrontendTheme.LOCADORA -> "LOCADORA • $systemTitle"
-        FrontendTheme.CONSOLE -> "CONSOLE • $systemTitle"
-        FrontendTheme.TV -> "TV RETRÔ • $systemTitle"
-        FrontendTheme.RETRO_80_90 -> "80/90 • $systemTitle"
-        FrontendTheme.ROCKSTAR -> "ROCKSTAR • $systemTitle"
-        FrontendTheme.THRASH_METAL -> "THRASH METAL • $systemTitle"
-        FrontendTheme.THREE_D, FrontendTheme.DEFAULT -> "3D • $systemTitle"
-    }
+    "${theme.displayName()} • $systemTitle"

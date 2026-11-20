@@ -1,5 +1,8 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
+
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -35,6 +38,8 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -379,6 +384,7 @@ private fun LocadoraLeftDetailsStage(
     description: String?,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val context = LocalContext.current
     val game = entry?.shelfGame
 
@@ -416,20 +422,22 @@ private fun LocadoraLeftDetailsStage(
                         null
                     }
 
+                var mediaFailed by remember(activeScreenshotUrl) { mutableStateOf(false) }
                 Crossfade(
                     targetState = activeScreenshotUrl to game?.id,
-                    animationSpec = tween(durationMillis = 480),
+                    animationSpec = tween(durationMillis = motion.mediaMillis),
                     label = "locadoraScreenshotCrossfade",
                     modifier = Modifier.fillMaxSize(),
                 ) { (url, _) ->
                     when {
-                        !url.isNullOrBlank() -> {
+                        !url.isNullOrBlank() && !mediaFailed -> {
                             AsyncImage(
                                 model =
                                     ImageRequest.Builder(context)
                                         .data(url)
-                                        .crossfade(true)
+                                        .crossfade(false)
                                         .build(),
+                                onError = { mediaFailed = true },
                                 contentDescription = entry?.shelfTitle,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize(),
@@ -566,7 +574,7 @@ private fun LocadoraLeftDetailsStage(
                         Text(
                             text = systemTitle.uppercase(),
                             color = ShelfCream,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.7.sp,
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
@@ -585,7 +593,7 @@ private fun LocadoraLeftDetailsStage(
                             Text(
                                 text = "$versions versões",
                                 color = ShelfGoldSoft,
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(horizontal = 9.dp, vertical = 3.dp),
                                 maxLines = 1,
@@ -643,6 +651,7 @@ private fun LocadoraWoodenBookshelfStage(
     onConfirmGame: (GroupedGameEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val shelfRows =
         remember(games) {
             games.chunked(SHELF_COLUMNS)
@@ -655,7 +664,7 @@ private fun LocadoraWoodenBookshelfStage(
     LaunchedEffect(selectedRowIndex, shelfRows.size) {
         if (shelfRows.isNotEmpty()) {
             val targetScrollRow = (selectedRowIndex - 1).coerceAtLeast(0)
-            listState.animateScrollToItem(index = targetScrollRow)
+            if (motion.animatedScroll) listState.animateScrollToItem(index = targetScrollRow) else listState.scrollToItem(index = targetScrollRow)
         }
     }
 
@@ -767,7 +776,7 @@ private fun LocadoraWoodenBookshelfStage(
                     Text(
                         text = "PRATELEIRA • ${systemTitle.uppercase()}",
                         color = ShelfGoldSoft,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 1.6.sp,
                         maxLines = 1,
@@ -1077,7 +1086,7 @@ private fun GameBoxSpineSlot(
                             } else {
                                 Color.White
                             },
-                        fontSize = 8.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Black,
                         maxLines = 1,
                     )
@@ -1095,7 +1104,7 @@ private fun GameBoxSpineSlot(
                     Text(
                         text = entry.shelfTitle,
                         color = boxStyle.spineTextColor,
-                        fontSize = 9.5.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -1219,18 +1228,15 @@ private fun SelectedPullOut3DBoxOverlay(
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val density = LocalDensity.current
     val pullProgress = remember(selectedIndex) { Animatable(0f) }
 
-    LaunchedEffect(selectedIndex) {
-        pullProgress.snapTo(0f)
-        pullProgress.animateTo(
+    LaunchedEffect(selectedIndex, motion.animatedScroll) {
+        pullProgress.snapTo(if (motion.animatedScroll) 0f else 1f)
+        if (motion.animatedScroll) pullProgress.animateTo(
             targetValue = 1f,
-            animationSpec =
-                spring(
-                    dampingRatio = 0.72f,
-                    stiffness = Spring.StiffnessMediumLow,
-                ),
+            animationSpec = tween(motion.mediaMillis),
         )
     }
 
@@ -1307,7 +1313,7 @@ private fun SelectedPullOut3DBoxOverlay(
                 Text(
                     text = "▶ A • JOGAR ESTE CARTUCHO",
                     color = ShelfGoldSoft,
-                    fontSize = 11.5.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.ExtraBold,
                     letterSpacing = 0.8.sp,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp),
@@ -1379,7 +1385,7 @@ private fun AuthenticFrontGameBox3D(
                         boxStyle.spineShortLabel
                     },
                 color = boxStyle.spineTextColor.copy(alpha = 0.88f),
-                fontSize = 8.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Black,
                 maxLines = 1,
                 modifier = Modifier.verticalSpineText(),
@@ -1510,7 +1516,7 @@ private fun AuthenticBoxHeaderBar(
         Text(
             text = boxStyle.consoleTag,
             color = if (isLightHeader) Color(0xFF15181E) else Color.White,
-            fontSize = 9.5.sp,
+            fontSize = 12.sp,
             fontWeight = FontWeight.Black,
             letterSpacing = 0.9.sp,
             maxLines = 1,

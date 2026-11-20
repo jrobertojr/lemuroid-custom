@@ -1,5 +1,8 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
+
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -203,6 +206,7 @@ private fun DashboardScreenshotMedia(
     showScanlines: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     Box(
         modifier = modifier.background(Color(0xFF060910)),
         contentAlignment = Alignment.Center,
@@ -210,7 +214,7 @@ private fun DashboardScreenshotMedia(
         if (screenshotUrl != null) {
             Crossfade(
                 targetState = screenshotUrl,
-                animationSpec = tween(durationMillis = 300),
+                animationSpec = tween(durationMillis = motion.mediaMillis),
                 label = "dashboardScreenshotCrossfade",
                 modifier = Modifier.fillMaxSize(),
             ) { url ->
@@ -305,23 +309,18 @@ private fun SonyXmbDashboard(
     onConfirmGame: (GroupedGameEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val selectedEntry = games.getOrNull(selectedIndex)
     val selectedGame = selectedEntry?.dashGame
     val listState = rememberLazyListState()
 
     LaunchedEffect(selectedIndex, games.size) {
         if (games.isNotEmpty()) {
-            listState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
+            if (motion.animatedScroll) listState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex)) else listState.scrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
         }
     }
 
-    val waveTransition = rememberInfiniteTransition(label = "xmbWave")
-    val wavePhase by waveTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = (2.0 * PI).toFloat(),
-        animationSpec = infiniteRepeatable(tween(9000, easing = LinearEasing), RepeatMode.Restart),
-        label = "xmbWavePhase",
-    )
+    val wavePhase by rememberFrontendLoop(targetValue = (2.0 * PI).toFloat(), durationMillis = 9000)
 
     Box(
         modifier =
@@ -400,7 +399,7 @@ private fun SonyXmbDashboard(
                                 Text(
                                     text = if (isActive) "🎮" else cat.take(1),
                                     color = if (isActive) Color.White else Color(0xFF9EBBE0),
-                                    fontSize = if (isActive) 14.sp else 11.sp,
+                                    fontSize = if (isActive) 14.sp else 12.sp,
                                     fontWeight = FontWeight.Bold,
                                 )
                             }
@@ -408,7 +407,7 @@ private fun SonyXmbDashboard(
                             Text(
                                 text = cat,
                                 color = if (isActive) Color.White else Color(0xFF8AA8CE),
-                                fontSize = if (isActive) 10.sp else 9.sp,
+                                fontSize = if (isActive) 10.sp else 12.sp,
                                 fontWeight = if (isActive) FontWeight.ExtraBold else FontWeight.Medium,
                                 letterSpacing = 1.sp,
                             )
@@ -425,7 +424,7 @@ private fun SonyXmbDashboard(
                     Text(
                         text = "${systemTitle.uppercase(Locale.ROOT)}  •  ${games.size} TÍTULOS",
                         color = Color(0xFFD6ECFF),
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                     )
@@ -507,7 +506,7 @@ private fun SonyXmbDashboard(
                                     Text(
                                         text = if (entry.dashDiscCount > 1) "${entry.dashDiscCount} Discos" else systemKey.uppercase(Locale.ROOT),
                                         color = Color(0xFF8CD3FF),
-                                        fontSize = 10.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.SemiBold,
                                     )
                                 }
@@ -567,7 +566,7 @@ private fun SonyXmbDashboard(
                                     description?.takeIf { it.isNotBlank() }
                                         ?: "Disco PlayStation pronto no leitor óptico.",
                                 color = Color(0xFFBDD8F5),
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -621,23 +620,18 @@ private fun NintendoSwitchDashboard(
     onConfirmGame: (GroupedGameEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val selectedEntry = games.getOrNull(selectedIndex)
     val selectedGame = selectedEntry?.dashGame
     val rowState = rememberLazyListState()
 
     LaunchedEffect(selectedIndex, games.size) {
         if (games.isNotEmpty()) {
-            rowState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
+            if (motion.animatedScroll) rowState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex)) else rowState.scrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
         }
     }
 
-    val pulseTransition = rememberInfiniteTransition(label = "switchFocus")
-    val pulseAlpha by pulseTransition.animateFloat(
-        initialValue = 0.65f,
-        targetValue = 1.0f,
-        animationSpec = infiniteRepeatable(tween(800), RepeatMode.Reverse),
-        label = "switchPulseAlpha",
-    )
+    val pulseAlpha by rememberFrontendLoop(initialValue = 0.85f, targetValue = 1f, durationMillis = 1400, reverse = true)
 
     Column(
         modifier =
@@ -697,7 +691,7 @@ private fun NintendoSwitchDashboard(
                     Text(
                         text = "100% ▮",
                         color = Color(0xFF69F0AE),
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 }
@@ -753,7 +747,7 @@ private fun NintendoSwitchDashboard(
                             description?.takeIf { it.isNotBlank() }
                                 ?: "Cartucho Nintendo inserido e pronto para jogar.",
                         color = Color(0xFFB8C2D1),
-                        fontSize = 11.5.sp,
+                        fontSize = 12.sp,
                         lineHeight = 15.sp,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis,
@@ -849,7 +843,7 @@ private fun NintendoSwitchDashboard(
             Text(
                 text = "NINTENDO HOME MENU",
                 color = Color(0xFF8B95A5),
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.2.sp,
             )
@@ -884,13 +878,14 @@ private fun SegaDreamcastMegaDashboard(
     onConfirmGame: (GroupedGameEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val selectedEntry = games.getOrNull(selectedIndex)
     val selectedGame = selectedEntry?.dashGame
     val listState = rememberLazyListState()
 
     LaunchedEffect(selectedIndex, games.size) {
         if (games.isNotEmpty()) {
-            listState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
+            if (motion.animatedScroll) listState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex)) else listState.scrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
         }
     }
 
@@ -1073,7 +1068,7 @@ private fun SegaDreamcastMegaDashboard(
                     Text(
                         text = description?.takeIf { it.isNotBlank() } ?: "SEGA 16-BIT / CD READY.",
                         color = Color(0xFF9AC8F5),
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -1110,13 +1105,14 @@ private fun ArcadeCabinetHallDashboard(
     onConfirmGame: (GroupedGameEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val selectedEntry = games.getOrNull(selectedIndex)
     val selectedGame = selectedEntry?.dashGame
     val listState = rememberLazyListState()
 
     LaunchedEffect(selectedIndex, games.size) {
         if (games.isNotEmpty()) {
-            listState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
+            if (motion.animatedScroll) listState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex)) else listState.scrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
         }
     }
 
@@ -1210,7 +1206,7 @@ private fun ArcadeCabinetHallDashboard(
                             text = String.format(Locale.US, "%02d", idx + 1),
                             color = if (isSel) Color(0xFFFFD54F) else Color(0xFF8A6FA8),
                             fontFamily = FontFamily.Monospace,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
@@ -1271,7 +1267,7 @@ private fun ArcadeCabinetHallDashboard(
                 Text(
                     text = description?.takeIf { it.isNotBlank() } ?: "INSIRA FICHA E PRESSIONE A PARA JOGAR.",
                     color = Color(0xFFD0C2E6),
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -1307,13 +1303,14 @@ private fun RetroWoodgrainTerminalDashboard(
     onConfirmGame: (GroupedGameEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val selectedEntry = games.getOrNull(selectedIndex)
     val selectedGame = selectedEntry?.dashGame
     val listState = rememberLazyListState()
 
     LaunchedEffect(selectedIndex, games.size) {
         if (games.isNotEmpty()) {
-            listState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
+            if (motion.animatedScroll) listState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex)) else listState.scrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
         }
     }
 
@@ -1443,7 +1440,7 @@ private fun RetroWoodgrainTerminalDashboard(
                     text = description?.takeIf { it.isNotBlank() } ?: "READY TO LOAD.",
                     color = Color(0xFFC5B39F),
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )

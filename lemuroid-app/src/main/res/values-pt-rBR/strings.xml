@@ -196,15 +196,15 @@
     <string name="cache_directory">Pasta de cache</string>
 
     <string-array name="pref_key_frontend_theme_display_names">
-        <item>Padrão</item>
+        <item>Essencial</item>
         <item>Locadora</item>
-        <item>Netflix</item>
-        <item>Console</item>
-        <item>TV Retrô</item>
-        <item>Retrô 80/90</item>
-        <item>Rockstar</item>
-        <item>Thrash Metal</item>
-        <item>3D (Objetos 3D)</item>
+        <item>CineArcade</item>
+        <item>Sala de Consoles</item>
+        <item>Canal Retrô</item>
+        <item>Noite Neon</item>
+        <item>Distrito Arcade</item>
+        <item>Palco de Aço</item>
+        <item>Vitrine 3D</item>
     </string-array>
 
     <string-array name="pref_key_performance_profile_names">

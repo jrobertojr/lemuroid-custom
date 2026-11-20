@@ -1,5 +1,8 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
+
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -33,6 +36,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -226,7 +232,7 @@ fun RetroTubeTVLayout(
                             text = systemKey.uppercase(Locale.ROOT),
                             color = CrtAmber.copy(alpha = 0.85f),
                             fontFamily = FontFamily.Monospace,
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.4.sp,
                         )
@@ -313,13 +319,14 @@ private fun RetroCrtTubeTV(
     onScreenClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val activeScreenshotUrl =
         if (screenshots.isNotEmpty()) {
             screenshots[screenshotIndex.crtFloorMod(screenshots.size)]
         } else {
             null
         }
-    val screenMediaKey = "${game.id}|${activeScreenshotUrl.orEmpty()}"
+    val screenMediaKey = game to activeScreenshotUrl
 
     BoxWithConstraints(
         modifier = modifier,
@@ -357,24 +364,26 @@ private fun RetroCrtTubeTV(
         ) {
             Crossfade(
                 targetState = screenMediaKey,
-                animationSpec = tween(durationMillis = 300),
+                animationSpec = tween(durationMillis = motion.mediaMillis),
                 label = "crt_3d_screen_media",
                 modifier = Modifier.fillMaxSize(),
-            ) { _ ->
-                if (activeScreenshotUrl != null) {
+            ) { (mediaGame, mediaUrl) ->
+                var mediaFailed by remember(mediaUrl) { mutableStateOf(false) }
+                if (mediaUrl != null && !mediaFailed) {
                     AsyncImage(
                         model =
                             ImageRequest.Builder(LocalContext.current)
-                                .data(activeScreenshotUrl)
+                                .data(mediaUrl)
                                 .crossfade(false)
                                 .build(),
-                        contentDescription = game.displayName(),
+                        onError = { mediaFailed = true },
+                        contentDescription = mediaGame.displayName(),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize(),
                     )
                 } else {
                     LemuroidGameImage(
-                        game = game,
+                        game = mediaGame,
                         contentScale = ContentScale.Fit,
                         preserveAspect = true,
                         modifier =
@@ -417,7 +426,7 @@ private fun RetroCrtTubeTV(
                 text = "AV-1",
                 color = CrtOsdGreen.copy(alpha = 0.88f),
                 fontFamily = FontFamily.Monospace,
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 modifier =
                     Modifier
@@ -490,7 +499,7 @@ private fun RetroTeletextInfoPanel(
                         text = channelLabel,
                         color = Color.Black,
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Black,
                     )
                 }
@@ -519,7 +528,7 @@ private fun RetroTeletextInfoPanel(
                     text = systemTitle.uppercase(Locale.ROOT),
                     color = CrtCyan,
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 10.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                 )
             }
@@ -536,7 +545,7 @@ private fun RetroTeletextInfoPanel(
                 text = resolvedDescription,
                 color = Color(0xFFD0D8E4),
                 fontFamily = FontFamily.Monospace,
-                fontSize = 11.5.sp,
+                fontSize = 12.sp,
                 lineHeight = 16.sp,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -554,10 +563,11 @@ private fun RetroChannelGuidePanel(
     onConfirmGame: (GroupedGameEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val listState = rememberLazyListState()
     LaunchedEffect(selectedIndex, games.size) {
         if (games.isNotEmpty()) {
-            listState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
+            if (motion.animatedScroll) listState.animateScrollToItem(selectedIndex.coerceIn(0, games.lastIndex)) else listState.scrollToItem(selectedIndex.coerceIn(0, games.lastIndex))
         }
     }
 
@@ -740,7 +750,7 @@ private fun RetroChannelGuideRow(
                 text = channelText,
                 color = if (isSelected) Color.Black else CrtAmber.copy(alpha = 0.80f),
                 fontFamily = FontFamily.Monospace,
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.ExtraBold,
             )
         }
@@ -785,7 +795,7 @@ private fun RetroChannelGuideRow(
                     text = "${versionCount}v",
                     color = if (isSelected) CrtCyan else Color(0xFF9EB0C8),
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 10.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                 )
             }

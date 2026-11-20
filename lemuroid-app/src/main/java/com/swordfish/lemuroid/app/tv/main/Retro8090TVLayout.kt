@@ -1,5 +1,8 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
+
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
@@ -34,6 +37,9 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -100,6 +106,7 @@ fun Retro8090TVLayout(
     onConfirmGame: (GroupedGameEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val safeIndex = if (games.isEmpty()) 0 else selectedIndex.coerceIn(0, games.lastIndex)
     val selectedEntry = games.getOrNull(safeIndex)
     val selectedGame = selectedEntry?.retroGame
@@ -107,7 +114,7 @@ fun Retro8090TVLayout(
 
     LaunchedEffect(safeIndex, games.size) {
         if (games.isNotEmpty() && safeIndex in games.indices) {
-            gridState.animateScrollToItem(safeIndex)
+            if (motion.animatedScroll) gridState.animateScrollToItem(safeIndex) else gridState.scrollToItem(safeIndex)
         }
     }
 
@@ -329,6 +336,7 @@ private fun SynthwavePreviewDeck(
     totalCount: Int,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val context = LocalContext.current
     val game = entry?.retroGame
 
@@ -361,18 +369,20 @@ private fun SynthwavePreviewDeck(
                     } else {
                         null
                     }
-                if (activeUrl != null) {
+                var mediaFailed by remember(activeUrl) { mutableStateOf(false) }
+                if (activeUrl != null && !mediaFailed) {
                     Crossfade(
                         targetState = activeUrl,
-                        animationSpec = tween(420),
+                        animationSpec = tween(motion.mediaMillis),
                         label = "synthwave_snap",
                     ) { url ->
                         AsyncImage(
                             model =
                                 ImageRequest.Builder(context)
                                     .data(url)
-                                    .crossfade(true)
+                                    .crossfade(false)
                                     .build(),
+                            onError = { mediaFailed = true },
                             contentDescription = game?.title,
                             contentScale = ContentScale.Fit,
                             modifier = Modifier.fillMaxSize(),
@@ -399,7 +409,7 @@ private fun SynthwavePreviewDeck(
                     Text(
                         text = "VHS PLAY ▶ 198X",
                         color = SynthCyan,
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace,
                         modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
@@ -457,7 +467,7 @@ private fun SynthwavePreviewDeck(
                         Text(
                             text = systemTitle.uppercase(),
                             color = SynthSunYellow,
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.ExtraBold,
                             fontFamily = FontFamily.Monospace,
                             modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
@@ -475,7 +485,7 @@ private fun SynthwavePreviewDeck(
                         Text(
                             text = "${entry?.retroVersions} VERSÕES",
                             color = SynthCyan,
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace,
                         )
@@ -484,7 +494,7 @@ private fun SynthwavePreviewDeck(
                     Text(
                         text = "#$selectedPosition/$totalCount",
                         color = SynthCyan.copy(alpha = 0.85f),
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace,
                     )
                 }
@@ -510,15 +520,16 @@ private fun SynthwaveGridCard(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
+    val motion = LocalFrontendMotion.current
     val game = entry.retroGame
     val scale by animateFloatAsState(
         targetValue = if (isSelected) 1.04f else 1.0f,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = tween(motion.focusMillis),
         label = "synth_card_scale",
     )
     val borderColor by animateColorAsState(
         targetValue = if (isSelected) SynthCyan else SynthMagenta.copy(alpha = 0.35f),
-        animationSpec = tween(160),
+        animationSpec = tween(motion.focusMillis),
         label = "synth_card_border",
     )
 
@@ -572,7 +583,7 @@ private fun SynthwaveGridCard(
             Text(
                 text = game.title,
                 color = if (isSelected) SynthSunYellow else Color(0xFFE0D0FF),
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

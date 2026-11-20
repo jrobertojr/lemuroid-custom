@@ -1,6 +1,21 @@
 package com.swordfish.lemuroid.app.mobile.shared.compose.ui
 
 import android.content.SharedPreferences
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfile
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfileManager
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
@@ -105,16 +120,16 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
             )
         FrontendTheme.NETFLIX ->
             darkColorScheme(
-                primary = Color(0xFFE50914),
-                onPrimary = Color(0xFFFFFFFF),
+                primary = Color(0xFFF04F5E),
+                onPrimary = Color(0xFF24070B),
                 primaryContainer = Color(0xFF730008),
                 onPrimaryContainer = Color(0xFFFFDAD6),
-                inversePrimary = Color(0xFFB80710),
+                inversePrimary = Color(0xFFBD3345),
                 secondary = Color(0xFFD4D4D4),
                 onSecondary = Color(0xFF121212),
                 secondaryContainer = Color(0xFF303030),
                 onSecondaryContainer = Color(0xFFF0F0F0),
-                tertiary = Color(0xFFFF4D5A),
+                tertiary = Color(0xFFFF8A91),
                 onTertiary = Color(0xFF2B0004),
                 tertiaryContainer = Color(0xFF5C0A12),
                 onTertiaryContainer = Color(0xFFFFD9DC),
@@ -124,7 +139,7 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
                 onSurface = Color(0xFFF8F8F8),
                 surfaceVariant = Color(0xFF282828),
                 onSurfaceVariant = Color(0xFFBDBDBD),
-                surfaceTint = Color(0xFFE50914),
+                surfaceTint = Color(0xFFF04F5E),
                 surfaceContainerLowest = Color(0xFF0A0A0A),
                 surfaceContainerLow = Color(0xFF141414),
                 surfaceContainer = Color(0xFF1C1C1C),
@@ -137,7 +152,7 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
             )
         FrontendTheme.CONSOLE ->
             darkColorScheme(
-                primary = Color(0xFF298DFF),
+                primary = Color(0xFF68B3FF),
                 onPrimary = Color(0xFF001936),
                 primaryContainer = Color(0xFF003E7E),
                 onPrimaryContainer = Color(0xFFD6E9FF),
@@ -156,7 +171,7 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
                 onSurface = Color(0xFFEDF4FF),
                 surfaceVariant = Color(0xFF1B2740),
                 onSurfaceVariant = Color(0xFFB5C7E3),
-                surfaceTint = Color(0xFF298DFF),
+                surfaceTint = Color(0xFF68B3FF),
                 surfaceContainerLowest = Color(0xFF060A12),
                 surfaceContainerLow = Color(0xFF0D1422),
                 surfaceContainer = Color(0xFF131D30),
@@ -169,7 +184,7 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
             )
         FrontendTheme.TV ->
             darkColorScheme(
-                primary = Color(0xFF39FF14),
+                primary = Color(0xFF9ADF8D),
                 onPrimary = Color(0xFF041C00),
                 primaryContainer = Color(0xFF124F06),
                 onPrimaryContainer = Color(0xFFBEFFAA),
@@ -188,7 +203,7 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
                 onSurface = Color(0xFFDCF7DE),
                 surfaceVariant = Color(0xFF1A2B1D),
                 onSurfaceVariant = Color(0xFF9EC9A3),
-                surfaceTint = Color(0xFF39FF14),
+                surfaceTint = Color(0xFF9ADF8D),
                 surfaceContainerLowest = Color(0xFF050A06),
                 surfaceContainerLow = Color(0xFF0C150E),
                 surfaceContainer = Color(0xFF121F14),
@@ -265,7 +280,7 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
             )
         FrontendTheme.THRASH_METAL ->
             darkColorScheme(
-                primary = Color(0xFFD61A1A),
+                primary = Color(0xFFE35B61),
                 onPrimary = Color(0xFFFFFFFF),
                 primaryContainer = Color(0xFF630606),
                 onPrimaryContainer = Color(0xFFFFD6D6),
@@ -284,7 +299,7 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
                 onSurface = Color(0xFFF0F2F5),
                 surfaceVariant = Color(0xFF22252C),
                 onSurfaceVariant = Color(0xFFB5BDC7),
-                surfaceTint = Color(0xFFC41212),
+                surfaceTint = Color(0xFFD84D5B),
                 surfaceContainerLowest = Color(0xFF060608),
                 surfaceContainerLow = Color(0xFF111216),
                 surfaceContainer = Color(0xFF191B21),
@@ -297,7 +312,7 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
             )
         FrontendTheme.THREE_D ->
             darkColorScheme(
-                primary = Color(0xFF4DA6FF),
+                primary = Color(0xFF7EB9FF),
                 onPrimary = Color(0xFF001B36),
                 primaryContainer = Color(0xFF004985),
                 onPrimaryContainer = Color(0xFFD6EBFF),
@@ -306,7 +321,7 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
                 onSecondary = Color(0xFF2B1500),
                 secondaryContainer = Color(0xFF633600),
                 onSecondaryContainer = Color(0xFFFFDFC0),
-                tertiary = Color(0xFF5CE1E6),
+                tertiary = Color(0xFF66D5E7),
                 onTertiary = Color(0xFF002022),
                 tertiaryContainer = Color(0xFF004F52),
                 onTertiaryContainer = Color(0xFFC4F9FB),
@@ -316,7 +331,7 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
                 onSurface = Color(0xFFECF2FA),
                 surfaceVariant = Color(0xFF20283A),
                 onSurfaceVariant = Color(0xFFAEBAD1),
-                surfaceTint = Color(0xFF4DA6FF),
+                surfaceTint = Color(0xFF7EB9FF),
                 surfaceContainerLowest = Color(0xFF070A10),
                 surfaceContainerLow = Color(0xFF101520),
                 surfaceContainer = Color(0xFF171E2D),
@@ -328,3 +343,83 @@ fun FrontendTheme.colorScheme(): ColorScheme? =
                 outlineVariant = Color(0xFF2B354A),
             )
     }
+
+/** Library decoration follows the existing global profile, never changes game/core or bezel settings. */
+@Immutable
+data class FrontendMotion(
+    val profile: PerformanceProfile = PerformanceProfile.BALANCED,
+    val foreground: Boolean = true,
+) {
+    val focusMillis: Int get() = when (profile) {
+        PerformanceProfile.PERFORMANCE -> 80
+        PerformanceProfile.BALANCED -> 140
+        PerformanceProfile.QUALITY -> 180
+    }
+    val mediaMillis: Int get() = when (profile) {
+        PerformanceProfile.PERFORMANCE -> 0
+        PerformanceProfile.BALANCED -> 180
+        PerformanceProfile.QUALITY -> 320
+    }
+    val slideshowMillis: Long get() = if (!foreground) 0L else when (profile) {
+        PerformanceProfile.PERFORMANCE -> 0L
+        PerformanceProfile.BALANCED -> 6000L
+        PerformanceProfile.QUALITY -> 4500L
+    }
+    val ambientMotion: Boolean get() = foreground && profile == PerformanceProfile.QUALITY
+    val animatedScroll: Boolean get() = foreground && profile != PerformanceProfile.PERFORMANCE
+}
+
+val LocalFrontendMotion = staticCompositionLocalOf { FrontendMotion() }
+
+@Composable
+fun rememberFrontendMotion(): FrontendMotion {
+    val context = LocalContext.current
+    val prefs = remember(context) { SharedPreferencesHelper.getSharedPreferences(context) }
+    var profile by remember(prefs) { mutableStateOf(PerformanceProfileManager.getActiveProfile(context)) }
+    val owner = LocalLifecycleOwner.current
+    var foreground by remember(owner) {
+        mutableStateOf(owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED))
+    }
+    DisposableEffect(prefs, context) {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == null || key == PerformanceProfileManager.PREF_KEY_PERFORMANCE_PROFILE) {
+                profile = PerformanceProfileManager.getActiveProfile(context)
+            }
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
+    }
+    DisposableEffect(owner) {
+        val observer = LifecycleEventObserver { _, _ ->
+            foreground = owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+        }
+        owner.lifecycle.addObserver(observer)
+        onDispose { owner.lifecycle.removeObserver(observer) }
+    }
+    return remember(profile, foreground) { FrontendMotion(profile, foreground) }
+}
+
+/** Returns state so callers can read it inside drawing/layer lambdas, avoiding full-layout frame recomposition. */
+@Composable
+fun rememberFrontendLoop(
+    initialValue: Float = 0f,
+    targetValue: Float = 360f,
+    durationMillis: Int = 4800,
+    reverse: Boolean = false,
+): State<Float> {
+    if (!LocalFrontendMotion.current.ambientMotion) return rememberUpdatedState(initialValue)
+    return rememberInfiniteTransition(label = "frontend_ambient").animateFloat(
+        initialValue = initialValue,
+        targetValue = targetValue,
+        animationSpec = infiniteRepeatable(
+            tween(durationMillis, easing = LinearEasing),
+            if (reverse) RepeatMode.Reverse else RepeatMode.Restart,
+        ),
+        label = "frontend_ambient_value",
+    )
+}
+
+/** Display names may evolve; [FrontendTheme.key] is the stable preference contract. */
+@Composable
+fun FrontendTheme.displayName(): String =
+    androidx.compose.ui.res.stringArrayResource(R.array.pref_key_frontend_theme_display_names)[ordinal]

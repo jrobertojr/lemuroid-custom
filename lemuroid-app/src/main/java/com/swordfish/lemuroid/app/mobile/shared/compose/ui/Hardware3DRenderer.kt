@@ -1,5 +1,6 @@
 package com.swordfish.lemuroid.app.mobile.shared.compose.ui
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -29,7 +30,7 @@ enum class Hardware3DType {
 fun resolveHardware3DType(systemId: String): Hardware3DType {
     return when (systemId) {
         "fbneo", "mame2003plus" -> Hardware3DType.MINI_ARCADE
-        "psx", "psp", "nds", "segacd", "gc", "3ds" -> Hardware3DType.JEWEL_CASE
+        "psx", "psp", "segacd", "scd" -> Hardware3DType.JEWEL_CASE
         else -> Hardware3DType.CARTRIDGE
     }
 }
@@ -53,7 +54,7 @@ fun resolveHardwareShellColor(systemId: String): FloatArray {
             "psp" -> 0xFF1B2332.toInt()
             "nds" -> 0xFFECEFF4.toInt()
             "3ds" -> 0xFFF2F4F8.toInt()
-            "segacd" -> 0xFF162547.toInt()
+            "segacd", "scd" -> 0xFF162547.toInt()
             "gc" -> 0xFF3F317A.toInt()
             // Mini arcade cabinet body
             "fbneo", "mame2003plus" -> 0xFF212634.toInt()
@@ -78,8 +79,13 @@ class Hardware3DRenderer(
     hardwareType: Hardware3DType,
     shellColor: FloatArray,
     spinning: Boolean = true,
+    systemId: String = "",
+    private val context: Context? = null,
 ) : GLSurfaceView.Renderer {
     private val stateLock = Any()
+    @Volatile private var pendingSystemId: String = canonicalMediaKey(systemId)
+    private var activeSystemId: String? = null
+    private var atlasTextureId: Int = 0
 
     @Volatile
     private var pendingType: Hardware3DType = hardwareType
@@ -136,11 +142,13 @@ class Hardware3DRenderer(
     fun updateHardware(
         type: Hardware3DType,
         shellColor: FloatArray,
+        systemId: String = "",
     ) {
         val normalized = normalizeRgba(shellColor)
         synchronized(stateLock) {
-            if (pendingType != type || !pendingShellColor.contentEquals(normalized)) {
+            if (pendingType != type || !pendingShellColor.contentEquals(normalized) || pendingSystemId != canonicalMediaKey(systemId)) {
                 pendingType = type
+                pendingSystemId = canonicalMediaKey(systemId)
                 pendingShellColor = normalized
                 meshDirty = true
             }
@@ -227,6 +235,7 @@ class Hardware3DRenderer(
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
 
         // Upload a clean 4x4 dark fallback texture so the textured face never renders black/corrupt
+        atlasTextureId = createPixelArtAtlasTexture(context)
         uploadSolidFallbackTexture()
         hasUploadedTexture = false
 
@@ -252,6 +261,7 @@ class Hardware3DRenderer(
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
         val type: Hardware3DType
+        val systemId: String
         val shellColor: FloatArray
         val spinning: Boolean
         val rebuildMesh: Boolean
@@ -260,11 +270,12 @@ class Hardware3DRenderer(
 
         synchronized(stateLock) {
             type = pendingType
+            systemId = pendingSystemId
             shellColor = pendingShellColor
             spinning = isSpinning
             rebuildMesh =
                 meshDirty ||
-                activeType != type ||
+                activeType != type || activeSystemId != systemId ||
                 activeShellColor == null ||
                 !activeShellColor!!.contentEquals(shellColor)
             meshDirty = false
@@ -275,7 +286,8 @@ class Hardware3DRenderer(
         }
 
         if (rebuildMesh) {
-            meshParts = buildMeshForType(type, shellColor)
+            meshParts = loadMediaMesh(systemId) ?: buildMeshForType(type, shellColor)
+            activeSystemId = systemId
             activeType = type
             activeShellColor = shellColor.copyOf()
         }
@@ -368,8 +380,9 @@ class Hardware3DRenderer(
             buf.position(6)
             GLES20.glVertexAttribPointer(aTexCoordLoc, 2, GLES20.GL_FLOAT, false, STRIDE_BYTES, buf)
 
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, if (part.useAtlas) atlasTextureId else textureId)
             GLES20.glUniform4fv(uColorLoc, 1, part.color, 0)
-            GLES20.glUniform1f(uUseTextureLoc, if (part.useTexture && hasUploadedTexture) 1.0f else 0.0f)
+            GLES20.glUniform1f(uUseTextureLoc, if (part.useAtlas || (part.useTexture && hasUploadedTexture)) 1.0f else 0.0f)
             GLES20.glUniform1f(uShininessLoc, part.shininess)
             GLES20.glUniform1f(uSpecStrengthLoc, part.specStrength)
             GLES20.glUniform1f(uEmissiveLoc, part.emissive)
@@ -391,17 +404,18 @@ class Hardware3DRenderer(
     }
 
     private fun prepareLetterboxedTexture(source: Bitmap): Bitmap {
-        val out = Bitmap.createBitmap(TEX_SIZE, TEX_SIZE, Bitmap.Config.ARGB_8888)
+        val size = if (source.width <= 256 && source.height <= 256) 256 else TEX_SIZE
+        val out = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(out)
         canvas.drawColor(Color.rgb(16, 18, 26))
 
         val srcW = source.width.coerceAtLeast(1).toFloat()
         val srcH = source.height.coerceAtLeast(1).toFloat()
-        val scale = min(TEX_SIZE / srcW, TEX_SIZE / srcH)
+        val scale = min(size / srcW, size / srcH)
         val dstW = srcW * scale
         val dstH = srcH * scale
-        val left = (TEX_SIZE - dstW) * 0.5f
-        val top = (TEX_SIZE - dstH) * 0.5f
+        val left = (size - dstW) * 0.5f
+        val top = (size - dstH) * 0.5f
 
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         canvas.drawBitmap(source, null, RectF(left, top, left + dstW, top + dstH), paint)
@@ -411,6 +425,31 @@ class Hardware3DRenderer(
     // -------------------------------------------------------------------------
     // Procedural 3D Hardware Meshes
     // -------------------------------------------------------------------------
+
+    private fun loadMediaMesh(systemId: String): List<MeshPart>? {
+        val assetContext = context ?: return null
+        if (systemId.isBlank()) return null
+        val parts = loadBlenderL3dFromAssets(assetContext, "media_$systemId") ?: return null
+        return parts.mapIndexed { index, part ->
+            MeshPart(
+                vertexBuffer = part.vertexBuffer,
+                vertexCount = part.vertexCount,
+                color = part.color,
+                useTexture = index == parts.lastIndex,
+                useAtlas = index != parts.lastIndex,
+                shininess = part.shininess,
+                specStrength = part.specStrength,
+                emissive = part.emissive,
+            )
+        }
+    }
+
+    private fun canonicalMediaKey(key: String): String = when (key.trim().lowercase(java.util.Locale.ROOT)) {
+        "scd", "segacd" -> "segacd"
+        "genesis" -> "md"
+        "fbneo", "mame2003plus" -> "arcade"
+        else -> key.trim().lowercase(java.util.Locale.ROOT)
+    }
 
     private fun buildMeshForType(
         type: Hardware3DType,
@@ -908,6 +947,7 @@ class Hardware3DRenderer(
         val vertexCount: Int,
         val color: FloatArray,
         val useTexture: Boolean = false,
+        val useAtlas: Boolean = false,
         val shininess: Float = 32f,
         val specStrength: Float = 0.35f,
         val emissive: Float = 0f,

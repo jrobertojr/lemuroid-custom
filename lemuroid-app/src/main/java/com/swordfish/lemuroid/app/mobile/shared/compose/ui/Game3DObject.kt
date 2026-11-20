@@ -62,6 +62,8 @@ import com.swordfish.lemuroid.R
 import com.swordfish.lemuroid.app.shared.covers.CoverFallbackInterceptor
 import com.swordfish.lemuroid.app.shared.covers.CoverUtils
 import com.swordfish.lemuroid.lib.library.db.entity.Game
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfile
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -181,6 +183,8 @@ private fun OpenGLHardwareShowcase(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val profile = rememberFrontend3DProfile()
+    val coverSize = if (profile == PerformanceProfile.PERFORMANCE) 256 else 512
 
     // Single reusable renderer & GLSurfaceView — never keyed by game.id so EGL context is never recreated.
     val renderer =
@@ -189,23 +193,33 @@ private fun OpenGLHardwareShowcase(
                 hardwareType = resolveHardware3DType(game.systemId),
                 shellColor = resolveHardwareShellColor(game.systemId),
                 spinning = true,
+                systemId = game.systemId,
+                context = context.applicationContext,
             )
         }
 
     var glSurfaceViewRef by remember { mutableStateOf<GLSurfaceView?>(null) }
+    Bind3DFrameClock(glSurfaceViewRef, game.fileUri)
 
-    LaunchedEffect(game.id, game.displayCoverUrl()) {
-        renderer.updateHardware(
-            resolveHardware3DType(game.systemId),
-            resolveHardwareShellColor(game.systemId),
-        )
-        renderer.setCoverBitmap(null)
-        delay(60L)
+    LaunchedEffect(profile) {
+        renderer.setSpinning(profile != PerformanceProfile.PERFORMANCE)
+        glSurfaceViewRef?.requestRender()
+    }
+
+    LaunchedEffect(game.fileUri, game.displayCoverUrl(), coverSize) {
+        // Keep the current object and cover until navigation settles and its replacement is ready.
+        delay(140L)
         withContext(Dispatchers.IO) {
-            val loaded = loadCoverBitmapForGL(context = context, game = game)
+            val loaded = loadCoverBitmapForGL(context = context, game = game, targetSize = coverSize)
             try {
                 if (isActive) {
+                    renderer.updateHardware(
+                        resolveHardware3DType(game.systemId),
+                        resolveHardwareShellColor(game.systemId),
+                        game.systemId,
+                    )
                     renderer.setCoverBitmap(loaded?.bitmap)
+                    glSurfaceViewRef?.requestRender()
                 }
             } finally {
                 if (loaded != null && loaded.recycleAfterCopy && !loaded.bitmap.isRecycled) {
@@ -253,7 +267,7 @@ private fun OpenGLHardwareShowcase(
                     setEGLConfigChooser(8, 8, 8, 8, 16, 0)
                     preserveEGLContextOnPause = true
                     setRenderer(renderer)
-                    renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+                    renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
                     glSurfaceViewRef = this
                 }
             },
@@ -290,6 +304,7 @@ private data class LoadedCoverBitmap(
 private suspend fun loadCoverBitmapForGL(
     context: android.content.Context,
     game: Game,
+    targetSize: Int,
 ): LoadedCoverBitmap? {
     val baseUrl = game.displayCoverUrl()
     val candidates =
@@ -309,9 +324,16 @@ private suspend fun loadCoverBitmapForGL(
             ImageRequest.Builder(context)
                 .data(url)
                 .allowHardware(false)
+                .size(targetSize, targetSize)
                 .setHeader(CoverFallbackInterceptor.HEADER_GAME_FILENAME, encodedFileName)
                 .build()
-        val result = runCatching { context.imageLoader.execute(request) }.getOrNull()
+        val result = try {
+            context.imageLoader.execute(request)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            null
+        }
         if (result is SuccessResult) {
             val drawable = result.drawable
             val cachedBmp = (drawable as? BitmapDrawable)?.bitmap
@@ -319,7 +341,7 @@ private suspend fun loadCoverBitmapForGL(
                 return LoadedCoverBitmap(bitmap = cachedBmp, recycleAfterCopy = false)
             }
             val renderedBmp =
-                runCatching { drawable.toBitmap(512, 512, Bitmap.Config.ARGB_8888) }.getOrNull()
+                runCatching { drawable.toBitmap(targetSize, targetSize, Bitmap.Config.ARGB_8888) }.getOrNull()
             if (renderedBmp != null && !renderedBmp.isRecycled) {
                 return LoadedCoverBitmap(bitmap = renderedBmp, recycleAfterCopy = true)
             }
@@ -328,7 +350,7 @@ private suspend fun loadCoverBitmapForGL(
 
     val fallbackBmp =
         runCatching {
-            CoverUtils.getFallbackDrawable(game).toBitmap(512, 512, Bitmap.Config.ARGB_8888)
+            CoverUtils.getFallbackDrawable(game).toBitmap(targetSize, targetSize, Bitmap.Config.ARGB_8888)
         }.getOrNull()
     return if (fallbackBmp != null && !fallbackBmp.isRecycled) {
         LoadedCoverBitmap(bitmap = fallbackBmp, recycleAfterCopy = true)

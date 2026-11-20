@@ -270,15 +270,15 @@
     </string-array>
 
     <string-array name="pref_key_frontend_theme_display_names">
-        <item>Default</item>
-        <item>Video Store (Locadora)</item>
-        <item>Netflix</item>
-        <item>Console</item>
-        <item>Retro TV</item>
-        <item>Retro 80/90</item>
-        <item>Rockstar</item>
-        <item>Thrash Metal</item>
-        <item>3D Objects</item>
+        <item>Essential</item>
+        <item>Video Store</item>
+        <item>CineArcade</item>
+        <item>Console Room</item>
+        <item>Retro Channel</item>
+        <item>Neon Nights</item>
+        <item>Distrito Arcade</item>
+        <item>Steel Stage</item>
+        <item>3D Showcase</item>
     </string-array>
 
     <string-array name="pref_key_performance_profile_values" translatable="false">

@@ -1,5 +1,8 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
+
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -38,6 +41,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -69,10 +74,10 @@ import com.swordfish.lemuroid.app.shared.games.GroupedGameEntry
 import com.swordfish.lemuroid.lib.library.db.entity.Game
 import java.util.Locale
 
-private val NetflixBg = Color(0xFF141414)
-private val NetflixRailBg = Color(0xFF0C0C0C)
-private val NetflixCardBg = Color(0xFF1F1F1F)
-private val NetflixRed = Color(0xFFE50914)
+private val NetflixBg = Color(0xFF0D131C)
+private val NetflixRailBg = Color(0xFF090E15)
+private val NetflixCardBg = Color(0xFF1B2532)
+private val NetflixRed = Color(0xFFF04F5E)
 private val NetflixMatchGreen = Color(0xFF46D369)
 private val NetflixMutedText = Color(0xFFB3B3B3)
 
@@ -410,7 +415,7 @@ fun buildNetflixCategoryRows(
             rows +=
                 NetflixCategoryRow(
                     id = "top_10",
-                    title = "Top 10 em $systemTitle Hoje",
+                    title = "Sua seleção • $systemTitle",
                     games = topTenPool,
                     isTopTen = true,
                 )
@@ -484,6 +489,7 @@ fun NetflixTVLayout(
     onConfirmGame: (GroupedGameEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val safeRowIndex =
         if (rows.isEmpty()) 0 else selectedRowIndex.coerceIn(0, rows.lastIndex)
     val activeRow = rows.getOrNull(safeRowIndex)
@@ -554,7 +560,7 @@ fun NetflixTVLayout(
                 val verticalListState = rememberLazyListState()
                 LaunchedEffect(safeRowIndex, rows.size) {
                     if (rows.isNotEmpty()) {
-                        verticalListState.animateScrollToItem(safeRowIndex)
+                        if (motion.animatedScroll) verticalListState.animateScrollToItem(safeRowIndex) else verticalListState.scrollToItem(safeRowIndex)
                     }
                 }
 
@@ -603,9 +609,9 @@ private fun NetflixLeftVisualRail(
                 .padding(vertical = 18.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Bold Red Netflix N Ribbon Emblem
-        NetflixNEmblem(
-            modifier = Modifier.size(width = 22.dp, height = 34.dp),
+        // Original cinema/play emblem
+        CineArcadeEmblem(
+            modifier = Modifier.size(38.dp),
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -640,34 +646,27 @@ private fun NetflixLeftVisualRail(
 }
 
 @Composable
-private fun NetflixNEmblem(modifier: Modifier = Modifier) {
+private fun CineArcadeEmblem(modifier: Modifier = Modifier) {
     Canvas(modifier = modifier) {
-        val w = size.width
-        val h = size.height
-        val barW = w * 0.30f
-
-        // Left pillar
-        drawRect(
-            color = Color(0xFFB20710),
-            topLeft = Offset(0f, 0f),
-            size = androidx.compose.ui.geometry.Size(barW, h),
+        val unit = size.minDimension
+        val center = Offset(size.width / 2f, size.height / 2f)
+        drawCircle(NetflixRed.copy(alpha = 0.18f), radius = unit / 2f, center = center)
+        drawArc(
+            color = NetflixRed,
+            startAngle = 48f,
+            sweepAngle = 264f,
+            useCenter = false,
+            topLeft = Offset(center.x - unit * 0.43f, center.y - unit * 0.43f),
+            size = androidx.compose.ui.geometry.Size(unit * 0.86f, unit * 0.86f),
+            style = androidx.compose.ui.graphics.drawscope.Stroke(width = unit * 0.12f),
         )
-        // Right pillar
-        drawRect(
-            color = Color(0xFFB20710),
-            topLeft = Offset(w - barW, 0f),
-            size = androidx.compose.ui.geometry.Size(barW, h),
-        )
-        // Bright diagonal ribbon
-        val ribbon =
-            Path().apply {
-                moveTo(0f, 0f)
-                lineTo(barW, 0f)
-                lineTo(w, h)
-                lineTo(w - barW, h)
-                close()
-            }
-        drawPath(path = ribbon, color = NetflixRed)
+        val play = Path().apply {
+            moveTo(center.x - unit * 0.08f, center.y - unit * 0.23f)
+            lineTo(center.x + unit * 0.28f, center.y)
+            lineTo(center.x - unit * 0.08f, center.y + unit * 0.23f)
+            close()
+        }
+        drawPath(play, Color.White)
     }
 }
 
@@ -676,9 +675,10 @@ private fun NetflixRailIcon(
     icon: ImageVector,
     isHighlighted: Boolean,
 ) {
+    val motion = LocalFrontendMotion.current
     val tint by animateColorAsState(
         targetValue = if (isHighlighted) Color.White else Color(0xFF666666),
-        animationSpec = tween(200),
+        animationSpec = tween(motion.focusMillis),
         label = "netflix_rail_tint",
     )
     Box(
@@ -714,6 +714,7 @@ private fun NetflixHeroBillboard(
     onConfirmGame: (GroupedGameEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val motion = LocalFrontendMotion.current
     val game = entry.netflixGame
     val activeScreenshotUrl =
         if (screenshots.isNotEmpty()) {
@@ -721,8 +722,7 @@ private fun NetflixHeroBillboard(
         } else {
             null
         }
-    val heroMediaKey = "${game.id}|${activeScreenshotUrl.orEmpty()}"
-    val matchScore = remember(game.id) { 94 + ((game.id.hashCode() and 0x7FFFFFFF) % 6) }
+    val heroMediaKey = game to activeScreenshotUrl
     val versionCount = entry.netflixVersionCount
 
     Box(
@@ -734,18 +734,20 @@ private fun NetflixHeroBillboard(
         // Full-bleed widescreen artwork on the right/full canvas with smooth Crossfade
         Crossfade(
             targetState = heroMediaKey,
-            animationSpec = tween(durationMillis = 420),
+            animationSpec = tween(durationMillis = motion.mediaMillis),
             modifier = Modifier.fillMaxSize(),
             label = "netflix_hero_crossfade",
-        ) { _ ->
-            if (activeScreenshotUrl != null) {
+        ) { (mediaGame, mediaUrl) ->
+            var mediaFailed by remember(mediaUrl) { mutableStateOf(false) }
+            if (mediaUrl != null && !mediaFailed) {
                 AsyncImage(
                     model =
                         ImageRequest.Builder(LocalContext.current)
-                            .data(activeScreenshotUrl)
-                            .crossfade(true)
+                            .data(mediaUrl)
+                            .crossfade(false)
                             .build(),
-                    contentDescription = game.displayName(),
+                    onError = { mediaFailed = true },
+                    contentDescription = mediaGame.displayName(),
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize(),
@@ -759,8 +761,8 @@ private fun NetflixHeroBillboard(
                     contentAlignment = Alignment.CenterEnd,
                 ) {
                     LemuroidGameImage(
-                        game = game,
-                        contentScale = ContentScale.Crop,
+                        game = mediaGame,
+                        contentScale = ContentScale.Fit,
                         preserveAspect = true,
                         modifier = Modifier.fillMaxSize(),
                     )
@@ -813,13 +815,13 @@ private fun NetflixHeroBillboard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                NetflixNEmblem(
+                CineArcadeEmblem(
                     modifier = Modifier.size(width = 11.dp, height = 18.dp),
                 )
                 Text(
                     text = "SÉRIE  •  ${systemTitle.uppercase(Locale.ROOT)}",
                     color = Color(0xFFD6D6D6),
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 2.sp,
                     maxLines = 1,
@@ -851,13 +853,13 @@ private fun NetflixHeroBillboard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Match score + HD / Console badges
+            // Actual library status and console badges
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 Text(
-                    text = "$matchScore% relevante",
+                    text = if (game.isFavorite) "Na sua lista" else "Da sua biblioteca",
                     color = NetflixMatchGreen,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
@@ -868,7 +870,7 @@ private fun NetflixHeroBillboard(
                 )
 
                 NetflixMetadataBadge(
-                    text = "HD",
+                    text = "JOGAR",
                 )
 
                 if (versionCount > 1) {
@@ -987,7 +989,7 @@ private fun NetflixMetadataBadge(text: String) {
         Text(
             text = text,
             color = Color(0xFFE5E5E5),
-            fontSize = 10.sp,
+            fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 0.6.sp,
         )
@@ -1003,10 +1005,11 @@ private fun NetflixCategoryRowSection(
     onSelectPosition: (row: Int, col: Int) -> Unit,
     onConfirmGame: (GroupedGameEntry) -> Unit,
 ) {
+    val motion = LocalFrontendMotion.current
     val horizontalListState = rememberLazyListState()
     LaunchedEffect(isRowActive, selectedColIndex, row.games.size) {
         if (isRowActive && selectedColIndex in row.games.indices) {
-            horizontalListState.animateScrollToItem(selectedColIndex)
+            if (motion.animatedScroll) horizontalListState.animateScrollToItem(selectedColIndex) else horizontalListState.scrollToItem(selectedColIndex)
         }
     }
 
@@ -1027,9 +1030,9 @@ private fun NetflixCategoryRowSection(
                             .padding(horizontal = 5.dp, vertical = 1.dp),
                 ) {
                     Text(
-                        text = "TOP 10",
+                        text = "SUA SELEÇÃO",
                         color = Color.White,
-                        fontSize = 9.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Black,
                         letterSpacing = 0.8.sp,
                     )
@@ -1093,9 +1096,10 @@ private fun NetflixTopTenPosterItem(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
+    val motion = LocalFrontendMotion.current
     val scale by animateFloatAsState(
         targetValue = if (isSelected) 1.06f else 1.0f,
-        animationSpec = tween(160),
+        animationSpec = tween(motion.focusMillis),
         label = "netflix_top10_scale",
     )
 
@@ -1164,15 +1168,16 @@ private fun NetflixPosterCard(
     onClick: () -> Unit,
     applyScale: Boolean = true,
 ) {
+    val motion = LocalFrontendMotion.current
     val game = entry.netflixGame
     val scale by animateFloatAsState(
         targetValue = if (applyScale && isSelected) 1.07f else 1.0f,
-        animationSpec = tween(160),
+        animationSpec = tween(motion.focusMillis),
         label = "netflix_card_scale",
     )
     val borderColor by animateColorAsState(
         targetValue = if (isSelected) Color.White else Color(0xFF2B2B2B),
-        animationSpec = tween(160),
+        animationSpec = tween(motion.focusMillis),
         label = "netflix_card_border",
     )
     val shape = RoundedCornerShape(6.dp)
@@ -1213,7 +1218,7 @@ private fun NetflixPosterCard(
         )
 
         // Subtle top-left Netflix "N" tag
-        NetflixNEmblem(
+        CineArcadeEmblem(
             modifier =
                 Modifier
                     .align(Alignment.TopStart)
@@ -1255,7 +1260,7 @@ private fun NetflixPosterCard(
             Text(
                 text = game.displayName(),
                 color = if (isSelected) Color.White else Color(0xFFE0E0E0),
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

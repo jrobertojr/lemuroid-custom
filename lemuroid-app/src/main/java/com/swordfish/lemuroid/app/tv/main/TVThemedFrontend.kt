@@ -1,5 +1,8 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendMotion
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
 import android.view.KeyEvent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
@@ -103,7 +106,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
-private const val SLIDESHOW_INTERVAL_MS = 3500L
 private const val METADATA_DEBOUNCE_MS = 120L
 private const val ARCADE_GROUP_KEY = "arcade"
 
@@ -230,13 +232,13 @@ private fun consoleAccentColor(systemKey: String): Color =
 
 private fun themeAccentColor(theme: FrontendTheme): Color =
     when (theme) {
-        FrontendTheme.NETFLIX -> Color(0xFFE50914)
+        FrontendTheme.NETFLIX -> Color(0xFFF04F5E)
         FrontendTheme.LOCADORA -> Color(0xFFF5B700)
         FrontendTheme.CONSOLE -> Color(0xFF00C2FF)
-        FrontendTheme.TV -> Color(0xFF39FF14)
+        FrontendTheme.TV -> Color(0xFF9ADF8D)
         FrontendTheme.RETRO_80_90 -> Color(0xFF00F0FF)
         FrontendTheme.ROCKSTAR -> Color(0xFFFFB800)
-        FrontendTheme.THRASH_METAL -> Color(0xFFC41212)
+        FrontendTheme.THRASH_METAL -> Color(0xFFD84D5B)
         FrontendTheme.THREE_D, FrontendTheme.DEFAULT -> Color(0xFF00E5FF)
     }
 
@@ -252,19 +254,35 @@ fun TVThemedFrontend(
     onRescan: () -> Unit,
     onRequestExit: () -> Unit,
 ) {
+    androidx.compose.runtime.CompositionLocalProvider(
+        LocalFrontendMotion provides rememberFrontendMotion(),
+    ) {
+        TVThemedFrontendContent(retrogradeDb, gameInteractor, onOpenSettings, onRescan, onRequestExit)
+    }
+}
+
+@Composable
+private fun TVThemedFrontendContent(
+    retrogradeDb: RetrogradeDatabase,
+    gameInteractor: GameInteractor,
+    onOpenSettings: () -> Unit,
+    onRescan: () -> Unit,
+    onRequestExit: () -> Unit,
+) {
+    val motion = LocalFrontendMotion.current
     val theme = LocalFrontendTheme.current
     val context = LocalContext.current
     val gameDao = remember(retrogradeDb) { retrogradeDb.gameDao() }
 
-    val systemCounts by gameDao.selectSystemsWithCount().collectAsState(initial = emptyList())
+    val systemCounts by remember(gameDao) { gameDao.selectSystemsWithCount() }.collectAsState(initial = emptyList())
     val systemIds = remember(systemCounts) { systemCounts.map { it.systemId } }
 
     val allGames by remember(systemIds) {
         if (systemIds.isEmpty()) flowOf(emptyList()) else gameDao.selectBySystemsList(systemIds)
     }.collectAsState(initial = emptyList())
 
-    val recentGames by gameDao.selectFirstUnfavoriteRecents(12).collectAsState(initial = emptyList())
-    val favoriteGames by gameDao.selectFirstFavorites(20).collectAsState(initial = emptyList())
+    val recentGames by remember(gameDao) { gameDao.selectFirstUnfavoriteRecents(12) }.collectAsState(initial = emptyList())
+    val favoriteGames by remember(gameDao) { gameDao.selectFirstFavorites(20) }.collectAsState(initial = emptyList())
 
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
     var selectedTabKey by rememberSaveable { mutableStateOf<String?>(null) }
@@ -513,11 +531,12 @@ fun TVThemedFrontend(
             activeGame?.let { TVGameMetadataHelper.screenshotGalleryUrlsFor(it) } ?: emptyList()
         }
     var screenshotIndex by remember(activeGame?.id) { mutableIntStateOf(0) }
-    LaunchedEffect(activeGame?.id, screenshots.size) {
+    val sharedSlideshowMillis = if (theme == FrontendTheme.THREE_D || theme == FrontendTheme.DEFAULT) 0L else motion.slideshowMillis
+    LaunchedEffect(activeGame?.id, screenshots.size, sharedSlideshowMillis) {
         screenshotIndex = 0
-        if (screenshots.size > 1) {
+        if (screenshots.size > 1 && sharedSlideshowMillis > 0L) {
             while (true) {
-                delay(SLIDESHOW_INTERVAL_MS)
+                delay(sharedSlideshowMillis)
                 screenshotIndex = (screenshotIndex + 1) % screenshots.size
             }
         }
@@ -1059,7 +1078,7 @@ private fun TVThemeAmbientBackground(theme: FrontendTheme) {
                 FrontendTheme.NETFLIX ->
                     Triple(
                         Brush.verticalGradient(listOf(Color(0xFF141414), Color(0xFF0E0E0E), Color(0xFF080808))),
-                        Color(0xFFE50914).copy(alpha = 0.14f),
+                        Color(0xFFF04F5E).copy(alpha = 0.14f),
                         Offset(0.84f, 0.14f),
                     )
                 FrontendTheme.LOCADORA ->
@@ -1077,13 +1096,13 @@ private fun TVThemeAmbientBackground(theme: FrontendTheme) {
                 FrontendTheme.TV ->
                     Triple(
                         Brush.verticalGradient(listOf(Color(0xFF08120A), Color(0xFF050C06), Color(0xFF030704))),
-                        Color(0xFF39FF14).copy(alpha = 0.12f),
+                        Color(0xFF9ADF8D).copy(alpha = 0.12f),
                         Offset(0.65f, 0.45f),
                     )
                 FrontendTheme.RETRO_80_90 ->
                     Triple(
                         Brush.verticalGradient(listOf(Color(0xFF16072E), Color(0xFF280B4F), Color(0xFF0C041A))),
-                        Color(0xFFFF2A85).copy(alpha = 0.22f),
+                        Color(0xFFFF75B5).copy(alpha = 0.22f),
                         Offset(0.75f, 0.20f),
                     )
                 FrontendTheme.ROCKSTAR ->
@@ -1095,7 +1114,7 @@ private fun TVThemeAmbientBackground(theme: FrontendTheme) {
                 FrontendTheme.THRASH_METAL ->
                     Triple(
                         Brush.verticalGradient(listOf(Color(0xFF181A1F), Color(0xFF101216), Color(0xFF090A0C))),
-                        Color(0xFFC41212).copy(alpha = 0.20f),
+                        Color(0xFFD84D5B).copy(alpha = 0.20f),
                         Offset(0.50f, 0.08f),
                     )
                 FrontendTheme.THREE_D, FrontendTheme.DEFAULT ->
@@ -1134,6 +1153,7 @@ private fun TVTopBar(
     selectedFilter: TVFilter,
     onSelectFilter: (TVFilter) -> Unit,
 ) {
+    val motion = LocalFrontendMotion.current
     val accent = themeAccentColor(theme)
     val listState = rememberLazyListState()
     val selectedIndex =
@@ -1142,7 +1162,7 @@ private fun TVTopBar(
         }
 
     LaunchedEffect(selectedIndex) {
-        runCatching { listState.animateScrollToItem(selectedIndex) }
+        runCatching { if (motion.animatedScroll) listState.animateScrollToItem(selectedIndex) else listState.scrollToItem(selectedIndex) }
     }
 
     Column(
@@ -1510,6 +1530,7 @@ private fun TVScreenshotSlideshow(
     modifier: Modifier = Modifier,
     showScanlines: Boolean = false,
 ) {
+    val motion = LocalFrontendMotion.current
     val galleryUrls =
         remember(game?.id, game?.coverFrontUrl, game?.customCoverUri) {
             game?.let { TVGameMetadataHelper.screenshotGalleryUrlsFor(it) } ?: emptyList()
@@ -1517,11 +1538,11 @@ private fun TVScreenshotSlideshow(
 
     var currentIndex by remember(game?.id) { mutableIntStateOf(0) }
 
-    LaunchedEffect(game?.id, galleryUrls.size) {
+    LaunchedEffect(game?.id, galleryUrls.size, motion.slideshowMillis) {
         currentIndex = 0
-        if (galleryUrls.size > 1) {
+        if (galleryUrls.size > 1 && motion.slideshowMillis > 0L) {
             while (true) {
-                delay(SLIDESHOW_INTERVAL_MS)
+                delay(motion.slideshowMillis)
                 currentIndex = (currentIndex + 1) % galleryUrls.size
             }
         }
@@ -1529,6 +1550,7 @@ private fun TVScreenshotSlideshow(
 
     val safeIndex = if (galleryUrls.isNotEmpty()) currentIndex % galleryUrls.size else 0
     val activeUrl = galleryUrls.getOrNull(safeIndex)
+    var mediaFailed by remember(activeUrl) { mutableStateOf(false) }
     val stageShape = RoundedCornerShape(14.dp)
 
     Box(
@@ -1540,10 +1562,10 @@ private fun TVScreenshotSlideshow(
                 .border(1.5.dp, accentColor.copy(alpha = 0.45f), stageShape),
         contentAlignment = Alignment.Center,
     ) {
-        if (activeUrl != null) {
+        if (activeUrl != null && !mediaFailed) {
             Crossfade(
                 targetState = activeUrl,
-                animationSpec = tween(durationMillis = 420),
+                animationSpec = tween(durationMillis = motion.mediaMillis),
                 label = "tv_slideshow_crossfade",
                 modifier = Modifier.fillMaxSize(),
             ) { url ->
@@ -1553,6 +1575,7 @@ private fun TVScreenshotSlideshow(
                             .data(url)
                             .crossfade(false)
                             .build(),
+                    onError = { mediaFailed = true },
                     contentDescription = game?.displayName(),
                     contentScale = ContentScale.Fit,
                     modifier =
@@ -1740,11 +1763,10 @@ private fun TVGameInfoPanel(
                 }
             }
 
-            if (showStarRating) {
+            if (showStarRating && game.isFavorite) {
                 Spacer(modifier = Modifier.weight(1f))
                 Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                    val starCount = if (game.isFavorite) 5 else 3
-                    repeat(starCount) {
+                    repeat(1) {
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = null,
@@ -1809,10 +1831,11 @@ private fun TVFocusableCard(
     focusRequester: FocusRequester? = null,
     popUpOnFocus: Boolean = false,
 ) {
+    val motion = LocalFrontendMotion.current
     var isFocused by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(if (isFocused) 1.07f else 1f, label = "tv_card_scale")
-    val offsetY by animateFloatAsState(if (isFocused && popUpOnFocus) -14f else 0f, label = "tv_card_y")
-    val elevation by animateDpAsState(if (isFocused) 14.dp else 2.dp, label = "tv_card_elev")
+    val scale by animateFloatAsState(if (isFocused) 1.04f else 1f, animationSpec = tween(motion.focusMillis), label = "tv_card_scale")
+    val offsetY by animateFloatAsState(if (isFocused && popUpOnFocus) -8f else 0f, animationSpec = tween(motion.focusMillis), label = "tv_card_y")
+    val elevation by animateDpAsState(if (isFocused) 14.dp else 2.dp, animationSpec = tween(motion.focusMillis), label = "tv_card_elev")
     val accent = themeAccentColor(theme)
     val cardShape = RoundedCornerShape(12.dp)
     val targetGame = entry.displayGame
@@ -2277,7 +2300,7 @@ private fun TVCrtGuideLayout(
     onFocusEntry: (GroupedGameEntry) -> Unit,
     onEntryClick: (GroupedGameEntry) -> Unit,
 ) {
-    val phosphorGreen = Color(0xFF39FF14)
+    val phosphorGreen = Color(0xFF9ADF8D)
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val lastFocusRequester = remember { FocusRequester() }
@@ -2438,8 +2461,8 @@ private fun TVRetro8090Layout(
                     .fillMaxWidth()
                     .height(258.dp)
                     .padding(horizontal = 32.dp, vertical = 12.dp)
-                    .shadow(14.dp, RoundedCornerShape(16.dp), ambientColor = Color(0xFFFF2A85), spotColor = Color(0xFF00F0FF))
-                    .border(2.dp, Brush.horizontalGradient(listOf(Color(0xFFFF2A85), Color(0xFF00F0FF))), RoundedCornerShape(16.dp))
+                    .shadow(14.dp, RoundedCornerShape(16.dp), ambientColor = Color(0xFFFF75B5), spotColor = Color(0xFF00F0FF))
+                    .border(2.dp, Brush.horizontalGradient(listOf(Color(0xFFFF75B5), Color(0xFF00F0FF))), RoundedCornerShape(16.dp))
                     .background(Color(0xFF190833).copy(alpha = 0.90f), RoundedCornerShape(16.dp))
                     .padding(14.dp),
         ) {
@@ -2605,7 +2628,7 @@ private fun TVThrashMetalLayout(
     onFocusEntry: (GroupedGameEntry) -> Unit,
     onEntryClick: (GroupedGameEntry) -> Unit,
 ) {
-    val crimson = Color(0xFFC41212)
+    val crimson = Color(0xFFD84D5B)
     val gridState = rememberLazyGridState()
     val coroutineScope = rememberCoroutineScope()
     val lastFocusRequester = remember { FocusRequester() }
@@ -2696,13 +2719,14 @@ private fun TVThreeDShowcaseLayout(
     onSelectIndex: (Int) -> Unit,
     onEntryClick: (GroupedGameEntry) -> Unit,
 ) {
+    val motion = LocalFrontendMotion.current
     val cyan = Color(0xFF00E5FF)
     val listState = rememberLazyListState()
     val safeIndex = if (entries.isEmpty()) 0 else selectedIndex.coerceIn(0, entries.lastIndex)
 
     LaunchedEffect(safeIndex, entries.size) {
         if (entries.isNotEmpty() && safeIndex in entries.indices) {
-            listState.animateScrollToItem(safeIndex)
+            if (motion.animatedScroll) listState.animateScrollToItem(safeIndex) else listState.scrollToItem(safeIndex)
         }
     }
 
@@ -2809,8 +2833,8 @@ private fun TVThreeDShowcaseLayout(
                 itemsIndexed(entries, key = { _, e -> e.displayGame.id }) { index, entry ->
                     val targetGame = entry.displayGame
                     val isFocused = index == safeIndex
-                    val scale by animateFloatAsState(if (isFocused) 1.07f else 1f, label = "3d_strip_scale")
-                    val elevation by animateDpAsState(if (isFocused) 14.dp else 2.dp, label = "3d_strip_elev")
+                    val scale = animateFloatAsState(if (isFocused) 1.04f else 1f, animationSpec = tween(motion.focusMillis), label = "3d_strip_scale")
+                    val elevation = if (isFocused) 14.dp else 2.dp
                     val itemShape = RoundedCornerShape(14.dp)
 
                     Box(
@@ -2818,8 +2842,8 @@ private fun TVThreeDShowcaseLayout(
                             Modifier
                                 .width(136.dp)
                                 .graphicsLayer {
-                                    scaleX = scale
-                                    scaleY = scale
+                                    scaleX = scale.value
+                                    scaleY = scale.value
                                 }
                                 .shadow(
                                     elevation = elevation,

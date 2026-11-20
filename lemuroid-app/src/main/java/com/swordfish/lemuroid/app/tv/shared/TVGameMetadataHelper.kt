@@ -10,10 +10,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Response
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
  * Provides derived artwork URLs and cached Wikipedia/metadata descriptions for Android TV layouts.
@@ -178,18 +185,15 @@ object TVGameMetadataHelper {
 
         val call = httpClient.newCall(request)
         return try {
-            call.execute().use { response ->
-                currentCoroutineContext().ensureActive()
-                if (!response.isSuccessful) return null
-                val body = response.body?.string() ?: return null
-                val firstResult =
-                    JSONObject(body)
-                        .optJSONObject("query")
-                        ?.optJSONArray("search")
-                        ?.optJSONObject(0)
-                        ?: return null
-                firstResult.optString("title", "").trim().takeIf { it.isNotEmpty() }
-            }
+            val body = call.awaitBody() ?: return null
+            currentCoroutineContext().ensureActive()
+            val firstResult =
+                JSONObject(body)
+                    .optJSONObject("query")
+                    ?.optJSONArray("search")
+                    ?.optJSONObject(0)
+                    ?: return null
+            firstResult.optString("title", "").trim().takeIf { it.isNotEmpty() }
         } catch (e: CancellationException) {
             call.cancel()
             throw e
@@ -214,19 +218,16 @@ object TVGameMetadataHelper {
 
         val call = httpClient.newCall(request)
         return try {
-            call.execute().use { response ->
-                currentCoroutineContext().ensureActive()
-                if (!response.isSuccessful) return null
-                val body = response.body?.string() ?: return null
-                val json = JSONObject(body)
-                if (json.optString("type", "") == "disambiguation") return null
-                val extract =
-                    json
-                        .optString("extract", "")
-                        .replace(WHITESPACE_REGEX, " ")
-                        .trim()
-                if (extract.length < MIN_EXTRACT_CHARS) null else capExtract(extract, MAX_EXTRACT_CHARS)
-            }
+            val body = call.awaitBody() ?: return null
+            currentCoroutineContext().ensureActive()
+            val json = JSONObject(body)
+            if (json.optString("type", "") == "disambiguation") return null
+            val extract =
+                json
+                    .optString("extract", "")
+                    .replace(WHITESPACE_REGEX, " ")
+                    .trim()
+            if (extract.length < MIN_EXTRACT_CHARS) null else capExtract(extract, MAX_EXTRACT_CHARS)
         } catch (e: CancellationException) {
             call.cancel()
             throw e
@@ -234,6 +235,25 @@ object TVGameMetadataHelper {
             currentCoroutineContext().ensureActive()
             null
         }
+    }
+
+    /** Cancelling selection cancels both waiting for headers and reading the response body. */
+    private suspend fun Call.awaitBody(): String? = suspendCancellableCoroutine { continuation ->
+        continuation.invokeOnCancellation { cancel() }
+        enqueue(object : Callback {
+            override fun onFailure(call: Call, exception: IOException) {
+                if (continuation.isActive) continuation.resumeWithException(exception)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                try {
+                    val body = response.use { if (it.isSuccessful) it.body?.string() else null }
+                    if (continuation.isActive) continuation.resume(body)
+                } catch (exception: Exception) {
+                    if (continuation.isActive) continuation.resumeWithException(exception)
+                }
+            }
+        })
     }
 
     private fun capExtract(
