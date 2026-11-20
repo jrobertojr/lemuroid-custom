@@ -24,6 +24,8 @@ import com.swordfish.lemuroid.lib.library.CoreID
 import com.swordfish.lemuroid.lib.library.GameSystem
 import com.swordfish.lemuroid.lib.library.SystemCoreConfig
 import com.swordfish.lemuroid.lib.library.db.entity.Game
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfile
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfileManager
 import com.swordfish.lemuroid.lib.storage.RomFiles
 import com.swordfish.libretrodroid.GLRetroView
 import com.swordfish.libretrodroid.GLRetroViewData
@@ -72,6 +74,7 @@ class GameViewModelRetroGameView(
     }
 
     private val gameState: MutableStateFlow<GameState> = MutableStateFlow(GameState.Uninitialized)
+    private var launchProfile: PerformanceProfile? = null
 
     private val retroGameViewFlow = MutableStateFlow<GLRetroView?>(null)
     var retroGameView: GLRetroView? by MutableStateProperty(retroGameViewFlow)
@@ -90,15 +93,46 @@ class GameViewModelRetroGameView(
         val currentState = gameState.value
         if (currentState != GameState.Uninitialized) return
 
+        val performanceProfile = PerformanceProfileManager.getActiveProfile(applicationContext, game)
+        launchProfile = performanceProfile
+        Timber.i("Game launch settings: game=%s core=%s profile=%s", game.id, systemCoreConfig.coreID.coreName, performanceProfile.prefValue)
         val autoSaveEnabled = settingsManager.autoSave()
-        val filter = settingsManager.screenFilter()
-        val hdMode = settingsManager.hdMode()
+        val userFilter = settingsManager.screenFilter()
+        val userHdMode = settingsManager.hdMode()
         val hdModeQuality = settingsManager.hdModeQuality()
         val alignment = settingsManager.viewportAlignment()
-        val lowLatencyAudio = settingsManager.lowLatencyAudio()
+        val userLowLatencyAudio = settingsManager.lowLatencyAudio()
         val enableRumble = settingsManager.enableRumble()
         val directLoad = settingsManager.allowDirectGameLoad()
-        val enableImmersiveMode = settingsManager.enableImmersiveMode()
+        val userEnableImmersiveMode = settingsManager.enableImmersiveMode()
+
+        val hdMode =
+            when (performanceProfile) {
+                PerformanceProfile.PERFORMANCE -> false
+                PerformanceProfile.BALANCED -> userHdMode
+                PerformanceProfile.QUALITY -> userHdMode
+            }
+        val lowLatencyAudio =
+            when (performanceProfile) {
+                PerformanceProfile.PERFORMANCE -> false
+                PerformanceProfile.BALANCED -> false
+                PerformanceProfile.QUALITY -> userLowLatencyAudio
+            }
+        val filter =
+            when (performanceProfile) {
+                // "default" falls back to the system's LCD/CRT shader, not a plain blit.
+                PerformanceProfile.PERFORMANCE -> "smooth"
+                PerformanceProfile.BALANCED -> userFilter
+                PerformanceProfile.QUALITY -> userFilter
+            }
+        val enableImmersiveMode =
+            when (performanceProfile) {
+                PerformanceProfile.PERFORMANCE -> false
+                PerformanceProfile.BALANCED -> userEnableImmersiveMode
+                PerformanceProfile.QUALITY -> userEnableImmersiveMode
+            }
+        // Always respect each core's own skipDuplicateFrames flag to prevent SurfaceFlinger/Mali flicker
+        val forceSkipDuplicateFrames = false
 
         val hasMicrophonePermission =
             ContextCompat.checkSelfPermission(
@@ -115,6 +149,7 @@ class GameViewModelRetroGameView(
                 requestLoadSave && autoSaveEnabled,
                 systemCoreConfig,
                 directLoad,
+                performanceProfile,
             )
 
         loadingStatesFlow
@@ -146,6 +181,7 @@ class GameViewModelRetroGameView(
                                 enableRumble,
                                 enableMicrophone,
                                 enableImmersiveMode,
+                                forceSkipDuplicateFrames,
                             )
                         GameState.Loaded(
                             gameData = loadingState.gameData,
@@ -217,6 +253,7 @@ class GameViewModelRetroGameView(
         requestRumble: Boolean,
         requestMicrophone: Boolean,
         enableImmersiveMode: Boolean,
+        forceSkipDuplicateFrames: Boolean,
     ): GLRetroViewData {
         return GLRetroViewData(appContext).apply {
             coreFilePath = gameData.coreLibrary
@@ -232,7 +269,13 @@ class GameViewModelRetroGameView(
             }
 
             systemDirectory = gameData.systemDirectory.absolutePath
-            savesDirectory = gameData.savesDirectory.absolutePath
+            savesDirectory =
+                if (systemCoreConfig.coreID == CoreID.NOODS) {
+                    // NooDS also writes a native .sav file. Keep it separate from other cores.
+                    java.io.File(gameData.savesDirectory, "noods").apply { mkdirs() }.absolutePath
+                } else {
+                    gameData.savesDirectory.absolutePath
+                }
             variables = gameData.coreVariables.map { Variable(it.key, it.value) }.toTypedArray()
             saveRAMState = gameData.saveRAMData
             shader =
@@ -251,7 +294,7 @@ class GameViewModelRetroGameView(
                 }
             preferLowLatencyAudio = lowLatencyAudio
             rumbleEventsEnabled = requestRumble
-            skipDuplicateFrames = systemCoreConfig.skipDuplicateFrames
+            skipDuplicateFrames = forceSkipDuplicateFrames || systemCoreConfig.skipDuplicateFrames
             enableMicrophone = requestMicrophone
             immersiveMode = buildImmersiveModeConfiguration(enableImmersiveMode)
         }
@@ -310,7 +353,7 @@ class GameViewModelRetroGameView(
     private suspend fun initializeCoreVariablesFlow() {
         try {
             waitRetroGameViewInitialized()
-            val options = coreVariablesManager.getOptionsForCore(system.id, systemCoreConfig)
+            val options = coreVariablesManager.getOptionsForCore(system.id, systemCoreConfig, launchProfile)
             currentNdsScreenLayout =
                 options.firstOrNull { it.key == MELONDS_SCREEN_LAYOUT_KEY }?.value
                     ?: currentNdsScreenLayout

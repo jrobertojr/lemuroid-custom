@@ -17,20 +17,45 @@ fun LemuroidGameCard(
     onClick: () -> Unit = { },
     onLongClick: () -> Unit = { },
 ) {
-    ElevatedCard(
-        modifier = modifier,
-    ) {
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .combinedClickable(
-                        onClick = onClick,
-                        onLongClick = onLongClick,
-                    ),
-        ) {
-            LemuroidGameImage(game = game)
-            LemuroidGameTexts(game = game)
+    val theme = LocalFrontendTheme.current
+
+    when (theme) {
+        FrontendTheme.DEFAULT -> {
+            ElevatedCard(
+                modifier = modifier,
+            ) {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .combinedClickable(
+                                onClick = onClick,
+                                onLongClick = onLongClick,
+                            ),
+                ) {
+                    LemuroidGameImage(game = game)
+                    LemuroidGameTexts(game = game)
+                }
+            }
+        }
+
+        FrontendTheme.THREE_D -> {
+            Game3DObject(
+                game = game,
+                onClick = onClick,
+                onLongClick = onLongClick,
+                modifier = modifier,
+            )
+        }
+
+        else -> {
+            ThemedGameGridItem(
+                game = game,
+                theme = theme,
+                onClick = onClick,
+                onLongClick = onLongClick,
+                modifier = modifier,
+            )
         }
     }
 }

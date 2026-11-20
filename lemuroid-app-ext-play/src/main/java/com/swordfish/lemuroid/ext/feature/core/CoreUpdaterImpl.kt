@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
 import retrofit2.Retrofit
+import java.io.File
 import kotlin.time.Duration.Companion.seconds
 
 class CoreUpdaterImpl(
@@ -37,7 +38,10 @@ class CoreUpdaterImpl(
         coreIDs: List<CoreID>,
     ) {
         val installManager = SplitInstallManagerFactory.create(context)
-        val installSession = installCores(installManager, coreIDs, context)
+        val downloadableCores = coreIDs.filterNot {
+            File(context.applicationInfo.nativeLibraryDir, it.libretroFileName).isFile
+        }
+        val installSession = installCores(installManager, downloadableCores, context)
 
         try {
             cancelPendingInstalls(installManager, installSession)

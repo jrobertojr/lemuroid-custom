@@ -1,0 +1,726 @@
+{
+  "retrieved_utc": "2026-11-19",
+  "source": "Official Libretro buildbot snapshot. SHA256 values pin retrieved artifacts, not publisher signatures.",
+  "libraries": [
+    {
+      "core": "stella2014",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/stella2014_libretro_android.so.zip",
+      "archive_sha256": "b2d59db7ba40e10b9f61c61f6583716832c886cf9718b37513a08f4fac2cdf6d",
+      "sha256": "7d1f0a5ad37c634ed5bcb270f1620e891e8576ff56b2a5272fb3e00604b1716d",
+      "bytes": 1588688,
+      "file": "src/main/jniLibs/armeabi-v7a/libstella2014_libretro_android.so"
+    },
+    {
+      "core": "stella2014",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/stella2014_libretro_android.so.zip",
+      "archive_sha256": "14d9bffeafcd899cab3e543dfda7120d68a9b583a8e290410f13e67c3ceb4c0b",
+      "sha256": "6f561690772a8fc15d0a3c37d77f6d5fcd407a14969e68e29cd4c6f586bf21b2",
+      "bytes": 3363152,
+      "file": "src/main/jniLibs/arm64-v8a/libstella2014_libretro_android.so"
+    },
+    {
+      "core": "stella2014",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/stella2014_libretro_android.so.zip",
+      "archive_sha256": "9f093afbc75f7111a8ecd12ed68005a038b4fcc3d524e5f6f06f00f45f786413",
+      "sha256": "22ae5328471034955ce5ab0eb9ff23c8452d84e2db821436461510d41ec865cd",
+      "bytes": 1942020,
+      "file": "src/main/jniLibs/x86/libstella2014_libretro_android.so"
+    },
+    {
+      "core": "stella2014",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/stella2014_libretro_android.so.zip",
+      "archive_sha256": "4e844b84425d0e8333de11e1826d6e51d695cb4f551ae719ee4a4b85ee3cd8c8",
+      "sha256": "2c412cff81b59b42a4fc80b32782120777053dd7a78db4b9f6b2bd314b8fea0f",
+      "bytes": 3350312,
+      "file": "src/main/jniLibs/x86_64/libstella2014_libretro_android.so"
+    },
+    {
+      "core": "quicknes",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/quicknes_libretro_android.so.zip",
+      "archive_sha256": "e4f5f66060f50f7f38d8a73fd047122ca9a50e82fb71e71d3d137e101330f443",
+      "sha256": "91579f6cae040ea9770c636195ecc9382ba72e2ca3c565cb9788c1c26f02f3ee",
+      "bytes": 779200,
+      "file": "src/main/jniLibs/armeabi-v7a/libquicknes_libretro_android.so"
+    },
+    {
+      "core": "quicknes",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/quicknes_libretro_android.so.zip",
+      "archive_sha256": "dd166ff31320accef505976a6c2b15a585a2b10511205a00e8ee3ccfa8b657dd",
+      "sha256": "6b9a0791e5576e06855cbc8685a405b562a37a1f5e54812a2359ffbd09230422",
+      "bytes": 1325416,
+      "file": "src/main/jniLibs/arm64-v8a/libquicknes_libretro_android.so"
+    },
+    {
+      "core": "quicknes",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/quicknes_libretro_android.so.zip",
+      "archive_sha256": "83f9bd4fb788c23e4a36450c181a7afac518f60593facfa035f6640e5c665f2a",
+      "sha256": "783c79f6763d3f5d022eec3467b607b6045243f348b7c2be4ca0917133a9e5b4",
+      "bytes": 950160,
+      "file": "src/main/jniLibs/x86/libquicknes_libretro_android.so"
+    },
+    {
+      "core": "quicknes",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/quicknes_libretro_android.so.zip",
+      "archive_sha256": "72eed1922f26eaf08129cca30a8a85055e94cfe1255a22445b9cebd898b2644c",
+      "sha256": "d5d8fb55f8493dc3b616fcb941545634624cf417750cdff7bcf4c3c79d45817d",
+      "bytes": 1341432,
+      "file": "src/main/jniLibs/x86_64/libquicknes_libretro_android.so"
+    },
+    {
+      "core": "nestopia",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/nestopia_libretro_android.so.zip",
+      "archive_sha256": "5176f70af2543a1d39e4a838dfe3043d9a07091a32bb3885db2c5499feeb113f",
+      "sha256": "7ec329b1ccb20c82c5419eb76411ec1a7871105510e76a4284c9b7de72639ab9",
+      "bytes": 3092860,
+      "file": "src/main/jniLibs/armeabi-v7a/libnestopia_libretro_android.so"
+    },
+    {
+      "core": "nestopia",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/nestopia_libretro_android.so.zip",
+      "archive_sha256": "9ebfdd2959fb1fe66d0e7a78be0ab067d0df7c7695c6f79bee16626903c4213c",
+      "sha256": "8ba3ed58b3792705ecf9a60554604c33feda276455856ec143f5b76a777d3471",
+      "bytes": 5062272,
+      "file": "src/main/jniLibs/arm64-v8a/libnestopia_libretro_android.so"
+    },
+    {
+      "core": "nestopia",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/nestopia_libretro_android.so.zip",
+      "archive_sha256": "9d5f957a51446e90aff145088cc6e72003d84847dea7d5aab9af1d26059cf2c7",
+      "sha256": "9f5a8f025bdcc3966c01d4f251b1b3f1a40488b9d858a8296720b8a5040fc68d",
+      "bytes": 3797584,
+      "file": "src/main/jniLibs/x86/libnestopia_libretro_android.so"
+    },
+    {
+      "core": "nestopia",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/nestopia_libretro_android.so.zip",
+      "archive_sha256": "ac873038b67a74f4da38456dc173cba206945fe622de3e3ee9a751baf46a2ade",
+      "sha256": "35a83169c26d74f85bddbe71e1f817cb46baf6a7a274198bead47dc47d90e95f",
+      "bytes": 5048736,
+      "file": "src/main/jniLibs/x86_64/libnestopia_libretro_android.so"
+    },
+    {
+      "core": "snes9x2005_plus",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/snes9x2005_plus_libretro_android.so.zip",
+      "archive_sha256": "31a95de5050b83fb9a01ac777151927cec7d88c42a33fc880a82dcaf2e96d966",
+      "sha256": "ada4dbf17de5b04c74ea071052ea11ec6999bee94fd9d669b864f4921fab0b13",
+      "bytes": 328920,
+      "file": "src/main/jniLibs/armeabi-v7a/libsnes9x2005_plus_libretro_android.so"
+    },
+    {
+      "core": "snes9x2005_plus",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/snes9x2005_plus_libretro_android.so.zip",
+      "archive_sha256": "40cf2e6e46ec13b902bed9ccfbaffa0a81c7b97ed9c2af1a3da9a62fb290941a",
+      "sha256": "0492439e52a1cbe41906febac6ae84b40209302129ad9bfc9eb7b99e0f965677",
+      "bytes": 709368,
+      "file": "src/main/jniLibs/arm64-v8a/libsnes9x2005_plus_libretro_android.so"
+    },
+    {
+      "core": "snes9x2005_plus",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/snes9x2005_plus_libretro_android.so.zip",
+      "archive_sha256": "755ee27fc6ce30d29fc93b892ffe8ce6d8ac851a0f05d6b6bbaa47a6dfa969bd",
+      "sha256": "4d8e40265dad3d514ed8241a9eac5f5ac44892674cbb4ea39a659d097742af3d",
+      "bytes": 668964,
+      "file": "src/main/jniLibs/x86/libsnes9x2005_plus_libretro_android.so"
+    },
+    {
+      "core": "snes9x2005_plus",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/snes9x2005_plus_libretro_android.so.zip",
+      "archive_sha256": "35c452695dc31c8336c6c979df4623505cbac7a394cf344b34bdcab042f181fe",
+      "sha256": "c0a7b74974680709314fa5ea1e42599f1ac38a712969e4b1ef06e1cd6e1ee227",
+      "bytes": 685728,
+      "file": "src/main/jniLibs/x86_64/libsnes9x2005_plus_libretro_android.so"
+    },
+    {
+      "core": "snes9x2010",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/snes9x2010_libretro_android.so.zip",
+      "archive_sha256": "000cc92a9076346ca263b98871f1b32d00085587c277857c88c0f64f3801e20f",
+      "sha256": "0894ed4aaf591a575562bc37f58a92e53442ccbf40da11129c0326650a49daee",
+      "bytes": 1632648,
+      "file": "src/main/jniLibs/armeabi-v7a/libsnes9x2010_libretro_android.so"
+    },
+    {
+      "core": "snes9x2010",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/snes9x2010_libretro_android.so.zip",
+      "archive_sha256": "03997ebeb0647acbda24205a3341ca609ad006fb57de0d7eef57db5cf8fae4ff",
+      "sha256": "852ab63039fda4d64ccfa961c0318db9a44c92cfaa4e27be951bf56189dde364",
+      "bytes": 2606800,
+      "file": "src/main/jniLibs/arm64-v8a/libsnes9x2010_libretro_android.so"
+    },
+    {
+      "core": "snes9x2010",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/snes9x2010_libretro_android.so.zip",
+      "archive_sha256": "c4e3c8637f7c7daeea8499548098eb2d6de732a4f4d6ac1d93a50edceada2fb9",
+      "sha256": "3d473688f865af4569f8011e433a03292017b58a675f8577120c7107fe7d15f8",
+      "bytes": 2795764,
+      "file": "src/main/jniLibs/x86/libsnes9x2010_libretro_android.so"
+    },
+    {
+      "core": "snes9x2010",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/snes9x2010_libretro_android.so.zip",
+      "archive_sha256": "96139204042b7b8edc1c9ee5decfab6610020423285c1b42ddefa9d72863dda1",
+      "sha256": "cede375a70d347d546283fdfd5601b4dfdab1aed213a6eeee7f87c797ade8a27",
+      "bytes": 2819016,
+      "file": "src/main/jniLibs/x86_64/libsnes9x2010_libretro_android.so"
+    },
+    {
+      "core": "picodrive",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/picodrive_libretro_android.so.zip",
+      "archive_sha256": "c6bd564904927b421bc6b0a7cf2f06b0f26cdb49b00d9cfbe097c1ffba87b8fd",
+      "sha256": "c1cc15edda64c4a98696cd678117f989029db93ed57a53a583791524c6041cf8",
+      "bytes": 1628256,
+      "file": "src/main/jniLibs/armeabi-v7a/libpicodrive_libretro_android.so"
+    },
+    {
+      "core": "picodrive",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/picodrive_libretro_android.so.zip",
+      "archive_sha256": "c461757206d2e7b3dcdc8235f1c68a48b8057fcbef3e428054633ffdb9df9252",
+      "sha256": "92d28b94fd9381a9dea670e57d58a0f3252a99d0ffde8d310add41f81f90a4fd",
+      "bytes": 1621480,
+      "file": "src/main/jniLibs/arm64-v8a/libpicodrive_libretro_android.so"
+    },
+    {
+      "core": "picodrive",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/picodrive_libretro_android.so.zip",
+      "archive_sha256": "b291397251a1605b9f71b5734a45b41ceeb0d616234c2c65901a976e56599272",
+      "sha256": "eae3fd61842cfa9d1edede2a2e7b1a05226c66b12b6984f45af9732182afc3fd",
+      "bytes": 1509152,
+      "file": "src/main/jniLibs/x86/libpicodrive_libretro_android.so"
+    },
+    {
+      "core": "picodrive",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/picodrive_libretro_android.so.zip",
+      "archive_sha256": "655a1cebf61f872c203b395e085ef1334ae166826c450981af16cdbf940a083b",
+      "sha256": "204aa87b3644d223986769f826bf9a518d220a2ea9b80b037985ef699daf195c",
+      "bytes": 1646016,
+      "file": "src/main/jniLibs/x86_64/libpicodrive_libretro_android.so"
+    },
+    {
+      "core": "gearsystem",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/gearsystem_libretro_android.so.zip",
+      "archive_sha256": "0478724d284b8db4c6cd63190f9b4c5e2208d1809789122d09a72df540e3f1d8",
+      "sha256": "ad3027b39fd46485451a322c1c776b559a5140550a872a3d02b911738f9d941c",
+      "bytes": 531656,
+      "file": "src/main/jniLibs/armeabi-v7a/libgearsystem_libretro_android.so"
+    },
+    {
+      "core": "gearsystem",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/gearsystem_libretro_android.so.zip",
+      "archive_sha256": "bbf24a99c6fa76d3474f6e8ddde44c3985a5f52c551f3913f61e33975f9bd46d",
+      "sha256": "2c9bfb260e7042bd1eae75441f4c1815e13d47a2fb017f35ba909ed1775c81c2",
+      "bytes": 874728,
+      "file": "src/main/jniLibs/arm64-v8a/libgearsystem_libretro_android.so"
+    },
+    {
+      "core": "gearsystem",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/gearsystem_libretro_android.so.zip",
+      "archive_sha256": "94d0036f1bd7dbc50c757ff772d119ed9ca3675e49cb4782df79a1bd40346705",
+      "sha256": "6d7fcff835e8f1231f86aecf547e7d66048526705a4d11cf43f1f64f2683d00d",
+      "bytes": 829976,
+      "file": "src/main/jniLibs/x86/libgearsystem_libretro_android.so"
+    },
+    {
+      "core": "gearsystem",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/gearsystem_libretro_android.so.zip",
+      "archive_sha256": "3e5d7c61e80ce09d98909fde8ad504b1fe75da004d38c50746761c4473f8f506",
+      "sha256": "f1bd3fc139b16aa07111bb0ce4dd596edc483c75cee36f42889a5d69cd716171",
+      "bytes": 885728,
+      "file": "src/main/jniLibs/x86_64/libgearsystem_libretro_android.so"
+    },
+    {
+      "core": "sameboy",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/sameboy_libretro_android.so.zip",
+      "archive_sha256": "b3ca0f4c1b1b60aa3c1a3f243dec2fe1f44398779e4f6a5b911488c13f22d39c",
+      "sha256": "2588c7fae664b8c89f5d4a7622fc1ecea3de58a61ea90cf0863e6c62d06401ce",
+      "bytes": 198288,
+      "file": "src/main/jniLibs/armeabi-v7a/libsameboy_libretro_android.so"
+    },
+    {
+      "core": "sameboy",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/sameboy_libretro_android.so.zip",
+      "archive_sha256": "cc2f2c207e75a4db26f4c8c903c6ddb33d80971ba6db73efaf7ca42d737e74a7",
+      "sha256": "a0c2b1dfe2b077d235f5d0d633e5e12951f930740f868594637fd604f299d88a",
+      "bytes": 307648,
+      "file": "src/main/jniLibs/arm64-v8a/libsameboy_libretro_android.so"
+    },
+    {
+      "core": "sameboy",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/sameboy_libretro_android.so.zip",
+      "archive_sha256": "324253f3dc954eb4b7c2597103283ce313b4968d8aa372c42013b5628fc6ea0c",
+      "sha256": "c41f4dae56f2a59b91a9d83f0b6071b1b7b9001b19b163dda94091291eb3c207",
+      "bytes": 282272,
+      "file": "src/main/jniLibs/x86/libsameboy_libretro_android.so"
+    },
+    {
+      "core": "sameboy",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/sameboy_libretro_android.so.zip",
+      "archive_sha256": "e16029fb05dc82e63ee55355312945ab02344edfa9dc20a18c7a814acec13f8f",
+      "sha256": "ab9aed4bbb0054e21c71cd764b35e819165b65402a31c608a0b23770a92b173a",
+      "bytes": 320480,
+      "file": "src/main/jniLibs/x86_64/libsameboy_libretro_android.so"
+    },
+    {
+      "core": "gpsp",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/gpsp_libretro_android.so.zip",
+      "archive_sha256": "841b6c50b4dfc16be76d299811c8dd7420c97ac1bf9e5dad798a4049449f2f12",
+      "sha256": "1909ad5f2b053dba120d77fae58352f1ecdb066dfdcdd20d4f565bb1fd52d376",
+      "bytes": 591020,
+      "file": "src/main/jniLibs/armeabi-v7a/libgpsp_libretro_android.so"
+    },
+    {
+      "core": "gpsp",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/gpsp_libretro_android.so.zip",
+      "archive_sha256": "75b710431bd22b7d04f421f22b12cf9878fd50ab9d439a8551c80ec5db1bdd09",
+      "sha256": "8b496b64f388b48abe7e8a5d8dc942574d0c67bafd431d2890711021a7dfc432",
+      "bytes": 706128,
+      "file": "src/main/jniLibs/arm64-v8a/libgpsp_libretro_android.so"
+    },
+    {
+      "core": "gpsp",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/gpsp_libretro_android.so.zip",
+      "archive_sha256": "41ef260f36057139647b694338c533ba180528c6681b0e416a3d959447480a79",
+      "sha256": "bcc119f3a3e82beb51d672b64d8586f39ed09a2d9ffc2a16eb4f21d1a4a3c445",
+      "bytes": 654196,
+      "file": "src/main/jniLibs/x86/libgpsp_libretro_android.so"
+    },
+    {
+      "core": "gpsp",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/gpsp_libretro_android.so.zip",
+      "archive_sha256": "1cae24dc118987fb3342048067d867d52a750c93032df5ef3fe0fb8575b6d5f2",
+      "sha256": "da38c8eeffdc7b92a722bb51010ab4d22313da07246a083c66ebedea798db5a9",
+      "bytes": 657584,
+      "file": "src/main/jniLibs/x86_64/libgpsp_libretro_android.so"
+    },
+    {
+      "core": "vba_next",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/vba_next_libretro_android.so.zip",
+      "archive_sha256": "4468b3a4cbea2c2f803609e19439f2aa545b593bb488e74dc77d341a3dda8f70",
+      "sha256": "baf625dd51a982a255811bbd37601ec66aa2f57d3273cf600297245c18f94643",
+      "bytes": 396492,
+      "file": "src/main/jniLibs/armeabi-v7a/libvba_next_libretro_android.so"
+    },
+    {
+      "core": "vba_next",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/vba_next_libretro_android.so.zip",
+      "archive_sha256": "30affa11c1bff1ac26c0eac1284309e75d48a5d1558215727b407daa80a9ab27",
+      "sha256": "2d015f36e3f1041b729713cdbb7b786fff93e5f58eb583a049ccc2a7a2f8eb6b",
+      "bytes": 765976,
+      "file": "src/main/jniLibs/arm64-v8a/libvba_next_libretro_android.so"
+    },
+    {
+      "core": "vba_next",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/vba_next_libretro_android.so.zip",
+      "archive_sha256": "88242dd24a7f865da27ddaab2907d12b4cd7c187b395e7f8ce0f560af7e695a7",
+      "sha256": "9ddcb23226a25174889041996d49e1858c53df4aa9bcb1dde8176ff0ef511605",
+      "bytes": 650860,
+      "file": "src/main/jniLibs/x86/libvba_next_libretro_android.so"
+    },
+    {
+      "core": "vba_next",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/vba_next_libretro_android.so.zip",
+      "archive_sha256": "6fe940db56addb3326ccf65916a35fb4b1564764b77f97698c57f8f85e04ccbe",
+      "sha256": "ae016588175f9b80d88c66c7cc0ac986ed73b059b81e8d7d83b7189ce36b5b46",
+      "bytes": 744200,
+      "file": "src/main/jniLibs/x86_64/libvba_next_libretro_android.so"
+    },
+    {
+      "core": "parallel_n64",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/parallel_n64_libretro_android.so.zip",
+      "archive_sha256": "d38b0b5f78bc2a856aa65ccbea32ce8a116f63f93ae2d026ced05a2c3e635717",
+      "sha256": "01322b5c99e3c8e6b7f1b8ffab020c5b562a1b7fc0984ec0e1924028b1ff4890",
+      "bytes": 6291272,
+      "file": "src/main/jniLibs/armeabi-v7a/libparallel_n64_libretro_android.so"
+    },
+    {
+      "core": "parallel_n64",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/parallel_n64_libretro_android.so.zip",
+      "archive_sha256": "5c4afa96db62e9451aace88470a79548fc1660fdef942f0d3613e6d4515d11aa",
+      "sha256": "f60ba4989486a3e24c76050f7d703e1c710ca7d1bef4a6c735c3b79323fc32d7",
+      "bytes": 6328072,
+      "file": "src/main/jniLibs/arm64-v8a/libparallel_n64_libretro_android.so"
+    },
+    {
+      "core": "parallel_n64",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/parallel_n64_libretro_android.so.zip",
+      "archive_sha256": "2bb5b72b5ebe0a8bc8de8d981dd6dcc28111b373095ac9a2ddf6b2b2d47343fb",
+      "sha256": "ca80a474e4c9276793b3374c41834367eb2ae928b38f3fff94dc1b7ca865da07",
+      "bytes": 6129412,
+      "file": "src/main/jniLibs/x86/libparallel_n64_libretro_android.so"
+    },
+    {
+      "core": "parallel_n64",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/parallel_n64_libretro_android.so.zip",
+      "archive_sha256": "c54bc7cf13d96f3548e0a82d6d3cbaa6faf08e2dae9d3bac2b78f0ef30199f49",
+      "sha256": "5e88bbd805278fd0d5d6d9d91b9b6fc4d43c4ec8f1763b778c9f6194cebef50d",
+      "bytes": 6373632,
+      "file": "src/main/jniLibs/x86_64/libparallel_n64_libretro_android.so"
+    },
+    {
+      "core": "swanstation",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/swanstation_libretro_android.so.zip",
+      "archive_sha256": "e8d9196fbb46b009fd25bdeebb6f37396d97b90bd248735d453cf4094555954c",
+      "sha256": "8324ac748ac8d68303ccd6d2735ba39ab8255207869f3a0035da3fa71479058e",
+      "bytes": 5211224,
+      "file": "src/main/jniLibs/armeabi-v7a/libswanstation_libretro_android.so"
+    },
+    {
+      "core": "swanstation",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/swanstation_libretro_android.so.zip",
+      "archive_sha256": "f9f616edcff28ecc233a5daaf1a8bd52bb44307d2ae3f415180d7066f3369a32",
+      "sha256": "71b0f8dc87f75848018b69a4dc5bdf03bc641caa64e190eccce767785f3e2842",
+      "bytes": 5699792,
+      "file": "src/main/jniLibs/arm64-v8a/libswanstation_libretro_android.so"
+    },
+    {
+      "core": "swanstation",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/swanstation_libretro_android.so.zip",
+      "archive_sha256": "8af6962759a62047e8c67c442787a5fedffc1d946e041fcfd3e667ec41718a77",
+      "sha256": "427da1de95163cafc1fb731b39097359224781887fefad4309a2c0e4e1bfe898",
+      "bytes": 5243584,
+      "file": "src/main/jniLibs/x86/libswanstation_libretro_android.so"
+    },
+    {
+      "core": "swanstation",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/swanstation_libretro_android.so.zip",
+      "archive_sha256": "1432cbf8035bdf85c9da8d71e41e2809ed60e93b0e97df42114b6e93600b0b65",
+      "sha256": "1d119606ed9b9123eb2ad1ac34683c0a0fd2638b785b7cd6a214836b1236b67a",
+      "bytes": 5791824,
+      "file": "src/main/jniLibs/x86_64/libswanstation_libretro_android.so"
+    },
+    {
+      "core": "fbalpha2012",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/fbalpha2012_libretro_android.so.zip",
+      "archive_sha256": "8003ca087cea5fa71058a851ef6a8f2b9fa9e39acbcc04b790b5063592e40389",
+      "sha256": "749e6f6079e03cb26736e7270f2badbcfd9e39d4dfaaa1311a010feeb9a33990",
+      "bytes": 13873704,
+      "file": "src/main/jniLibs/armeabi-v7a/libfbalpha2012_libretro_android.so"
+    },
+    {
+      "core": "fbalpha2012",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/fbalpha2012_libretro_android.so.zip",
+      "archive_sha256": "a475730d564864ca02aba3014f1fffaa0207a04b01e168f74529f8d813e402cf",
+      "sha256": "657036bd812a9179fd6b7af8759303fcca0f023f32b9b7fccc8419b46f967962",
+      "bytes": 21457976,
+      "file": "src/main/jniLibs/arm64-v8a/libfbalpha2012_libretro_android.so"
+    },
+    {
+      "core": "fbalpha2012",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/fbalpha2012_libretro_android.so.zip",
+      "archive_sha256": "6e0dfeffee869f97ace2572fed1d14db558129b8029a594374b7765c1f2063aa",
+      "sha256": "08a0f1a886c5333c905b4c21b3df13a68abde46fc7b4a124933db9edd6325687",
+      "bytes": 18293164,
+      "file": "src/main/jniLibs/x86/libfbalpha2012_libretro_android.so"
+    },
+    {
+      "core": "fbalpha2012",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/fbalpha2012_libretro_android.so.zip",
+      "archive_sha256": "703ef80cd7f3891baa7fdf79b0d98b598443deb0641482e51255dc088da0dfec",
+      "sha256": "107aa81c26bd9452cb2ac2df651ec1676094559fcb7c9caa1353b340aa684b37",
+      "bytes": 21330344,
+      "file": "src/main/jniLibs/x86_64/libfbalpha2012_libretro_android.so"
+    },
+    {
+      "core": "mame2000",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/mame2000_libretro_android.so.zip",
+      "archive_sha256": "a467c72e7330c89bf39f0fd7c45af6c2b0b2dfcaa16299d69f23dc398079887f",
+      "sha256": "17491e806a01b66a0fd5a7dd865199f5c9c92e64f126df20a7d21183178f76d6",
+      "bytes": 8079032,
+      "file": "src/main/jniLibs/armeabi-v7a/libmame2000_libretro_android.so"
+    },
+    {
+      "core": "mame2000",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/mame2000_libretro_android.so.zip",
+      "archive_sha256": "c5f40053dfa1b8de82f608c23a7976a05fe66d548d7230d39ed63602d1db5375",
+      "sha256": "f7f04835912a2ada0f5de22e70da43bb50fef0e79d14462f9f877ca843bd5dce",
+      "bytes": 14583920,
+      "file": "src/main/jniLibs/arm64-v8a/libmame2000_libretro_android.so"
+    },
+    {
+      "core": "mame2000",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/mame2000_libretro_android.so.zip",
+      "archive_sha256": "5da642cc5c4e8215c2da97f76781a0c354bba7e671ffd20e9e7e5fe9ffbd91e0",
+      "sha256": "707d88b467ea853c690bd049087706617d79e54ff57aa67312cdde9e74400a67",
+      "bytes": 11031636,
+      "file": "src/main/jniLibs/x86/libmame2000_libretro_android.so"
+    },
+    {
+      "core": "mame2000",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/mame2000_libretro_android.so.zip",
+      "archive_sha256": "627544c0e19145d6304637723d5d882b3d7f3f02e2fd7fda008f8322c9e62979",
+      "sha256": "068e77531e7d52bccee4ac0247eb09f83b610cec97287044a580752c876051b3",
+      "bytes": 14635888,
+      "file": "src/main/jniLibs/x86_64/libmame2000_libretro_android.so"
+    },
+    {
+      "core": "mame2003",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/mame2003_libretro_android.so.zip",
+      "archive_sha256": "8e0b319563068695d68f938a76cb68cc6e3345e0d573ea956551f8190a711530",
+      "sha256": "4ca2cd26019d565c4f964adae484ceb929085d2c1b51452fc3b7af80571b2591",
+      "bytes": 22772436,
+      "file": "src/main/jniLibs/armeabi-v7a/libmame2003_libretro_android.so"
+    },
+    {
+      "core": "mame2003",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/mame2003_libretro_android.so.zip",
+      "archive_sha256": "b45a41bac9a9ed6981472f8a452f961a9e7993a4c0cff76532d519ca5e858bfa",
+      "sha256": "c89730f6d56a6fa8a91183a275a784570498eeefff859a77c7f840ded7577b29",
+      "bytes": 36347992,
+      "file": "src/main/jniLibs/arm64-v8a/libmame2003_libretro_android.so"
+    },
+    {
+      "core": "mame2003",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/mame2003_libretro_android.so.zip",
+      "archive_sha256": "232fbaa3f492fb358a6915af84ee35ca8370d7be785ec1a04a7f0eabe02bcff9",
+      "sha256": "faec42fefaa6c0136e78eb15e856dd25da0f2b8def6764cf78c8615e841030d9",
+      "bytes": 28341516,
+      "file": "src/main/jniLibs/x86/libmame2003_libretro_android.so"
+    },
+    {
+      "core": "mame2003",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/mame2003_libretro_android.so.zip",
+      "archive_sha256": "7d5d0f354f661dfbaaf1dfa0a4c218c98b34d1c023df50e5d918d3a25bea3324",
+      "sha256": "8ea816f6c0a57082f79ceaca34e4ec5d1798743b49b647c216bed36d115ec4fb",
+      "bytes": 36183136,
+      "file": "src/main/jniLibs/x86_64/libmame2003_libretro_android.so"
+    },
+    {
+      "core": "mednafen_pce",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/mednafen_pce_libretro_android.so.zip",
+      "archive_sha256": "40872ffbe78d4cdc7d736fba1885a15e02556efc3d153e50639914fd99cb40f9",
+      "sha256": "c5165ae91aa163162ba0ec33175dcd4eecbbeeca9847d1c4103bc122c8f2b325",
+      "bytes": 2164704,
+      "file": "src/main/jniLibs/armeabi-v7a/libmednafen_pce_libretro_android.so"
+    },
+    {
+      "core": "mednafen_pce",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/mednafen_pce_libretro_android.so.zip",
+      "archive_sha256": "966b701528797f07d94e14f4940c739f7128eac26738ab3a40cd2fdd3230481b",
+      "sha256": "58f773d7c3d9cd4bc678151fd91718381699832958a16e77eb0412f2a5d68e18",
+      "bytes": 4301952,
+      "file": "src/main/jniLibs/arm64-v8a/libmednafen_pce_libretro_android.so"
+    },
+    {
+      "core": "mednafen_pce",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/mednafen_pce_libretro_android.so.zip",
+      "archive_sha256": "b1773b3de5312ed058f996ed4a7b18ff15b58a09ae64950cdf095b70400276b2",
+      "sha256": "aa79aaca46c8ea41a904b22b37419c67285e813216fd31c1ad64be04e4b46ae6",
+      "bytes": 2641988,
+      "file": "src/main/jniLibs/x86/libmednafen_pce_libretro_android.so"
+    },
+    {
+      "core": "mednafen_pce",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/mednafen_pce_libretro_android.so.zip",
+      "archive_sha256": "efa4fc888827fdb8ea788fbc0a5033ac37437336a7c2cc228da1f4190434e4b9",
+      "sha256": "6cf1413d394d5e64ee31c39ceef0661e11cafa1e824ff988c09e4b049649cae7",
+      "bytes": 4394808,
+      "file": "src/main/jniLibs/x86_64/libmednafen_pce_libretro_android.so"
+    },
+    {
+      "core": "mednafen_lynx",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/mednafen_lynx_libretro_android.so.zip",
+      "archive_sha256": "007dc8cf72a3adb6905d1a01477d0ec8f7cd2a4cb2205196bd9895b5c4a3a978",
+      "sha256": "2ef2dc14190f4af7f81ca7d80dffc5aedba559a73a8ac04345edbef9a866331d",
+      "bytes": 212660,
+      "file": "src/main/jniLibs/armeabi-v7a/libmednafen_lynx_libretro_android.so"
+    },
+    {
+      "core": "mednafen_lynx",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/mednafen_lynx_libretro_android.so.zip",
+      "archive_sha256": "d319b871954c4ee19058e75f92dd5c936696050fa85e439c5954288257b53d89",
+      "sha256": "26163656e3ebdad5f634057febf8d6a822a37f2bbead250a4a7a34726a438503",
+      "bytes": 340408,
+      "file": "src/main/jniLibs/arm64-v8a/libmednafen_lynx_libretro_android.so"
+    },
+    {
+      "core": "mednafen_lynx",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/mednafen_lynx_libretro_android.so.zip",
+      "archive_sha256": "4e0ed2b49758b153cc0ca507c8e9fe85b30f3cd7f990a4c13506b44feeeee096",
+      "sha256": "a5a693783f9825eeef67ae328bf9891d63aaa253503d09cd739ee7a701ef29be",
+      "bytes": 309696,
+      "file": "src/main/jniLibs/x86/libmednafen_lynx_libretro_android.so"
+    },
+    {
+      "core": "mednafen_lynx",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/mednafen_lynx_libretro_android.so.zip",
+      "archive_sha256": "afcbfe12ea8872cf447f646525f2abc5d64fd211771db9be3d68fbb730ca5672",
+      "sha256": "0d5d0a3a2a19898bf42a7a7a6fbdbfe77354d5c334900daa2e06b917c6edd657",
+      "bytes": 341008,
+      "file": "src/main/jniLibs/x86_64/libmednafen_lynx_libretro_android.so"
+    },
+    {
+      "core": "race",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/race_libretro_android.so.zip",
+      "archive_sha256": "93e5566df7a5c2606330212cd2f30e9efe5feb9bb2db81beb2b9319169abc364",
+      "sha256": "8cd31e76845b423d15cc8bbba9d75a4026deb52091701dae7abceeafbfdd332d",
+      "bytes": 184408,
+      "file": "src/main/jniLibs/armeabi-v7a/librace_libretro_android.so"
+    },
+    {
+      "core": "race",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/race_libretro_android.so.zip",
+      "archive_sha256": "f9bdad46aeca19dce4618030136f7a3f50180e749e8e4f1f691bb9ab9f8eccb1",
+      "sha256": "403abaf3b7a558074b6ce49597881de750456c8a2c9848a50765519a7f8d9831",
+      "bytes": 401136,
+      "file": "src/main/jniLibs/arm64-v8a/librace_libretro_android.so"
+    },
+    {
+      "core": "race",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/race_libretro_android.so.zip",
+      "archive_sha256": "5aa8e4859a16682def839ddfbde0b74aec7435eee496f044e8a3d18d0ab5b506",
+      "sha256": "80f51bfa89f59689791d74baeacde25fa49b9d4bda9438ae2433aae994dde1a6",
+      "bytes": 298184,
+      "file": "src/main/jniLibs/x86/librace_libretro_android.so"
+    },
+    {
+      "core": "race",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/race_libretro_android.so.zip",
+      "archive_sha256": "90ffd4efa4269410a85617ef75b74e0b21de2b439b5081e63649351282267a28",
+      "sha256": "39a06b3bf2e1db8e7ea355b9cdb14843c2c1c8fb46caebc8f323ee9eccb4c04a",
+      "bytes": 398072,
+      "file": "src/main/jniLibs/x86_64/librace_libretro_android.so"
+    },
+    {
+      "core": "mesen",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/mesen_libretro_android.so.zip",
+      "archive_sha256": "795ee953beeff58f7e537bd9101294efd97f595b9f0075e13cf4f95b5154854a",
+      "sha256": "d6ab647268ddd5a7faf93d8fa99eeb6fde03b84e2a6298fe03da3a5cf009a0d0",
+      "bytes": 1823932,
+      "file": "src/main/jniLibs/armeabi-v7a/libmesen_libretro_android.so"
+    },
+    {
+      "core": "mesen",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/mesen_libretro_android.so.zip",
+      "archive_sha256": "d4cc53a4961662a9a8f46a8dd35077a5955112c5a0be6e7dddfdf6a5c5293226",
+      "sha256": "b98359389dfbca0571b4e5de4526cf7711f2477cef72b7afb683e22bf1fdc460",
+      "bytes": 3546464,
+      "file": "src/main/jniLibs/arm64-v8a/libmesen_libretro_android.so"
+    },
+    {
+      "core": "mesen",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/mesen_libretro_android.so.zip",
+      "archive_sha256": "56ecdfbeca44774bc645cadcd06433bc28acec67390bf7a1878663884aad1a71",
+      "sha256": "c39bd8029104846cf5517f079d7cc7e9c033b154d5bbc6cc31c883ff7b6ce3d8",
+      "bytes": 3457680,
+      "file": "src/main/jniLibs/x86/libmesen_libretro_android.so"
+    },
+    {
+      "core": "mesen",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/mesen_libretro_android.so.zip",
+      "archive_sha256": "72a00887c456da234617db3912efa7a6f5c0e4a8c6048bbaa90019af87e46b2a",
+      "sha256": "67382a8cf70d0fa61551b5fba628eeee5e29115c7a23721edf6d9f474a606b63",
+      "bytes": 3805016,
+      "file": "src/main/jniLibs/x86_64/libmesen_libretro_android.so"
+    },
+    {
+      "core": "mesen-s",
+      "abi": "armeabi-v7a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/armeabi-v7a/mesen-s_libretro_android.so.zip",
+      "archive_sha256": "4fc15a4c2b3c5896dd6e15d414edb49a54bb9e1827fea87b628c455a6bd98a6a",
+      "sha256": "6452e091881363ae18b7d0dfba3bbbf4b99bc14ae6ae9ad2d7c33ec146e4b497",
+      "bytes": 1137320,
+      "file": "src/main/jniLibs/armeabi-v7a/libmesen-s_libretro_android.so"
+    },
+    {
+      "core": "mesen-s",
+      "abi": "arm64-v8a",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/mesen-s_libretro_android.so.zip",
+      "archive_sha256": "f2e286d117d57d063c50fbd3e387518767ccf7db218a505282fef0c9435a42bb",
+      "sha256": "0d27fdbd0639725c933d66bfc9affc91f9c732c61dfceed96e7aa997bd48304b",
+      "bytes": 2217336,
+      "file": "src/main/jniLibs/arm64-v8a/libmesen-s_libretro_android.so"
+    },
+    {
+      "core": "mesen-s",
+      "abi": "x86",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86/mesen-s_libretro_android.so.zip",
+      "archive_sha256": "bd864eb01d83d1f365965ff346e1750bccd0e532652a2e77fa1d30c74b5c597e",
+      "sha256": "755772880499549283e04af0c9a65cc6468682d95f319852d470b5ba9fa1b288",
+      "bytes": 2421648,
+      "file": "src/main/jniLibs/x86/libmesen-s_libretro_android.so"
+    },
+    {
+      "core": "mesen-s",
+      "abi": "x86_64",
+      "url": "https://buildbot.libretro.com/nightly/android/latest/x86_64/mesen-s_libretro_android.so.zip",
+      "archive_sha256": "62bc14d3b4da72db937578713f993bea31185d986bc7670c452b707aaccdb56b",
+      "sha256": "df14baf51a7211e135b5d6ea60b3ee964091b3aaec35fbd39c6f7c04b98d632f",
+      "bytes": 2403192,
+      "file": "src/main/jniLibs/x86_64/libmesen-s_libretro_android.so"
+    }
+  ]
+}

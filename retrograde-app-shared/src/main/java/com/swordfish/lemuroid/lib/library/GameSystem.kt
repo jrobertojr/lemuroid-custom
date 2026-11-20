@@ -19,6 +19,7 @@
 
 package com.swordfish.lemuroid.lib.library
 
+import android.os.Build
 import androidx.annotation.StringRes
 import com.swordfish.lemuroid.lib.R
 import com.swordfish.lemuroid.lib.core.CoreVariable
@@ -717,10 +718,17 @@ data class GameSystem(
                                     ),
                                 ),
                             defaultSettings =
-                                listOf(
-                                    CoreVariable("mupen64plus-43screensize", "320x240"),
-                                    CoreVariable("mupen64plus-FrameDuping", "True"),
-                                ),
+                                buildList {
+                                    add(CoreVariable("mupen64plus-43screensize", "320x240"))
+                                    add(CoreVariable("mupen64plus-FrameDuping", "True"))
+                                    if (Build.SUPPORTED_64_BIT_ABIS.isEmpty()) {
+                                        add(CoreVariable("mupen64plus-cpucore", "cached_interpreter"))
+                                        add(CoreVariable("mupen64plus-EnableFBEmulation", "False"))
+                                        add(CoreVariable("mupen64plus-EnableCopyColorToRDRAM", "Off"))
+                                        add(CoreVariable("mupen64plus-EnableCopyDepthToRDRAM", "Off"))
+                                        add(CoreVariable("mupen64plus-ThreadedRenderer", "False"))
+                                    }
+                                },
                             controllerConfigs =
                                 hashMapOf(
                                     0 to arrayListOf(ControllerConfigs.N64),
@@ -955,6 +963,22 @@ data class GameSystem(
                                                 "left/right",
                                                 R.string.value_desmume_screens_layout_leftright,
                                             ),
+                                            ExposedSetting.Value(
+                                                "top only",
+                                                R.string.value_desmume_screens_layout_toponly,
+                                            ),
+                                            ExposedSetting.Value(
+                                                "bottom only",
+                                                R.string.value_desmume_screens_layout_bottomonly,
+                                            ),
+                                            ExposedSetting.Value(
+                                                "hybrid/top",
+                                                R.string.value_desmume_screens_layout_hybridtop,
+                                            ),
+                                            ExposedSetting.Value(
+                                                "hybrid/bottom",
+                                                R.string.value_desmume_screens_layout_hybridbottom,
+                                            ),
                                         ),
                                     ),
                                     ExposedSetting(
@@ -1045,6 +1069,38 @@ data class GameSystem(
                                 ),
                             statesVersion = 2,
                             supportsMicrophone = true,
+                        ),
+                        SystemCoreConfig(
+                            CoreID.NOODS,
+                            exposedSettings = listOf(
+                                ExposedSetting(
+                                    "noods_screenLayout",
+                                    R.string.setting_melonds_screen_layout,
+                                    arrayListOf(
+                                        ExposedSetting.Value("top-bottom", R.string.value_melonds_screen_layout_topbottom),
+                                        ExposedSetting.Value("left-right", R.string.value_melonds_screen_layout_leftright),
+                                        ExposedSetting.Value("top", R.string.value_melonds_screen_layout_toponly),
+                                        ExposedSetting.Value("bottom", R.string.value_melonds_screen_layout_bottomonly),
+                                    ),
+                                ),
+                            ),
+                            exposedAdvancedSettings = listOf(
+                                ExposedSetting("noods_arm7Hle", R.string.setting_noods_arm7_hle),
+                                ExposedSetting("noods_highRes3D", R.string.setting_noods_high_res),
+                                ExposedSetting("noods_threaded3D", R.string.setting_noods_threads),
+                            ),
+                            defaultSettings = listOf(
+                                CoreVariable("noods_directBoot", "enabled"),
+                                CoreVariable("noods_fpsLimiter", "disabled"),
+                                CoreVariable("noods_frameskip", "disabled"),
+                                CoreVariable("noods_romInRam", "disabled"),
+                                CoreVariable("noods_emulateAudio", "enabled"),
+                                CoreVariable("noods_audio16Bit", "enabled"),
+                                CoreVariable("noods_touchMode", "Auto"),
+                            ),
+                            controllerConfigs = hashMapOf(0 to arrayListOf(ControllerConfigs.MELONDS)),
+                            statesVersion = 3,
+                            skipDuplicateFrames = false,
                         ),
                     ),
                     uniqueExtensions = listOf("nds"),
@@ -1258,6 +1314,7 @@ data class GameSystem(
                     ),
                     fastForwardSupport = false,
                     uniqueExtensions = listOf("dosz"),
+                    supportedExtensions = listOf("dosz", "zip"),
                     scanOptions =
                         ScanOptions(
                             scanByFilename = false,
@@ -1323,7 +1380,112 @@ data class GameSystem(
                     uniqueExtensions = listOf("3ds"),
                     hasTouchScreen = true,
                 ),
-            )
+            ).map { system ->
+                if (system.id != SystemID.NDS) {
+                    system
+                } else {
+                    val legacy = system.systemCoreConfigs.first { it.coreID == CoreID.DESMUME }
+                    val desmume2015 = legacy.copy(
+                        coreID = CoreID.DESMUME_2015,
+                        exposedSettings = legacy.exposedSettings.map {
+                            it.copy(key = it.key.replaceFirst("desmume_", "desmume2015_"))
+                        },
+                        defaultSettings = legacy.defaultSettings.map {
+                            CoreVariable(it.key.replaceFirst("desmume_", "desmume2015_"), it.value)
+                        },
+                        statesVersion = 1,
+                    )
+                    val dsperate = SystemCoreConfig(
+                        coreID = CoreID.DSPERATE,
+                        controllerConfigs = hashMapOf(0 to arrayListOf(ControllerConfigs.MELONDS)),
+                        exposedSettings = listOf(
+                            ExposedSetting(
+                                "dsperate_screen_layout",
+                                R.string.setting_melonds_screen_layout,
+                                arrayListOf(
+                                    ExposedSetting.Value("top-bottom", R.string.value_melonds_screen_layout_topbottom),
+                                    ExposedSetting.Value("left-right", R.string.value_melonds_screen_layout_leftright),
+                                    ExposedSetting.Value("top", R.string.value_melonds_screen_layout_toponly),
+                                    ExposedSetting.Value("bottom", R.string.value_melonds_screen_layout_bottomonly),
+                                ),
+                            ),
+                        ),
+                        statesVersion = 1,
+                        skipDuplicateFrames = false,
+                    )
+                    system.copy(systemCoreConfigs = system.systemCoreConfigs + desmume2015 + dsperate)
+                }
+            }.map(::withAlternativeCores)
+
+        /** Additional cores never replace the baseline or inherit options from another emulator. */
+        private fun withAlternativeCores(system: GameSystem): GameSystem {
+            val alternatives = when (system.id) {
+                SystemID.ATARI2600 -> listOf(CoreID.STELLA_2014)
+                SystemID.NES -> listOf(CoreID.QUICKNES, CoreID.NESTOPIA, CoreID.MESEN)
+                SystemID.SNES -> listOf(CoreID.SNES9X_2005_PLUS, CoreID.SNES9X_2010, CoreID.MESEN_S)
+                SystemID.SMS -> listOf(CoreID.PICODRIVE, CoreID.GEARSYSTEM)
+                SystemID.GENESIS, SystemID.SEGACD -> listOf(CoreID.PICODRIVE)
+                SystemID.GG -> listOf(CoreID.GEARSYSTEM)
+                SystemID.GB, SystemID.GBC -> listOf(CoreID.SAMEBOY)
+                SystemID.GBA -> listOf(CoreID.GPSP, CoreID.VBA_NEXT)
+                SystemID.N64 -> listOf(CoreID.PARALLEL_N64)
+                SystemID.PSX -> listOf(CoreID.SWANSTATION)
+                SystemID.FBNEO -> listOf(CoreID.FBALPHA_2012, CoreID.MAME2003PLUS, CoreID.MAME_2000, CoreID.MAME_2003)
+                SystemID.MAME2003PLUS -> listOf(CoreID.MAME_2000, CoreID.MAME_2003, CoreID.FBALPHA_2012, CoreID.FBNEO)
+                SystemID.LYNX -> listOf(CoreID.MEDNAFEN_LYNX)
+                SystemID.PC_ENGINE -> listOf(CoreID.MEDNAFEN_PCE)
+                SystemID.NGP, SystemID.NGC -> listOf(CoreID.RACE)
+                else -> emptyList()
+            }
+            val baseline = system.systemCoreConfigs.first()
+            val additional = alternatives.map { coreID ->
+                SystemCoreConfig(
+                    coreID = coreID,
+                    controllerConfigs = if (coreID == CoreID.SWANSTATION) {
+                        HashMap(baseline.controllerConfigs.mapValues { (_, controllers) ->
+                            ArrayList(controllers.map { controller ->
+                                if (controller.name == "dualshock") {
+                                    controller.copy(libretroId = 261, libretroDescriptor = "Analog Controller (DualShock)")
+                                } else {
+                                    controller.copy(libretroId = 1, libretroDescriptor = "Digital Controller (Gamepad)")
+                                }
+                            })
+                        })
+                    } else baseline.controllerConfigs,
+                    statesVersion = 1,
+                    statesSupported = system.id != SystemID.FBNEO && system.id != SystemID.MAME2003PLUS,
+                    supportsLibretroVFS = coreID == CoreID.SWANSTATION,
+                    requiredBIOSFiles = when (coreID) {
+                        CoreID.SWANSTATION -> listOf("scph5501.bin")
+                        CoreID.MEDNAFEN_LYNX -> listOf("lynxboot.img")
+                        else -> emptyList()
+                    },
+                    regionalBIOSFiles = if (coreID == CoreID.PICODRIVE && system.id == SystemID.SEGACD) {
+                        mapOf("Japan" to "bios_CD_J.bin", "USA" to "bios_CD_U.bin", "Europe" to "bios_CD_E.bin")
+                    } else emptyMap(),
+                    defaultSettings = when (coreID) {
+                        CoreID.PICODRIVE -> if (system.id == SystemID.GENESIS || system.id == SystemID.SEGACD) {
+                            listOf(
+                                CoreVariable("picodrive_input1", "6 button pad"),
+                                CoreVariable("picodrive_input2", "6 button pad"),
+                            )
+                        } else emptyList()
+                        CoreID.GPSP -> listOf(CoreVariable("gpsp_bios", "auto"), CoreVariable("gpsp_drc", "enabled"))
+                        CoreID.SWANSTATION -> listOf(
+                            CoreVariable("swanstation_GPU_Renderer", "Software"),
+                            CoreVariable("swanstation_GPU_ResolutionScale", "1"),
+                            CoreVariable("swanstation_GPU_PGXPEnable", "false"),
+                        )
+                        CoreID.PARALLEL_N64 -> listOf(
+                            CoreVariable("parallel-n64-gfxplugin", "rice"),
+                            CoreVariable("parallel-n64-cpucore", "dynamic_recompiler"),
+                        )
+                        else -> emptyList()
+                    },
+                )
+            }
+            return system.copy(systemCoreConfigs = system.systemCoreConfigs + additional)
+        }
 
         private val byIdCache by lazy { mapOf(*SYSTEMS.map { it.id.dbname to it }.toTypedArray()) }
         private val byExtensionCache by lazy {

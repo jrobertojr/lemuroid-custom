@@ -13,6 +13,15 @@ android {
         versionCode = 252
         versionName = "1.17.0" // Always remember to update Cores Tag!
         applicationId = "com.swordfish.lemuroid"
+
+        // Optional device APK: avoid unused native ABIs on storage-limited TVs.
+        providers.gradleProperty("lemuroidAbis").orNull?.let { value ->
+            val requested = value.split(",").map(String::trim).filter(String::isNotEmpty)
+            require(requested.isNotEmpty() && requested.all {
+                it in setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            }) { "lemuroidAbis must contain supported Android ABIs" }
+            ndk { abiFilters.addAll(requested) }
+        }
     }
     flavorDimensions += listOf("opensource", "cores")
 
@@ -129,6 +138,10 @@ dependencies {
     implementation(project(":retrograde-app-shared"))
     implementation(project(":lemuroid-metadata-libretro-db"))
     implementation(project(":lemuroid-touchinput"))
+    implementation(project(":lemuroid-core-noods"))
+    implementation(project(":lemuroid-core-desmume2015"))
+    implementation(project(":lemuroid-core-dsperate"))
+    implementation(project(":lemuroid-core-alternatives"))
 
     "baselineProfile"(project(":baselineprofile"))
     implementation(deps.libs.androidx.profileInstaller)

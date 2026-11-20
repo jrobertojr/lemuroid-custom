@@ -26,6 +26,13 @@
     <string name="settings_category_general">General</string>
     <string name="settings_category_input">Input</string>
     <string name="settings_category_misc">Miscellaneous</string>
+    <string name="settings_title_frontend_theme">Frontend theme</string>
+    <string name="settings_title_performance_profile">Performance mode</string>
+    <string name="settings_description_performance_profile">Quality (default), Balanced, or Max performance (auto-detected)</string>
+    <string name="settings_title_console_bezel_mode">Console side bezels</string>
+    <string name="settings_description_console_bezel_mode">Display console-themed side artwork instead of black bars</string>
+    <string name="settings_title_frontend_sounds">Frontend sound effects</string>
+    <string name="settings_description_frontend_sounds">Play console navigation sounds in custom themes</string>
     <string name="settings_title_enable_autosave">Autosave state</string>
     <string name="settings_description_enable_autosave">Save state when exiting via game menu</string>
     <string name="settings_title_enable_touch_feedback">Vibrate on touch</string>
@@ -246,5 +253,59 @@
     <string name="tilt_configuration_buttons_l1_r1">L1 - R1</string>
     <string name="tilt_configuration_buttons_l2_r2">L2 - R2</string>
     <string name="bios_directory">BIOS directory</string>
+    <string name="settings_title_custom_cache_enabled">Use custom cache folder</string>
+    <string name="settings_description_custom_cache_enabled">Move and store cached ROMs in a custom folder</string>
+    <string name="cache_directory">Cache directory</string>
 
+    <string-array name="pref_key_frontend_theme_values" translatable="false">
+        <item>default</item>
+        <item>locadora</item>
+        <item>netflix</item>
+        <item>console</item>
+        <item>tv</item>
+        <item>retro_80_90</item>
+        <item>rockstar</item>
+        <item>thrash_metal</item>
+        <item>three_d</item>
+    </string-array>
+
+    <string-array name="pref_key_frontend_theme_display_names">
+        <item>Default</item>
+        <item>Video Store (Locadora)</item>
+        <item>Netflix</item>
+        <item>Console</item>
+        <item>Retro TV</item>
+        <item>Retro 80/90</item>
+        <item>Rockstar</item>
+        <item>Thrash Metal</item>
+        <item>3D Objects</item>
+    </string-array>
+
+    <string-array name="pref_key_performance_profile_values" translatable="false">
+        <item>quality</item>
+        <item>balanced</item>
+        <item>performance</item>
+    </string-array>
+
+    <string-array name="pref_key_performance_profile_names">
+        <item>Quality</item>
+        <item>Balanced</item>
+        <item>Performance</item>
+    </string-array>
+
+    <string-array name="pref_key_console_bezel_mode_values" translatable="false">
+        <item>auto</item>
+        <item>subtle</item>
+        <item>disabled</item>
+    </string-array>
+
+    <string-array name="pref_key_console_bezel_mode_names">
+        <item>Automatic (by console)</item>
+        <item>Subtle (55%)</item>
+        <item>Disabled (black bars)</item>
+    </string-array>
+
+    <string name="settings_core_selection_reset">Restore default cores</string>
+    <string name="settings_core_selection_reset_summary">Restore the original core for each system. Game saves and performance modes are preserved.</string>
+    <string name="settings_core_selection_arcade_summary">Choose a core separately for FBNeo and MAME2003 Plus. Each game uses the saved core for its detected system; the ROMset must match the core.</string>
 </resources>

@@ -50,6 +50,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.swordfish.lemuroid.app.shared.game.BaseGameScreenViewModel
+import com.swordfish.lemuroid.app.shared.game.ConsoleBezelOverlay
 import com.swordfish.lemuroid.app.shared.game.viewmodel.GameViewModelTouchControls.Companion.MENU_LOADING_ANIMATION_MILLIS
 import com.swordfish.lemuroid.app.shared.settings.HapticFeedbackMode
 import com.swordfish.lemuroid.lib.controller.ControllerConfig
@@ -130,6 +131,11 @@ fun MobileGameScreen(viewModel: BaseGameScreenViewModel) {
                 factory = {
                     viewModel.createRetroView(localContext, lifecycle)
                 },
+            )
+
+            ConsoleBezelOverlay(
+                systemId = viewModel.systemId,
+                modifier = Modifier.fillMaxSize(),
             )
 
             val fullPos = fullScreenPosition.value

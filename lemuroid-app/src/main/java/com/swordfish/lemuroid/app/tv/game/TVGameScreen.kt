@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.swordfish.lemuroid.app.shared.game.BaseGameScreenViewModel
+import com.swordfish.lemuroid.app.shared.game.ConsoleBezelOverlay
 
 @Composable
 fun TVGameScreen(viewModel: BaseGameScreenViewModel) {
@@ -22,6 +23,11 @@ fun TVGameScreen(viewModel: BaseGameScreenViewModel) {
         factory = {
             viewModel.createRetroView(localContext, lifecycle)
         },
+    )
+
+    ConsoleBezelOverlay(
+        systemId = viewModel.systemId,
+        modifier = Modifier.fillMaxSize(),
     )
 
     val isLoading =

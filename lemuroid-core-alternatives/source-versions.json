@@ -1,0 +1,124 @@
+[
+  {
+    "core": "fbalpha2012",
+    "version": "v0.2.97.29 0ce3153",
+    "source": "https://github.com/libretro/fbalpha2012/tree/0ce3153",
+    "commit_reported": "0ce3153"
+  },
+  {
+    "core": "gearsystem",
+    "version": " 3.9.25-13-g1bd5472",
+    "source": "https://github.com/drhelius/Gearsystem/tree/1bd5472",
+    "commit_reported": "1bd5472"
+  },
+  {
+    "core": "gpsp",
+    "version": "v1.1.0-5819380",
+    "source": "https://github.com/libretro/gpsp/tree/5819380",
+    "commit_reported": "5819380"
+  },
+  {
+    "core": "mame2000",
+    "version": "0.37b5 181b42e",
+    "source": "https://github.com/libretro/mame2000-libretro/tree/181b42e",
+    "commit_reported": "181b42e"
+  },
+  {
+    "core": "mame2003",
+    "version": "0.78 b9ac708",
+    "source": "https://github.com/libretro/mame2003-libretro/tree/b9ac708",
+    "commit_reported": "b9ac708"
+  },
+  {
+    "core": "mednafen_lynx",
+    "version": "v1.24.0 fcdefcf",
+    "source": "https://github.com/libretro/beetle-lynx-libretro/tree/fcdefcf",
+    "commit_reported": "fcdefcf"
+  },
+  {
+    "core": "mednafen_pce",
+    "version": "v1.29.0 b96c11e",
+    "source": "https://github.com/libretro/beetle-pce-libretro/tree/b96c11e",
+    "commit_reported": "b96c11e"
+  },
+  {
+    "core": "nestopia",
+    "version": "2.0.0 f1e02d1",
+    "source": "https://github.com/libretro/nestopia/tree/f1e02d1",
+    "commit_reported": "f1e02d1"
+  },
+  {
+    "core": "parallel_n64",
+    "version": "1.0 ab48ad5",
+    "source": "https://github.com/libretro/parallel-n64/tree/ab48ad5",
+    "commit_reported": "ab48ad5"
+  },
+  {
+    "core": "picodrive",
+    "version": "2.05-1890c29",
+    "source": "https://github.com/libretro/picodrive/tree/1890c29",
+    "commit_reported": "1890c29"
+  },
+  {
+    "core": "quicknes",
+    "version": "1.0-WIP 26bb785",
+    "source": "https://github.com/libretro/QuickNES_Core/tree/26bb785",
+    "commit_reported": "26bb785"
+  },
+  {
+    "core": "race",
+    "version": "v2.16 c660d9a",
+    "source": "https://github.com/libretro/RACE/tree/c660d9a",
+    "commit_reported": "c660d9a"
+  },
+  {
+    "core": "sameboy",
+    "version": "1.0.5 90e2899",
+    "source": "https://github.com/LIJI32/SameBoy/tree/90e2899",
+    "commit_reported": "90e2899"
+  },
+  {
+    "core": "snes9x2005_plus",
+    "version": "v1.36 a79dfe9",
+    "source": "https://github.com/libretro/snes9x2005/tree/a79dfe9",
+    "commit_reported": "a79dfe9"
+  },
+  {
+    "core": "snes9x2010",
+    "version": "1.52.4 fe690dd",
+    "source": "https://github.com/libretro/snes9x2010/tree/fe690dd",
+    "commit_reported": "fe690dd"
+  },
+  {
+    "core": "stella2014",
+    "version": "3.9.3 7d1361e",
+    "source": "https://github.com/libretro/stella2014-libretro/tree/7d1361e",
+    "commit_reported": "7d1361e"
+  },
+  {
+    "core": "swanstation",
+    "version": "1.0.0 631f0fb",
+    "source": "https://github.com/libretro/swanstation/tree/631f0fb",
+    "commit_reported": "631f0fb"
+  },
+  {
+    "core": "vba_next",
+    "version": "v1.0.2 788192f",
+    "source": "https://github.com/libretro/vba-next/tree/788192f",
+    "commit_reported": "788192f"
+  },
+  {
+    "core": "mesen",
+    "version": "0.9.9",
+    "source": "https://github.com/libretro/Mesen",
+    "commit_reported": null,
+    "note": "Library reports no commit; exact distributed binaries are SHA256 pinned in manifest.json."
+  },
+  {
+    "core": "mesen-s",
+    "version": "0.4.0",
+    "source": "https://github.com/libretro/Mesen-S",
+    "commit_reported": null,
+    "note": "Library reports no commit; exact distributed binaries are SHA256 pinned in manifest.json."
+  }
+]

@@ -24,6 +24,10 @@ class GameInteractor(
     private val gameLauncher: GameLauncher,
     private val customCoverManager: CustomCoverManager,
 ) {
+    fun onGamePreferences(game: Game) {
+        if (ensureNotBusy()) com.swordfish.lemuroid.app.shared.gamepreferences.GamePreferencesActivity.open(activity.activity(), game)
+    }
+
     fun onGamePlay(game: Game) {
         if (!ensureNotBusy()) {
             return

@@ -183,4 +183,7 @@
     <string name="tilt_configuration_buttons_l_r">L - R</string>
     <string name="tilt_configuration_buttons_l1_r1">L1 - R1</string>
     <string name="tilt_configuration_buttons_l2_r2">L2 - R2</string>
+    <string name="settings_core_selection_reset">Restaurar núcleos padrão</string>
+    <string name="settings_core_selection_reset_summary">Restaura o núcleo original de cada sistema. Os saves e modos de desempenho são preservados.</string>
+    <string name="settings_core_selection_arcade_summary">Escolha um núcleo para FBNeo e outro para MAME2003 Plus. Cada jogo usa a escolha guardada para o sistema identificado; o ROMset deve ser compatível com o núcleo.</string>
 </resources>

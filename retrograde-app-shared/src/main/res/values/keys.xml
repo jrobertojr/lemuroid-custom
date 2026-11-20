@@ -5,5 +5,9 @@
     <string name="pref_key_last_save_sync" translatable="false">last_save_sync</string>
     <string name="pref_key_extenral_folder" translatable="false">external_folder</string>
     <string name="pref_key_external_bios_folder" translatable="false">external_bios_folder</string>
+    <string name="pref_key_custom_cache_enabled" translatable="false">custom_cache_enabled</string>
+    <string name="pref_key_custom_cache_folder" translatable="false">custom_cache_folder</string>
     <string name="pref_key_legacy_external_folder" translatable="false">legacy_external_folder</string>
+    <string name="pref_key_performance_profile" translatable="false">pref_key_performance_profile</string>
+    <string name="pref_key_console_bezel_mode" translatable="false">pref_key_console_bezel_mode</string>
 </resources>

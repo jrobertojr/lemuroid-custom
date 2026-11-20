@@ -26,6 +26,18 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
+    <queries>
+        <intent>
+            <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.OPEN_DOCUMENT_TREE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.OPEN_DOCUMENT" />
+        </intent>
+    </queries>
+
     <application
         android:name="com.swordfish.lemuroid.app.LemuroidApplication"
         android:allowBackup="true"
@@ -94,6 +106,10 @@
         <activity
             android:name="com.swordfish.lemuroid.app.shared.settings.StorageFrameworkPickerLauncher"
             android:theme="@style/LemuroidMaterialTheme.Invisible" />
+
+        <activity android:name=".app.shared.gamepreferences.GamePreferencesActivity" android:exported="false" android:theme="@style/LemuroidGamePreferencesTheme" />
+
+        <activity android:name=".app.shared.gamepreferences.SystemProfilesActivity" android:exported="false" android:label="Desempenho por sistema" android:theme="@style/LemuroidMaterialTheme" />
 
         <!-- Leanback activities -->
         <activity

@@ -7,6 +7,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 
 private val LightColorScheme =
@@ -80,16 +81,20 @@ fun AppTheme(
     darkTheme: Boolean = true,
     content: @Composable () -> Unit,
 ) {
+    val frontendTheme = rememberFrontendTheme()
     val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val colors =
-        when {
-            dynamicColor && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
-            dynamicColor && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
-            darkTheme -> DarkColorScheme
-            else -> LightColorScheme
-        }
+        frontendTheme.colorScheme()
+            ?: when {
+                dynamicColor && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
+                dynamicColor && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
+                darkTheme -> DarkColorScheme
+                else -> LightColorScheme
+            }
 
-    MaterialTheme(colorScheme = colors) {
-        content()
+    CompositionLocalProvider(LocalFrontendTheme provides frontendTheme) {
+        MaterialTheme(colorScheme = colors) {
+            content()
+        }
     }
 }

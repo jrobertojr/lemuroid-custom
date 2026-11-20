@@ -6,6 +6,8 @@ import com.fredporciuncula.flow.preferences.FlowSharedPreferences
 import com.swordfish.lemuroid.R
 import com.swordfish.lemuroid.app.shared.settings.HDModeQuality
 import com.swordfish.lemuroid.common.math.Fraction
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfile
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfileManager
 import com.swordfish.lemuroid.lib.storage.cache.CacheCleaner
 import dagger.Lazy
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +59,11 @@ class SettingsManager(private val context: Context, sharedPreferences: Lazy<Shar
         )
 
     suspend fun allowDirectGameLoad() = booleanPreference(R.string.pref_key_allow_direct_game_load, true)
+
+    suspend fun performanceProfile(): PerformanceProfile =
+        withContext(Dispatchers.IO) {
+            PerformanceProfileManager.getActiveProfile(context)
+        }
 
     private suspend fun booleanPreference(
         keyId: Int,

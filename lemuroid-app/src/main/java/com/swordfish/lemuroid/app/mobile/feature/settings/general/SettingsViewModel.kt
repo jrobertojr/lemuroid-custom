@@ -40,6 +40,8 @@ class SettingsViewModel(
     data class State(
         val currentDirectory: String = "",
         val currentBiosDirectory: String = "",
+        val currentCacheDirectory: String = "",
+        val customCacheEnabled: Boolean = false,
         val isSaveSyncSupported: Boolean = false,
     )
 
@@ -57,11 +59,31 @@ class SettingsViewModel(
             .asFlow()
             .flowOn(Dispatchers.IO)
 
+    private val cacheDirectoryFlow =
+        sharedPreferences.getString(context.getString(com.swordfish.lemuroid.lib.R.string.pref_key_custom_cache_folder))
+            .asFlow()
+            .flowOn(Dispatchers.IO)
+
+    private val customCacheEnabledFlow =
+        sharedPreferences.getBoolean(
+            context.getString(com.swordfish.lemuroid.lib.R.string.pref_key_custom_cache_enabled),
+            false,
+        )
+            .asFlow()
+            .flowOn(Dispatchers.IO)
+
     val uiState =
-        combine(romsDirectoryFlow, biosDirectoryFlow) { romsDir, biosDir ->
+        combine(
+            romsDirectoryFlow,
+            biosDirectoryFlow,
+            cacheDirectoryFlow,
+            customCacheEnabledFlow,
+        ) { romsDir, biosDir, cacheDir, customCacheEnabled ->
             State(
                 currentDirectory = romsDir,
                 currentBiosDirectory = biosDir,
+                currentCacheDirectory = cacheDir,
+                customCacheEnabled = customCacheEnabled,
                 isSaveSyncSupported = saveSyncManager.isSupported(),
             )
         }.stateIn(viewModelScope, SharingStarted.Lazily, State())
@@ -72,5 +94,13 @@ class SettingsViewModel(
 
     fun changeBiosFolder() {
         settingsInteractor.changeBiosFolder()
+    }
+
+    fun changeCacheFolder() {
+        settingsInteractor.changeCacheFolder()
+    }
+
+    fun setCustomCacheEnabled(enabled: Boolean) {
+        settingsInteractor.setCustomCacheEnabled(enabled)
     }
 }

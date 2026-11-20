@@ -31,7 +31,8 @@ object GameCacheUtils {
         context: Context,
     ): File {
         val gamesCachePath = buildPath(folderName, game.systemId)
-        val gamesCacheDir = File(context.cacheDir, gamesCachePath)
+        val cacheRoot = CacheMigrationManager.getActiveCacheRoot(context)
+        val gamesCacheDir = File(cacheRoot, gamesCachePath)
         gamesCacheDir.mkdirs()
         return gamesCacheDir
     }

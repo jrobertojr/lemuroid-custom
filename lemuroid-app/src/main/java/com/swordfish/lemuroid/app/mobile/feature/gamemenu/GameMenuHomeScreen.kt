@@ -29,7 +29,12 @@ fun GameMenuHomeScreen(
     gameMenuRequest: GameMenuActivity.GameMenuRequest,
     onResult: KFunction1<Intent.() -> Unit, Unit>,
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        LemuroidSettingsMenuLink(
+            title = { Text("Núcleo e desempenho deste jogo") },
+            onClick = { com.swordfish.lemuroid.app.shared.gamepreferences.GamePreferencesActivity.open(context, gameMenuRequest.game, false) },
+        )
         if (gameMenuRequest.coreConfig.statesSupported) {
             LemuroidSettingsMenuLink(
                 title = { Text(text = stringResource(id = R.string.game_menu_save)) },

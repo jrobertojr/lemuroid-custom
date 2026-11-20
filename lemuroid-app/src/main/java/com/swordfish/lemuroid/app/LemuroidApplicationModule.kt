@@ -87,6 +87,10 @@ import java.util.zip.ZipInputStream
 
 @Module
 abstract class LemuroidApplicationModule {
+    @PerActivity
+    @ContributesAndroidInjector
+    abstract fun gamePreferencesActivity(): com.swordfish.lemuroid.app.shared.gamepreferences.GamePreferencesActivity
+
     @Binds
     abstract fun context(app: LemuroidApplication): Context
 
@@ -312,7 +316,7 @@ abstract class LemuroidApplicationModule {
         @Provides
         @PerApp
         @JvmStatic
-        fun coreSelectionPreferences() = CoresSelectionPreferences()
+        fun coreSelectionPreferences(coresSelection: CoresSelection) = CoresSelectionPreferences(coresSelection)
 
         @Provides
         @PerApp
@@ -384,7 +388,8 @@ abstract class LemuroidApplicationModule {
         fun gameLauncher(
             coresSelection: CoresSelection,
             gameLaunchTaskHandler: GameLaunchTaskHandler,
-        ) = GameLauncher(coresSelection, gameLaunchTaskHandler)
+            coreUpdater: CoreUpdater,
+        ) = GameLauncher(coresSelection, gameLaunchTaskHandler, coreUpdater)
 
         @Provides
         @PerApp

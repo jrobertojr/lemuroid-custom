@@ -59,6 +59,8 @@ class BaseGameScreenViewModel(
     coreVariablesManager: CoreVariablesManager,
     rumbleManager: RumbleManager,
 ) : ViewModel(), DefaultLifecycleObserver {
+    val systemId: String = system.id.dbname
+    val systemTitleResId: Int = system.titleResId
     class Factory(
         private val appContext: Context,
         private val game: Game,

@@ -6,6 +6,7 @@ import com.swordfish.lemuroid.common.kotlin.toStringCRC32
 import com.swordfish.lemuroid.lib.storage.BaseStorageFile
 import com.swordfish.lemuroid.lib.storage.StorageFile
 import com.swordfish.lemuroid.lib.storage.scanner.SerialScanner
+import com.swordfish.lemuroid.lib.library.SystemID
 import timber.log.Timber
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -19,7 +20,17 @@ object DocumentFileParser {
         context: Context,
         baseStorageFile: BaseStorageFile,
     ): StorageFile {
-        return if (baseStorageFile.extension == "zip") {
+        return if (DosArchiveRules.isDosArchive(baseStorageFile.name, baseStorageFile.path ?: baseStorageFile.uri.path)) {
+            // DOSBox Pure mounts the complete archive, including data files and CD images.
+            // Skipping ROM heuristics and CRC also avoids reading multi-GB DOS packages twice.
+            StorageFile(
+                name = baseStorageFile.name,
+                size = baseStorageFile.size,
+                uri = baseStorageFile.uri,
+                path = baseStorageFile.path ?: baseStorageFile.uri.path,
+                systemID = SystemID.DOS,
+            )
+        } else if (baseStorageFile.extension.equals("zip", ignoreCase = true)) {
             Timber.d("Detected zip file. ${baseStorageFile.name}")
             parseZipFile(context, baseStorageFile)
         } else {

@@ -127,13 +127,23 @@ class ExternalGameLauncherActivity : ImmersiveActivity() {
 
         when (requestCode) {
             BaseGameActivity.REQUEST_PLAY_GAME -> {
-                val isLeanback = data?.extras?.getBoolean(BaseGameActivity.PLAY_GAME_RESULT_LEANBACK) == true
+                val isLeanback = data?.extras?.getBoolean(BaseGameActivity.PLAY_GAME_RESULT_LEANBACK)
+                    ?: TVHelper.isTV(applicationContext)
 
                 GlobalScope.safeLaunch {
                     if (isLeanback) {
                         ChannelUpdateWork.enqueue(applicationContext)
                     }
                     gameLaunchTaskHandler.handleGameFinish(false, this@ExternalGameLauncherActivity, resultCode, data)
+                    // Reuse the library's existing browser, including its saved selection.
+                    val browser = if (isLeanback) {
+                        com.swordfish.lemuroid.app.tv.main.MainTVActivity::class.java
+                    } else {
+                        com.swordfish.lemuroid.app.mobile.feature.main.MainActivity::class.java
+                    }
+                    startActivity(Intent(this@ExternalGameLauncherActivity, browser).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    })
                     finish()
                 }
             }

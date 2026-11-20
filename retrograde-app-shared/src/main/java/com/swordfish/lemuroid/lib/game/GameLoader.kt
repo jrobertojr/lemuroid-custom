@@ -32,6 +32,8 @@ import com.swordfish.lemuroid.lib.library.SystemID
 import com.swordfish.lemuroid.lib.library.db.RetrogradeDatabase
 import com.swordfish.lemuroid.lib.library.db.entity.Game
 import com.swordfish.lemuroid.lib.migration.DesmumeMigrationHandler
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfile
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfileManager
 import com.swordfish.lemuroid.lib.saves.SaveState
 import com.swordfish.lemuroid.lib.saves.SavesCoherencyEngine
 import com.swordfish.lemuroid.lib.saves.SavesManager
@@ -68,6 +70,7 @@ class GameLoader(
         loadSave: Boolean,
         systemCoreConfig: SystemCoreConfig,
         directLoad: Boolean,
+        performanceProfile: PerformanceProfile? = null,
     ): Flow<LoadingState> =
         flow {
             try {
@@ -130,7 +133,11 @@ class GameLoader(
                     }.getOrElse { throw GameLoaderException(GameLoaderError.Saves) }
 
                 val coreVariables =
-                    coreVariablesManager.getOptionsForCore(system.id, systemCoreConfig)
+                    coreVariablesManager.getOptionsForCore(
+                        system.id,
+                        systemCoreConfig,
+                        performanceProfile ?: PerformanceProfileManager.getActiveProfile(appContext, game),
+                    )
                         .toTypedArray()
 
                 val systemDirectory = directoriesManager.getSystemDirectory()

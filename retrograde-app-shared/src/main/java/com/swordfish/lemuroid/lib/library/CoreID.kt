@@ -58,12 +58,12 @@ enum class CoreID(
     ),
     FBNEO(
         "fbneo",
-        "FBNeo",
+        "FBNeo — Compatibilidade / ROMset FBNeo",
         "libfbneo_libretro_android.so",
     ),
     MAME2003PLUS(
         "mame2003_plus",
-        "MAME2003 Plus",
+        "MAME2003 Plus — Equilibrado / ROMset 2003-Plus",
         "libmame2003_plus_libretro_android.so",
     ),
     DESMUME(
@@ -75,6 +75,21 @@ enum class CoreID(
         "melonds",
         "MelonDS",
         "libmelonds_libretro_android.so",
+    ),
+    NOODS(
+        "noods",
+        "NooDS",
+        "libnoods_libretro_android.so",
+    ),
+    DSPERATE(
+        "dsperate",
+        "DSperate — Desempenho",
+        "libdsperate_libretro_android.so",
+    ),
+    DESMUME_2015(
+        "desmume2015",
+        "DeSmuME 2015",
+        "libdesmume2015_libretro_android.so",
     ),
     HANDY(
         "handy",
@@ -111,6 +126,26 @@ enum class CoreID(
         "DosBox Pure",
         "libdosbox_pure_libretro_android.so",
     ),
+    STELLA_2014("stella2014", "Stella 2014 — Desempenho", "libstella2014_libretro_android.so"),
+    QUICKNES("quicknes", "QuickNES — Desempenho", "libquicknes_libretro_android.so"),
+    NESTOPIA("nestopia", "Nestopia UE — Qualidade", "libnestopia_libretro_android.so"),
+    SNES9X_2005_PLUS("snes9x2005_plus", "Snes9x 2005 Plus — Desempenho", "libsnes9x2005_plus_libretro_android.so"),
+    SNES9X_2010("snes9x2010", "Snes9x 2010 — Equilibrado", "libsnes9x2010_libretro_android.so"),
+    PICODRIVE("picodrive", "PicoDrive — Desempenho", "libpicodrive_libretro_android.so"),
+    GEARSYSTEM("gearsystem", "Gearsystem — Precisão", "libgearsystem_libretro_android.so"),
+    SAMEBOY("sameboy", "SameBoy — Qualidade", "libsameboy_libretro_android.so"),
+    GPSP("gpsp", "gpSP — Desempenho", "libgpsp_libretro_android.so"),
+    VBA_NEXT("vba_next", "VBA Next — Desempenho", "libvba_next_libretro_android.so"),
+    PARALLEL_N64("parallel_n64", "ParaLLEl N64 — Alternativo", "libparallel_n64_libretro_android.so"),
+    SWANSTATION("swanstation", "SwanStation — Qualidade (BIOS PS1)", "libswanstation_libretro_android.so"),
+    FBALPHA_2012("fbalpha2012", "FBA 2012 — Desempenho / ROMset 0.2.97.29", "libfbalpha2012_libretro_android.so"),
+    MAME_2000("mame2000", "MAME 2000 — Desempenho / ROMset 0.37b5", "libmame2000_libretro_android.so"),
+    MAME_2003("mame2003", "MAME 2003 — Desempenho / ROMset 0.78", "libmame2003_libretro_android.so"),
+    MEDNAFEN_PCE("mednafen_pce", "Beetle PCE — Qualidade", "libmednafen_pce_libretro_android.so"),
+    MEDNAFEN_LYNX("mednafen_lynx", "Beetle Lynx — Precisão", "libmednafen_lynx_libretro_android.so"),
+    MESEN("mesen", "Mesen — Precisão / Compatibilidade", "libmesen_compat_libretro_android.so"),
+    MESEN_S("mesen-s", "Mesen-S — Precisão / Compatibilidade", "libmesen-s_compat_libretro_android.so"),
+    RACE("race", "RACE — Desempenho", "librace_libretro_android.so"),
     ;
 
     companion object {

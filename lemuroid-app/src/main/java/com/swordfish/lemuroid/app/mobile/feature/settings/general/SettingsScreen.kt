@@ -51,6 +51,8 @@ fun SettingsScreen(
             state = state,
             onChangeFolder = { viewModel.changeLocalStorageFolder() },
             onChangeBiosFolder = { viewModel.changeBiosFolder() },
+            onChangeCacheFolder = { viewModel.changeCacheFolder() },
+            onCustomCacheEnabledChange = { viewModel.setCustomCacheEnabled(it) },
             indexingInProgress = indexingInProgress,
             scanInProgress = scanInProgress,
         )
@@ -142,6 +144,47 @@ private fun GeneralSettings() {
     LemuroidCardSettingsGroup(
         title = { Text(text = stringResource(id = R.string.settings_category_general)) },
     ) {
+        LemuroidSettingsList(
+            state =
+                indexPreferenceState(
+                    R.string.pref_key_frontend_theme,
+                    "default",
+                    stringListResource(R.array.pref_key_frontend_theme_values),
+                ),
+            title = {
+                Text(text = stringResource(id = R.string.settings_title_frontend_theme))
+            },
+            items = stringListResource(R.array.pref_key_frontend_theme_display_names),
+        )
+        LemuroidSettingsList(
+            state =
+                indexPreferenceState(
+                    com.swordfish.lemuroid.lib.R.string.pref_key_performance_profile,
+                    "quality",
+                    stringListResource(R.array.pref_key_performance_profile_values),
+                ),
+            title = {
+                Text(text = stringResource(id = R.string.settings_title_performance_profile))
+            },
+            items = stringListResource(R.array.pref_key_performance_profile_names),
+        )
+        LemuroidSettingsList(
+            state =
+                indexPreferenceState(
+                    com.swordfish.lemuroid.lib.R.string.pref_key_console_bezel_mode,
+                    "auto",
+                    stringListResource(R.array.pref_key_console_bezel_mode_values),
+                ),
+            title = {
+                Text(text = stringResource(id = R.string.settings_title_console_bezel_mode))
+            },
+            items = stringListResource(R.array.pref_key_console_bezel_mode_names),
+        )
+        LemuroidSettingsSwitch(
+            state = booleanPreferenceState(R.string.pref_key_frontend_sounds, true),
+            title = { Text(text = stringResource(id = R.string.settings_title_frontend_sounds)) },
+            subtitle = { Text(text = stringResource(id = R.string.settings_description_frontend_sounds)) },
+        )
         LemuroidSettingsSwitch(
             state = booleanPreferenceState(R.string.pref_key_autosave, true),
             title = { Text(text = stringResource(id = R.string.settings_title_enable_autosave)) },
@@ -198,6 +241,8 @@ private fun RomsSettings(
     state: SettingsViewModel.State,
     onChangeFolder: () -> Unit,
     onChangeBiosFolder: () -> Unit,
+    onChangeCacheFolder: () -> Unit,
+    onCustomCacheEnabledChange: (Boolean) -> Unit,
     indexingInProgress: Boolean,
     scanInProgress: Boolean,
 ) {
@@ -205,7 +250,14 @@ private fun RomsSettings(
 
     val currentDirectory = state.currentDirectory
     val currentBiosDirectory = state.currentBiosDirectory
+    val currentCacheDirectory = state.currentCacheDirectory
     val emptyDirectory = stringResource(R.string.none)
+
+    val customCacheEnabledState =
+        booleanPreferenceState(
+            com.swordfish.lemuroid.lib.R.string.pref_key_custom_cache_enabled,
+            state.customCacheEnabled,
+        )
 
     val currentDirectoryName =
         remember(state.currentDirectory) {
@@ -221,6 +273,13 @@ private fun RomsSettings(
             }.getOrNull() ?: emptyDirectory
         }
 
+    val currentCacheDirectoryName =
+        remember(state.currentCacheDirectory) {
+            runCatching {
+                DocumentFile.fromTreeUri(context, Uri.parse(currentCacheDirectory))?.name
+            }.getOrNull() ?: emptyDirectory
+        }
+
     LemuroidCardSettingsGroup(title = { Text(text = stringResource(id = R.string.roms)) }) {
         LemuroidSettingsMenuLink(
             title = { Text(text = stringResource(id = R.string.directory)) },
@@ -233,6 +292,19 @@ private fun RomsSettings(
             subtitle = { Text(text = currentBiosDirectoryName) },
             onClick = { onChangeBiosFolder() },
             enabled = !indexingInProgress,
+        )
+        LemuroidSettingsSwitch(
+            state = customCacheEnabledState,
+            title = { Text(text = stringResource(id = R.string.settings_title_custom_cache_enabled)) },
+            subtitle = { Text(text = stringResource(id = R.string.settings_description_custom_cache_enabled)) },
+            enabled = !indexingInProgress,
+            onCheckedChange = { onCustomCacheEnabledChange(it) },
+        )
+        LemuroidSettingsMenuLink(
+            title = { Text(text = stringResource(id = R.string.cache_directory)) },
+            subtitle = { Text(text = currentCacheDirectoryName) },
+            onClick = { onChangeCacheFolder() },
+            enabled = !indexingInProgress && customCacheEnabledState.value,
         )
         if (scanInProgress) {
             LemuroidSettingsMenuLink(

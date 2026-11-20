@@ -26,7 +26,16 @@ class CoresSelectionViewModel(
 
     val indexingInProgress = PendingOperationsMonitor(context).anyLibraryOperationInProgress()
 
-    fun getSelectedCores() = coresSelection.getSelectedCores()
+    private val selectedCores = coresSelection.getSelectedCores()
+
+    fun getSelectedCores() = selectedCores
+
+    fun resetCores(context: Context) {
+        viewModelScope.launch {
+            coresSelection.resetToDefaults()
+            LibraryIndexScheduler.scheduleCoreUpdate(context.applicationContext)
+        }
+    }
 
     fun changeCore(
         system: GameSystem,

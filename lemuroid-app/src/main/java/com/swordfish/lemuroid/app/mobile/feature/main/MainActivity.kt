@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -115,6 +116,7 @@ class MainActivity : RetrogradeComponentActivity(), BusyActivity {
             SystemBarStyle.dark(Color.TRANSPARENT),
         )
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         GlobalScope.safeLaunch {
             reviewManager.initialize(applicationContext)
@@ -172,17 +174,28 @@ class MainActivity : RetrogradeComponentActivity(), BusyActivity {
                     .collectAsState(MainViewModel.UiState())
                     .value
 
+            val activeFrontendTheme = com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendTheme.current
+            val useFullThemedHome =
+                activeFrontendTheme != com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme.DEFAULT &&
+                    currentRoute == MainRoute.HOME
+
             Scaffold(
                 topBar = {
-                    MainTopBar(
-                        currentRoute = currentRoute,
-                        navController = navController,
-                        onHelpPressed = onHelpPressed,
-                        mainUIState = mainUIState,
-                        onUpdateQueryString = { mainViewModel.changeQueryString(it) },
-                    )
+                    if (!useFullThemedHome) {
+                        MainTopBar(
+                            currentRoute = currentRoute,
+                            navController = navController,
+                            onHelpPressed = onHelpPressed,
+                            mainUIState = mainUIState,
+                            onUpdateQueryString = { mainViewModel.changeQueryString(it) },
+                        )
+                    }
                 },
-                bottomBar = { MainNavigationBar(currentRoute, navController) },
+                bottomBar = {
+                    if (!useFullThemedHome) {
+                        MainNavigationBar(currentRoute, navController)
+                    }
+                },
             ) { padding ->
                 NavHost(
                     modifier = Modifier.fillMaxSize(),
@@ -190,21 +203,34 @@ class MainActivity : RetrogradeComponentActivity(), BusyActivity {
                     startDestination = MainRoute.HOME.route,
                 ) {
                     composable(MainRoute.HOME) {
-                        HomeScreen(
-                            modifier = Modifier.padding(padding),
-                            viewModel =
-                                viewModel(
-                                    factory =
-                                        HomeViewModel.Factory(
-                                            applicationContext,
-                                            retrogradeDb,
-                                            coresSelection,
-                                        ),
-                                ),
-                            onGameClick = onGameClick,
-                            onGameLongClick = onGameLongClick,
-                            onOpenCoreSelection = { navController.navigateToRoute(MainRoute.SETTINGS_CORES_SELECTION) },
-                        )
+                        if (useFullThemedHome) {
+                            MobileThemedFrontend(
+                                retrogradeDb = retrogradeDb,
+                                gameInteractor = gameInteractor,
+                                onOpenSettings = { navController.navigateToRoute(MainRoute.SETTINGS) },
+                                onOpenSearch = { navController.navigateToRoute(MainRoute.SEARCH) },
+                                onRescan = {
+                                    com.swordfish.lemuroid.app.shared.library.LibraryIndexScheduler
+                                        .scheduleLibrarySync(applicationContext)
+                                },
+                            )
+                        } else {
+                            HomeScreen(
+                                modifier = Modifier.padding(padding),
+                                viewModel =
+                                    viewModel(
+                                        factory =
+                                            HomeViewModel.Factory(
+                                                applicationContext,
+                                                retrogradeDb,
+                                                coresSelection,
+                                            ),
+                                    ),
+                                onGameClick = onGameClick,
+                                onGameLongClick = onGameLongClick,
+                                onOpenCoreSelection = { navController.navigateToRoute(MainRoute.SETTINGS_CORES_SELECTION) },
+                            )
+                        }
                     }
                     composable(MainRoute.FAVORITES) {
                         FavoritesScreen(

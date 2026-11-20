@@ -2,6 +2,7 @@ package com.swordfish.lemuroid.app.mobile.shared.compose.ui
 
 import android.net.Uri
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,6 +23,8 @@ import com.swordfish.lemuroid.lib.library.db.entity.Game
 fun LemuroidGameImage(
     modifier: Modifier = Modifier,
     game: Game,
+    contentScale: ContentScale = ContentScale.Crop,
+    preserveAspect: Boolean = false,
 ) {
     val fallbackDrawable =
         remember(game) {
@@ -46,6 +49,15 @@ fun LemuroidGameImage(
     var attemptIndex by remember(baseUrl) { mutableIntStateOf(0) }
     val currentUrl = candidates.getOrNull(attemptIndex)
 
+    val imageModifier =
+        if (preserveAspect) {
+            modifier.fillMaxSize()
+        } else {
+            modifier
+                .fillMaxWidth()
+                .aspectRatio(1.0f)
+        }
+
     AsyncImage(
         model =
             ImageRequest.Builder(LocalContext.current)
@@ -53,10 +65,7 @@ fun LemuroidGameImage(
                 .setHeader(CoverFallbackInterceptor.HEADER_GAME_FILENAME, Uri.encode(game.fileName))
                 .build(),
         contentDescription = game.displayName(),
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .aspectRatio(1.0f),
+        modifier = imageModifier,
         fallback = fallbackPainter,
         error = fallbackPainter,
         onError = {
@@ -64,6 +73,6 @@ fun LemuroidGameImage(
                 attemptIndex++
             }
         },
-        contentScale = ContentScale.Crop,
+        contentScale = contentScale,
     )
 }

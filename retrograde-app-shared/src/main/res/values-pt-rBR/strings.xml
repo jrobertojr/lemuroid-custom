@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="setting_noods_arm7_hle">Emulação rápida ARM7 (pode afetar a compatibilidade)</string>
+    <string name="setting_noods_high_res">3D em alta resolução</string>
+    <string name="setting_noods_threads">Trabalhadores da renderização 3D</string>
     <string name="local_storage">Armazenamento local</string>
     <string name="controller_arcade_4">Padrão (4 botões)</string>
     <string name="controller_arcade_6">Padrão (6 botões)</string>
@@ -115,6 +118,10 @@
     <string name="value_citra_layout_option_sidebyside">Esquerda — direita</string>
     <string name="value_desmume_screens_layout_topbottom">Superior — inferior</string>
     <string name="value_desmume_screens_layout_leftright">Esquerda — direita</string>
+    <string name="value_desmume_screens_layout_toponly">Somente Superior</string>
+    <string name="value_desmume_screens_layout_bottomonly">Somente Inferior</string>
+    <string name="value_desmume_screens_layout_hybridtop">Topo híbrido</string>
+    <string name="value_desmume_screens_layout_hybridbottom">Híbrido Inferior</string>
     <string name="value_ppsspp_cpu_core_jit">JIT</string>
     <string name="value_ppsspp_cpu_core_irjit">IR JIT</string>
     <string name="value_ppsspp_cpu_core_interpreter">Interpretador</string>

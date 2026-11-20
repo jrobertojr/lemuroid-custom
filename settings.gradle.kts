@@ -11,6 +11,9 @@ include(
     ":retrograde-util",
     ":retrograde-app-shared",
     ":lemuroid-touchinput",
+    ":lemuroid-core-noods",
+    ":lemuroid-core-desmume2015",
+    ":lemuroid-core-dsperate",
     ":lemuroid-app",
     ":lemuroid-metadata-libretro-db",
     ":lemuroid-app-ext-free",
@@ -71,3 +74,5 @@ if (usePlayDynamicFeatures()) {
     project(":lemuroid_core_dosbox_pure").projectDir = File("lemuroid-cores/lemuroid_core_dosbox_pure")
     project(":lemuroid_core_citra").projectDir = File("lemuroid-cores/lemuroid_core_citra")
 }
+
+include(":lemuroid-core-alternatives")

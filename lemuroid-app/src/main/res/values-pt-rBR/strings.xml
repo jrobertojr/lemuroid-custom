@@ -25,6 +25,13 @@
     <string name="settings_category_general">Geral</string>
     <string name="settings_category_input">Entrada</string>
     <string name="settings_category_misc">Outras configurações</string>
+    <string name="settings_title_frontend_theme">Tema do frontend</string>
+    <string name="settings_title_performance_profile">Modo de desempenho</string>
+    <string name="settings_description_performance_profile">Qualidade (padrão), Equilibrado ou Desempenho máximo (detectado automaticamente)</string>
+    <string name="settings_title_console_bezel_mode">Molduras laterais (Bezels)</string>
+    <string name="settings_description_console_bezel_mode">Exibir arte lateral referente ao console no lugar das bordas pretas</string>
+    <string name="settings_title_frontend_sounds">Sons do frontend</string>
+    <string name="settings_description_frontend_sounds">Tocar sons de navegação ao usar os temas</string>
     <string name="settings_title_enable_autosave">Estado de salvamento automático</string>
     <string name="settings_description_enable_autosave">Salvar estado quando sair pelo menu do jogo</string>
     <string name="settings_title_enable_touch_feedback">Vibrar no toque</string>
@@ -184,4 +191,34 @@
     <string name="tilt_configuration_buttons_l1_r1">L1 - R1</string>
     <string name="tilt_configuration_buttons_l2_r2">L2 - R2</string>
     <string name="bios_directory">Pasta de BIOS</string>
+    <string name="settings_title_custom_cache_enabled">Usar pasta de cache personalizada</string>
+    <string name="settings_description_custom_cache_enabled">Transfere e salva o cache de jogos na pasta escolhida</string>
+    <string name="cache_directory">Pasta de cache</string>
+
+    <string-array name="pref_key_frontend_theme_display_names">
+        <item>Padrão</item>
+        <item>Locadora</item>
+        <item>Netflix</item>
+        <item>Console</item>
+        <item>TV Retrô</item>
+        <item>Retrô 80/90</item>
+        <item>Rockstar</item>
+        <item>Thrash Metal</item>
+        <item>3D (Objetos 3D)</item>
+    </string-array>
+
+    <string-array name="pref_key_performance_profile_names">
+        <item>Qualidade</item>
+        <item>Equilibrado</item>
+        <item>Desempenho</item>
+    </string-array>
+
+    <string-array name="pref_key_console_bezel_mode_names">
+        <item>Automático (por console)</item>
+        <item>Suave (55%)</item>
+        <item>Desativado (bordas pretas)</item>
+    </string-array>
+    <string name="settings_core_selection_reset">Restaurar núcleos padrão</string>
+    <string name="settings_core_selection_reset_summary">Restaura o núcleo original de cada sistema. Os saves e modos de desempenho são preservados.</string>
+    <string name="settings_core_selection_arcade_summary">Escolha um núcleo para FBNeo e outro para MAME2003 Plus. Cada jogo usa a escolha salva para o sistema identificado; o ROMset deve ser compatível com o núcleo.</string>
 </resources>

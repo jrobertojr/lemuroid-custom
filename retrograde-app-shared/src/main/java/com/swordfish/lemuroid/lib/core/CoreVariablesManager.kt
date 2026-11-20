@@ -3,6 +3,8 @@ package com.swordfish.lemuroid.lib.core
 import android.content.SharedPreferences
 import com.swordfish.lemuroid.lib.library.SystemCoreConfig
 import com.swordfish.lemuroid.lib.library.SystemID
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfileManager
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfile
 import dagger.Lazy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,10 +14,21 @@ class CoreVariablesManager(private val sharedPreferences: Lazy<SharedPreferences
     suspend fun getOptionsForCore(
         systemID: SystemID,
         systemCoreConfig: SystemCoreConfig,
+        performanceProfile: PerformanceProfile? = null,
     ): List<CoreVariable> {
         val defaultMap = convertCoreVariablesToMap(systemCoreConfig.defaultSettings)
+        val profile = performanceProfile ?: PerformanceProfileManager.getProfileFromPreferences(sharedPreferences.get())
+        val profileOverrides =
+            PerformanceProfileManager.getCoreOverridesForProfile(
+                profile,
+                systemID,
+                systemCoreConfig.coreID,
+            )
         val coreVariables = retrieveCustomCoreVariables(systemID, systemCoreConfig)
-        val coreVariablesMap = defaultMap + convertCoreVariablesToMap(coreVariables)
+        val coreVariablesMap =
+            defaultMap +
+                convertCoreVariablesToMap(profileOverrides) +
+                convertCoreVariablesToMap(coreVariables)
         return convertMapToCoreVariables(coreVariablesMap)
     }
 

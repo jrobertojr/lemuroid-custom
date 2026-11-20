@@ -76,13 +76,19 @@ class LibretroDBMetadataProvider(private val ovgdbManager: LibretroDBManager) :
 
         val metadata =
             runCatching {
-                findByCRC(storageFile, db)
-                    ?: findBySerial(storageFile, db)
-                    ?: findByFilename(db, storageFile)
-                    ?: findByPathAndFilename(db, storageFile)
-                    ?: findByUniqueExtension(db, storageFile)
-                    ?: findByKnownSystem(db, storageFile)
-                    ?: findByPathAndSupportedExtension(db, storageFile)
+                // A DOS package is explicitly identified by its archive extension/folder.
+                // A coincidental ROM filename match must not reclassify it as a console game.
+                if (storageFile.systemID == SystemID.DOS) {
+                    findByKnownSystem(db, storageFile)
+                } else {
+                    findByCRC(storageFile, db)
+                        ?: findBySerial(storageFile, db)
+                        ?: findByFilename(db, storageFile)
+                        ?: findByPathAndFilename(db, storageFile)
+                        ?: findByUniqueExtension(db, storageFile)
+                        ?: findByKnownSystem(db, storageFile)
+                        ?: findByPathAndSupportedExtension(db, storageFile)
+                }
             }.getOrElse {
                 Timber.e("Error in retrieving $storageFile metadata: $it... Skipping.")
                 null

@@ -1,14 +1,20 @@
 package com.swordfish.lemuroid.app.tv.settings
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.InputDevice
 import android.view.View
+import androidx.activity.addCallback
+import androidx.documentfile.provider.DocumentFile
 import androidx.leanback.preference.LeanbackPreferenceFragmentCompat
+import androidx.leanback.preference.LeanbackSettingsFragmentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceScreen
+import androidx.preference.PreferenceFragmentCompat
 import com.swordfish.lemuroid.R
 import com.swordfish.lemuroid.app.shared.input.InputDeviceManager
 import com.swordfish.lemuroid.app.shared.library.PendingOperationsMonitor
@@ -17,6 +23,8 @@ import com.swordfish.lemuroid.app.shared.settings.SettingsInteractor
 import com.swordfish.lemuroid.common.coroutines.launchOnState
 import com.swordfish.lemuroid.common.coroutines.safeCollect
 import com.swordfish.lemuroid.common.kotlin.NTuple2
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfile
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfileManager
 import com.swordfish.lemuroid.lib.preferences.SharedPreferencesHelper
 import com.swordfish.lemuroid.lib.savesync.SaveSyncManager
 import dagger.android.support.AndroidSupportInjection
@@ -61,6 +69,21 @@ class TVSettingsFragment : LeanbackPreferenceFragmentCompat() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        // The Arcade child screen returns to core selection, keeping the TV remote flow local.
+        val wrapper = parentFragment as? LeanbackSettingsFragmentCompat
+        if (wrapper != null && arguments?.getString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT) ==
+            getString(R.string.pref_key_arcade_core_selection)
+        ) {
+            val coreSelectionKey = getString(R.string.pref_key_open_cores_selection)
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                wrapper.startPreferenceFragment(TVSettingsFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, coreSelectionKey)
+                    }
+                })
+            }
+        }
+
         launchOnState(Lifecycle.State.CREATED) {
             val gamePadStatus =
                 combine(
@@ -95,12 +118,33 @@ class TVSettingsFragment : LeanbackPreferenceFragmentCompat() {
         savedInstanceState: Bundle?,
         rootKey: String?,
     ) {
+        runCatching { PerformanceProfileManager.ensureInitialized(requireContext()) }
         preferenceManager.preferenceDataStore =
             SharedPreferencesHelper.getSharedPreferencesDataStore(requireContext())
         setPreferencesFromResource(R.xml.tv_settings, rootKey)
 
+        findPreference<ListPreference>(PerformanceProfileManager.PREF_KEY_PERFORMANCE_PROFILE)?.let { pref ->
+            if (pref.value.isNullOrEmpty()) {
+                pref.value =
+                    when (PerformanceProfileManager.getActiveProfile(requireContext())) {
+                        PerformanceProfile.QUALITY -> "quality"
+                        PerformanceProfile.BALANCED -> "balanced"
+                        PerformanceProfile.PERFORMANCE -> "performance"
+                    }
+            }
+        }
+
         getCoresSelectionScreen()?.let {
             coresSelectionPreferences.addCoresSelectionPreferences(it)
+        }
+
+        findPreference<PreferenceScreen>(getString(R.string.pref_key_arcade_core_selection))?.let {
+            coresSelectionPreferences.addArcadeCoresSelectionPreferences(it)
+        }
+
+        findPreference<Preference>("system_performance_profiles")?.setOnPreferenceClickListener {
+            startActivity(android.content.Intent(requireContext(), com.swordfish.lemuroid.app.shared.gamepreferences.SystemProfilesActivity::class.java))
+            true
         }
 
         getBiosInfoPreferenceScreen()?.let {
@@ -117,11 +161,48 @@ class TVSettingsFragment : LeanbackPreferenceFragmentCompat() {
             }
             it.isVisible = saveSyncManager.isSupported()
         }
+
+        val customCacheEnabledKey = getString(com.swordfish.lemuroid.lib.R.string.pref_key_custom_cache_enabled)
+        findPreference<Preference>(customCacheEnabledKey)?.setOnPreferenceChangeListener { _, newValue ->
+            val enabled = newValue as? Boolean ?: false
+            settingsInteractor.setCustomCacheEnabled(enabled)
+            true
+        }
     }
 
     override fun onResume() {
         super.onResume()
         refreshSaveSyncScreen()
+        refreshBiosFolderSummary()
+        refreshCacheFolderSummary()
+    }
+
+    private fun refreshBiosFolderSummary() {
+        val biosKey = getString(com.swordfish.lemuroid.lib.R.string.pref_key_external_bios_folder)
+        val pref = findPreference<Preference>(biosKey) ?: return
+        val folderUri =
+            SharedPreferencesHelper
+                .getLegacySharedPreferences(requireContext())
+                .getString(biosKey, null)
+        val folderName =
+            folderUri?.let { uri ->
+                runCatching { DocumentFile.fromTreeUri(requireContext(), Uri.parse(uri))?.name }.getOrNull()
+            } ?: getString(R.string.none)
+        pref.summary = folderName
+    }
+
+    private fun refreshCacheFolderSummary() {
+        val cacheKey = getString(com.swordfish.lemuroid.lib.R.string.pref_key_custom_cache_folder)
+        val pref = findPreference<Preference>(cacheKey) ?: return
+        val folderUri =
+            SharedPreferencesHelper
+                .getLegacySharedPreferences(requireContext())
+                .getString(cacheKey, null)
+        val folderName =
+            folderUri?.let { uri ->
+                runCatching { DocumentFile.fromTreeUri(requireContext(), Uri.parse(uri))?.name }.getOrNull()
+            } ?: getString(R.string.none)
+        pref.summary = folderName
     }
 
     private fun getGamePadPreferenceScreen(): PreferenceScreen? {
@@ -181,6 +262,14 @@ class TVSettingsFragment : LeanbackPreferenceFragmentCompat() {
         }
 
         when (preference.key) {
+            getString(com.swordfish.lemuroid.lib.R.string.pref_key_external_bios_folder) -> {
+                settingsInteractor.changeBiosFolder()
+                return true
+            }
+            getString(com.swordfish.lemuroid.lib.R.string.pref_key_custom_cache_folder) -> {
+                settingsInteractor.changeCacheFolder()
+                return true
+            }
             getString(R.string.pref_key_reset_gamepad_bindings) ->
                 lifecycleScope.launch {
                     handleResetGamePadBindings()

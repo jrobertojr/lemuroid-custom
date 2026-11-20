@@ -11,6 +11,10 @@ import androidx.leanback.widget.VerticalGridPresenter
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
+import androidx.compose.ui.graphics.toArgb
+import com.swordfish.lemuroid.R
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.colorScheme
 import com.swordfish.lemuroid.app.shared.GameInteractor
 import com.swordfish.lemuroid.app.shared.games.GroupedGameEntry
 import com.swordfish.lemuroid.app.shared.games.MultiDiscGrouper
@@ -47,10 +51,9 @@ class TVGamesFragment : VerticalGridSupportFragment() {
         val gamesViewModel = ViewModelProvider(this, factory)[TVGamesViewModel::class.java]
 
         val cardSize = resources.getDimensionPixelSize(com.swordfish.lemuroid.lib.R.dimen.card_size)
-        val gamesAdapter = ArrayObjectAdapter(GamePresenter(cardSize, gameInteractor))
-        this.adapter = gamesAdapter
-
         val multiDiscMap = HashMap<Int, GroupedGameEntry.MultiDisc>()
+        val gamesAdapter = ArrayObjectAdapter(GamePresenter(cardSize, gameInteractor) { it.id !in multiDiscMap })
+        this.adapter = gamesAdapter
 
         launchOnState(Lifecycle.State.RESUMED) {
             gamesViewModel.games.collect { rawGames ->
@@ -80,18 +83,43 @@ class TVGamesFragment : VerticalGridSupportFragment() {
                     val multiDisc = multiDiscMap[item.id]
                     if (multiDisc != null) {
                         val discNames = multiDisc.discs.map { multiDisc.itemLabel(it) }.toTypedArray()
-                        AlertDialog.Builder(requireContext())
+                        val dialog = AlertDialog.Builder(requireContext())
                             .setTitle(multiDisc.folderName)
                             .setItems(discNames) { _, which ->
                                 gameInteractor.onGamePlay(multiDisc.discs[which])
                             }
                             .setNegativeButton(android.R.string.cancel, null)
-                            .show()
+                            .create()
+                        dialog.setOnKeyListener { _, keyCode, event ->
+                            if (keyCode == android.view.KeyEvent.KEYCODE_BUTTON_X) {
+                                if (event.action == android.view.KeyEvent.ACTION_UP) {
+                                    val position = dialog.listView.selectedItemPosition
+                                    multiDisc.discs.getOrNull(position)?.let { disc ->
+                                        dialog.dismiss()
+                                        gameInteractor.onGamePreferences(disc)
+                                    }
+                                }
+                                true
+                            } else false
+                        }
+                        dialog.show()
                     } else {
                         gameInteractor.onGamePlay(item)
                     }
                 }
             }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val ctx = context ?: return
+        val themeKey =
+            com.swordfish.lemuroid.lib.preferences.SharedPreferencesHelper
+                .getSharedPreferences(ctx)
+                .getString(getString(R.string.pref_key_frontend_theme), "default")
+        FrontendTheme.fromKey(themeKey).colorScheme()?.let { scheme ->
+            view?.setBackgroundColor(scheme.background.toArgb())
+        }
     }
 
     override fun onAttach(context: Context) {

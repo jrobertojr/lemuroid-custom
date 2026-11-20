@@ -1,0 +1,37 @@
+{
+  "ndk": "27.2.12479018",
+  "libraries": [
+    {
+      "file": "src/main/jniLibs/armeabi-v7a/libmesen_compat_libretro_android.so",
+      "sha256": "6fcdbc1208ebf2cefd5bb115d8428394fed77cedcb623466efb5c3889903db2a"
+    },
+    {
+      "file": "src/main/jniLibs/armeabi-v7a/libmesen-s_compat_libretro_android.so",
+      "sha256": "5e61643a3204aa28439360b3a56274357d34b4aec3312be45cde73675f8f9a51"
+    },
+    {
+      "file": "src/main/jniLibs/arm64-v8a/libmesen_compat_libretro_android.so",
+      "sha256": "8e5a608088bf9b67c8591ac869d539fcdbc987367b0d3500713e5c59c8314ef1"
+    },
+    {
+      "file": "src/main/jniLibs/arm64-v8a/libmesen-s_compat_libretro_android.so",
+      "sha256": "9b9b873a7e1b18b203331620ecb146fb10c85930e9481bf1e083c7f6fca87e4b"
+    },
+    {
+      "file": "src/main/jniLibs/x86/libmesen_compat_libretro_android.so",
+      "sha256": "c92ec0583d70507e6b2aae35ce62af7b2ba170ae414506ef01d4092d96774d20"
+    },
+    {
+      "file": "src/main/jniLibs/x86/libmesen-s_compat_libretro_android.so",
+      "sha256": "5104b41a963a02e8b093615e0c73477ed448d43d24b8cd38f7a586049d2b68ce"
+    },
+    {
+      "file": "src/main/jniLibs/x86_64/libmesen_compat_libretro_android.so",
+      "sha256": "29352dff730224236ba9db463856d8e4e1ddbaaef4fcc33930fd14d2f7c49cf5"
+    },
+    {
+      "file": "src/main/jniLibs/x86_64/libmesen-s_compat_libretro_android.so",
+      "sha256": "e5620109db18b66ac1ebc44dfd8877312bea13f8dbc683688d37a045ae294fe5"
+    }
+  ]
+}

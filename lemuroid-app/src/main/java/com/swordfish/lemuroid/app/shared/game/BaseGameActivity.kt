@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.MotionEvent
 import androidx.activity.OnBackPressedCallback
@@ -32,13 +33,16 @@ import com.swordfish.lemuroid.common.dump
 import com.swordfish.lemuroid.common.kotlin.serializable
 import com.swordfish.lemuroid.lib.core.CoreVariablesManager
 import com.swordfish.lemuroid.lib.game.GameLoader
+import com.swordfish.lemuroid.lib.library.CoreID
 import com.swordfish.lemuroid.lib.library.ExposedSetting
 import com.swordfish.lemuroid.lib.library.GameSystem
 import com.swordfish.lemuroid.lib.library.SystemCoreConfig
+import com.swordfish.lemuroid.lib.library.SystemID
 import com.swordfish.lemuroid.lib.library.db.entity.Game
 import com.swordfish.lemuroid.lib.saves.SavesManager
 import com.swordfish.lemuroid.lib.saves.StatesManager
 import com.swordfish.lemuroid.lib.saves.StatesPreviewManager
+import com.swordfish.libretrodroid.Variable
 import com.swordfish.touchinput.radial.sensors.TiltConfiguration
 import dagger.Lazy
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -88,6 +92,12 @@ abstract class BaseGameActivity : ImmersiveActivity() {
 
     private val startGameTime = System.currentTimeMillis()
     private var finishTriggered = false
+
+    private var isNdsScreenPeekActive = false
+    private var ndsPeekVariableKey: String? = null
+    private var ndsPrimaryScreenLayout: String? = null
+    private var isNdsPeekHeldByKey = false
+    private var isNdsPeekHeldByAxis = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -177,6 +187,8 @@ abstract class BaseGameActivity : ImmersiveActivity() {
         currentTiltConfiguration: TiltConfiguration,
         tiltConfigurations: List<TiltConfiguration>,
     ) {
+        stopNdsScreenPeek()
+
         if (baseGameScreenViewModel.loadingState.value) {
             return
         }
@@ -266,7 +278,103 @@ abstract class BaseGameActivity : ImmersiveActivity() {
         baseGameScreenViewModel.toggleFastForward()
     }
 
+    private fun resolveNdsSingleScreenLayout(): Triple<String, String, String>? {
+        if (system.id != SystemID.NDS) {
+            return null
+        }
+
+        val (variableKey, topLayout, bottomLayout) =
+            when (systemCoreConfig.coreID) {
+                CoreID.DESMUME ->
+                    Triple(
+                        DESMUME_SCREEN_LAYOUT_KEY,
+                        DESMUME_LAYOUT_TOP_ONLY,
+                        DESMUME_LAYOUT_BOTTOM_ONLY,
+                    )
+                CoreID.MELONDS ->
+                    Triple(
+                        MELONDS_SCREEN_LAYOUT_KEY,
+                        MELONDS_LAYOUT_TOP_ONLY,
+                        MELONDS_LAYOUT_BOTTOM_ONLY,
+                    )
+                CoreID.NOODS -> Triple("noods_screenLayout", "top", "bottom")
+                CoreID.DSPERATE -> Triple("dsperate_screen_layout", "top", "bottom")
+                CoreID.DESMUME_2015 ->
+                    Triple("desmume2015_screens_layout", DESMUME_LAYOUT_TOP_ONLY, DESMUME_LAYOUT_BOTTOM_ONLY)
+                else -> return null
+            }
+
+        val currentLayout =
+            baseGameScreenViewModel.retroGameView.retroGameView
+                ?.getVariables()
+                ?.firstOrNull { it.key == variableKey }
+                ?.value
+                ?: sharedPreferences.get().getString(
+                    CoreVariablesManager.computeSharedPreferenceKey(variableKey, system.id.dbname),
+                    null,
+                )
+
+        return when (currentLayout) {
+            topLayout -> Triple(variableKey, topLayout, bottomLayout)
+            bottomLayout -> Triple(variableKey, bottomLayout, topLayout)
+            else -> null
+        }
+    }
+
+    private fun startNdsScreenPeek(): Boolean {
+        if (isNdsScreenPeekActive) {
+            return true
+        }
+
+        val (key, primary, opposite) = resolveNdsSingleScreenLayout() ?: return false
+        ndsPeekVariableKey = key
+        ndsPrimaryScreenLayout = primary
+        isNdsScreenPeekActive = true
+        baseGameScreenViewModel.retroGameView.retroGameView?.updateVariables(Variable(key, opposite))
+        return true
+    }
+
+    private fun stopNdsScreenPeek() {
+        if (!isNdsScreenPeekActive) {
+            return
+        }
+
+        val key = ndsPeekVariableKey
+        val primary = ndsPrimaryScreenLayout
+        isNdsScreenPeekActive = false
+        isNdsPeekHeldByKey = false
+        isNdsPeekHeldByAxis = false
+        ndsPeekVariableKey = null
+        ndsPrimaryScreenLayout = null
+
+        if (key != null && primary != null) {
+            baseGameScreenViewModel.retroGameView.retroGameView?.updateVariables(Variable(key, primary))
+        }
+    }
+
     override fun onGenericMotionEvent(event: MotionEvent): Boolean {
+        if (system.id == SystemID.NDS && (event.source and InputDevice.SOURCE_JOYSTICK) != 0) {
+            val rTrigger =
+                maxOf(
+                    event.getAxisValue(MotionEvent.AXIS_RTRIGGER),
+                    event.getAxisValue(MotionEvent.AXIS_GAS),
+                )
+            if (rTrigger >= NDS_PEEK_TRIGGER_PRESS_THRESHOLD) {
+                if (!isNdsScreenPeekActive) {
+                    if (startNdsScreenPeek()) {
+                        isNdsPeekHeldByAxis = true
+                    }
+                } else {
+                    isNdsPeekHeldByAxis = true
+                }
+            } else if (rTrigger < NDS_PEEK_TRIGGER_RELEASE_THRESHOLD && isNdsPeekHeldByAxis) {
+                isNdsPeekHeldByAxis = false
+                if (!isNdsPeekHeldByKey) {
+                    stopNdsScreenPeek()
+                }
+            }
+        }
+
         val handled = baseGameScreenViewModel.sendMotionEvent(event)
         if (handled) {
             return true
@@ -278,6 +386,16 @@ abstract class BaseGameActivity : ImmersiveActivity() {
         keyCode: Int,
         event: KeyEvent,
     ): Boolean {
+        if (system.id == SystemID.NDS && keyCode == KeyEvent.KEYCODE_BUTTON_R2) {
+            if (event.repeatCount > 0 && isNdsScreenPeekActive) {
+                return true
+            }
+            if (startNdsScreenPeek()) {
+                isNdsPeekHeldByKey = true
+                return true
+            }
+        }
+
         val handled = baseGameScreenViewModel.sendKeyEvent(keyCode, event)
         if (handled) {
             return true
@@ -289,6 +407,14 @@ abstract class BaseGameActivity : ImmersiveActivity() {
         keyCode: Int,
         event: KeyEvent,
     ): Boolean {
+        if (system.id == SystemID.NDS && keyCode == KeyEvent.KEYCODE_BUTTON_R2 && isNdsScreenPeekActive) {
+            isNdsPeekHeldByKey = false
+            if (!isNdsPeekHeldByAxis) {
+                stopNdsScreenPeek()
+            }
+            return true
+        }
+
         val handled = baseGameScreenViewModel.sendKeyEvent(keyCode, event)
         if (handled) {
             return true
@@ -341,6 +467,11 @@ abstract class BaseGameActivity : ImmersiveActivity() {
 
     open fun onFinishTriggered() {
         finishTriggered = true
+    }
+
+    override fun onPause() {
+        stopNdsScreenPeek()
+        super.onPause()
     }
 
     override fun onStop() {
@@ -423,6 +554,15 @@ abstract class BaseGameActivity : ImmersiveActivity() {
         private const val EXTRA_LOAD_SAVE = "LOAD_SAVE"
         private const val EXTRA_LEANBACK = "LEANBACK"
         private const val EXTRA_SYSTEM_CORE_CONFIG = "EXTRA_SYSTEM_CORE_CONFIG"
+
+        private const val DESMUME_SCREEN_LAYOUT_KEY = "desmume_screens_layout"
+        private const val DESMUME_LAYOUT_TOP_ONLY = "top only"
+        private const val DESMUME_LAYOUT_BOTTOM_ONLY = "bottom only"
+        private const val MELONDS_SCREEN_LAYOUT_KEY = "melonds_screen_layout1"
+        private const val MELONDS_LAYOUT_TOP_ONLY = "top"
+        private const val MELONDS_LAYOUT_BOTTOM_ONLY = "bottom"
+        private const val NDS_PEEK_TRIGGER_PRESS_THRESHOLD = 0.5f
+        private const val NDS_PEEK_TRIGGER_RELEASE_THRESHOLD = 0.35f
 
         const val REQUEST_PLAY_GAME = 1001
         const val PLAY_GAME_RESULT_SESSION_DURATION = "PLAY_GAME_RESULT_SESSION_DURATION"

@@ -7,6 +7,60 @@
         android:title="@string/settings_category_general"
         app:iconSpaceReserved="false">
 
+        <ListPreference
+            android:key="@string/pref_key_frontend_theme"
+            android:title="@string/settings_title_frontend_theme"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true"
+            android:entries="@array/pref_key_frontend_theme_display_names"
+            app:entryValues="@array/pref_key_frontend_theme_values"
+            android:defaultValue="default"/>
+
+        <ListPreference
+            android:key="@string/pref_key_performance_profile"
+            android:title="@string/settings_title_performance_profile"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true"
+            android:entries="@array/pref_key_performance_profile_names"
+            app:entryValues="@array/pref_key_performance_profile_values"
+            android:defaultValue="quality"/>
+
+        <Preference android:key="system_performance_profiles" android:title="Desempenho por sistema" android:summary="Escolha um dos três modos ou use a configuração geral" app:iconSpaceReserved="false" />
+
+        <ListPreference
+            android:key="@string/pref_key_console_bezel_mode"
+            android:title="@string/settings_title_console_bezel_mode"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true"
+            android:entries="@array/pref_key_console_bezel_mode_names"
+            app:entryValues="@array/pref_key_console_bezel_mode_values"
+            android:defaultValue="auto"/>
+
+        <SwitchPreference
+            android:key="@string/pref_key_frontend_sounds"
+            android:title="@string/settings_title_frontend_sounds"
+            android:summary="@string/settings_description_frontend_sounds"
+            app:iconSpaceReserved="false"
+            android:defaultValue="true"/>
+
+        <Preference
+            android:key="@string/pref_key_external_bios_folder"
+            android:title="@string/bios_directory"
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreference
+            android:key="@string/pref_key_custom_cache_enabled"
+            android:title="@string/settings_title_custom_cache_enabled"
+            android:summary="@string/settings_description_custom_cache_enabled"
+            app:iconSpaceReserved="false"
+            android:defaultValue="false"/>
+
+        <Preference
+            android:key="@string/pref_key_custom_cache_folder"
+            android:title="@string/cache_directory"
+            app:dependency="@string/pref_key_custom_cache_enabled"
+            app:iconSpaceReserved="false"/>
+
         <SwitchPreference
             android:key="@string/pref_key_autosave"
             android:title="@string/settings_title_enable_autosave"
@@ -78,7 +132,13 @@
             android:key="@string/pref_key_open_cores_selection"
             android:title="@string/settings_title_open_cores_selection"
             app:summary="@string/settings_description_open_cores_selection"
-            app:iconSpaceReserved="false"/>
+            app:iconSpaceReserved="false">
+            <PreferenceScreen
+                android:key="@string/pref_key_arcade_core_selection"
+                android:title="@string/game_system_title_arcade"
+                app:summary="@string/settings_core_selection_arcade_summary"
+                app:iconSpaceReserved="false"/>
+        </PreferenceScreen>
 
         <PreferenceScreen
             android:key="@string/pref_key_display_bios_info"

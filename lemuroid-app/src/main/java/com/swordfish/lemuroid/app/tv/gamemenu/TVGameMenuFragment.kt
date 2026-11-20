@@ -48,6 +48,16 @@ class TVGameMenuFragment(
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        preferenceScreen.addPreference(Preference(requireContext()).apply {
+            key = "game_launch_preferences"
+            title = "Núcleo e desempenho deste jogo"
+            summary = "Salvar escolhas para a próxima abertura"
+            order = -1
+            setOnPreferenceClickListener {
+                com.swordfish.lemuroid.app.shared.gamepreferences.GamePreferencesActivity.open(requireContext(), game, false)
+                true
+            }
+        })
         GameMenuHelper.setupAudioOption(preferenceScreen, audioEnabled)
         GameMenuHelper.setupFastForwardOption(preferenceScreen, fastForwardEnabled, fastForwardSupported)
         GameMenuHelper.setupSaveOption(preferenceScreen, systemCoreConfig)

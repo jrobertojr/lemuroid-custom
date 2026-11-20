@@ -162,6 +162,14 @@ private fun ContextActionContent(
             },
         )
         ContextActionEntry(
+            label = "Núcleo e desempenho deste jogo",
+            icon = Icons.Default.Edit,
+            onClick = {
+                com.swordfish.lemuroid.app.shared.gamepreferences.GamePreferencesActivity.open(context, selectedGame)
+                selectedGameState.value = null
+            },
+        )
+        ContextActionEntry(
             label = stringResource(id = R.string.game_context_menu_restart),
             icon = Icons.Default.RestartAlt,
             onClick = {

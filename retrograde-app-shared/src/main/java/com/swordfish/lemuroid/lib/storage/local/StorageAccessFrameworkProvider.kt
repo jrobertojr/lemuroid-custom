@@ -2,6 +2,8 @@ package com.swordfish.lemuroid.lib.storage.local
 
 import android.content.Context
 import android.net.Uri
+import android.os.Environment
+import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import androidx.documentfile.provider.DocumentFile
 import androidx.leanback.preference.LeanbackPreferenceFragment
@@ -21,6 +23,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.io.InputStream
 import java.util.zip.ZipInputStream
 
@@ -161,11 +165,9 @@ class StorageAccessFrameworkProvider(private val context: Context) : StorageProv
             return RomFiles.Standard(listOf(cacheFile))
         }
 
-        val stream =
-            ZipInputStream(
-                context.contentResolver.openInputStream(originalDocument.uri),
-            )
-        stream.extractEntryToFile(game.fileName, cacheFile)
+        ZipInputStream(openInputStreamResilient(originalDocument.uri)).use { stream ->
+            stream.extractEntryToFile(game.fileName, cacheFile)
+        }
         return RomFiles.Standard(listOf(cacheFile))
     }
 
@@ -181,7 +183,7 @@ class StorageAccessFrameworkProvider(private val context: Context) : StorageProv
     private fun getDataFileVirtual(dataFile: DataFile): RomFiles.Virtual.Entry {
         return RomFiles.Virtual.Entry(
             "$VIRTUAL_FILE_PATH/${dataFile.fileName}",
-            context.contentResolver.openFileDescriptor(Uri.parse(dataFile.fileUri), "r")!!,
+            openFileDescriptorResilient(Uri.parse(dataFile.fileUri)),
         )
     }
 
@@ -201,7 +203,7 @@ class StorageAccessFrameworkProvider(private val context: Context) : StorageProv
             return cacheFile
         }
 
-        val stream = context.contentResolver.openInputStream(Uri.parse(dataFile.fileUri))!!
+        val stream = openInputStreamResilient(Uri.parse(dataFile.fileUri))
         stream.writeToFile(cacheFile)
         return cacheFile
     }
@@ -209,7 +211,7 @@ class StorageAccessFrameworkProvider(private val context: Context) : StorageProv
     private fun getGameRomVirtual(game: Game): RomFiles.Virtual.Entry {
         return RomFiles.Virtual.Entry(
             "$VIRTUAL_FILE_PATH/${game.fileName}",
-            context.contentResolver.openFileDescriptor(Uri.parse(game.fileUri), "r")!!,
+            openFileDescriptorResilient(Uri.parse(game.fileUri)),
         )
     }
 
@@ -223,13 +225,73 @@ class StorageAccessFrameworkProvider(private val context: Context) : StorageProv
             return cacheFile
         }
 
-        val stream = context.contentResolver.openInputStream(originalDocument.uri)!!
+        val stream = openInputStreamResilient(originalDocument.uri)
         stream.writeToFile(cacheFile)
         return cacheFile
     }
 
     override fun getInputStream(uri: Uri): InputStream? {
-        return context.contentResolver.openInputStream(uri)
+        return runCatching { openInputStreamResilient(uri) }.getOrNull()
+    }
+
+    private fun openInputStreamResilient(uri: Uri): InputStream {
+        val primaryError =
+            try {
+                context.contentResolver.openInputStream(uri)?.let { return it }
+                FileNotFoundException("Null InputStream for $uri")
+            } catch (e: Exception) {
+                e
+            }
+
+        val fallbackFile = resolveLocalFileFromDocumentUri(uri)
+        if (fallbackFile != null && fallbackFile.exists() && fallbackFile.canRead()) {
+            Timber.w(primaryError, "SAF openInputStream failed for %s; falling back to %s", uri, fallbackFile.absolutePath)
+            return FileInputStream(fallbackFile)
+        }
+
+        throw primaryError
+    }
+
+    private fun openFileDescriptorResilient(uri: Uri): ParcelFileDescriptor {
+        val primaryError =
+            try {
+                context.contentResolver.openFileDescriptor(uri, "r")?.let { return it }
+                FileNotFoundException("Null ParcelFileDescriptor for $uri")
+            } catch (e: Exception) {
+                e
+            }
+
+        val fallbackFile = resolveLocalFileFromDocumentUri(uri)
+        if (fallbackFile != null && fallbackFile.exists() && fallbackFile.canRead()) {
+            Timber.w(primaryError, "SAF openFileDescriptor failed for %s; falling back to %s", uri, fallbackFile.absolutePath)
+            return ParcelFileDescriptor.open(fallbackFile, ParcelFileDescriptor.MODE_READ_ONLY)
+        }
+
+        throw primaryError
+    }
+
+    private fun resolveLocalFileFromDocumentUri(uri: Uri): File? {
+        val rawDocId =
+            runCatching { DocumentsContract.getDocumentId(uri) }.getOrNull()
+                ?: uri.lastPathSegment
+                ?: return null
+        val docId = Uri.decode(rawDocId)
+        return when {
+            docId.startsWith("/") -> File(docId)
+            docId.startsWith("raw:") -> File(docId.removePrefix("raw:"))
+            docId.contains(":") -> {
+                val volumeId = docId.substringBefore(':')
+                val relativePath = docId.substringAfter(':').trimStart('/')
+                val baseDir =
+                    when {
+                        volumeId.equals("primary", ignoreCase = true) -> Environment.getExternalStorageDirectory()
+                        volumeId.equals("home", ignoreCase = true) -> File(Environment.getExternalStorageDirectory(), "Documents")
+                        else -> File("/storage", volumeId)
+                    }
+                if (relativePath.isBlank()) baseDir else File(baseDir, relativePath)
+            }
+            else -> null
+        }
     }
 
     companion object {
