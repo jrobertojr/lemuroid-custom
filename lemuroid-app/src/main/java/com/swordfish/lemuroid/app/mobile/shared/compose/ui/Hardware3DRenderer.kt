@@ -235,7 +235,7 @@ class Hardware3DRenderer(
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
 
         // Upload a clean 4x4 dark fallback texture so the textured face never renders black/corrupt
-        atlasTextureId = createPixelArtAtlasTexture(context)
+        atlasTextureId = createPixelArtAtlasTexture(context, "textures/hardware_atlas_v3.png")
         uploadSolidFallbackTexture()
         hasUploadedTexture = false
 
@@ -1323,7 +1323,7 @@ class Hardware3DRenderer(
                 vec4 baseColor = uColor;
                 if (uUseTexture > 0.5) {
                     vec4 texColor = texture2D(uTexture, vTexCoord);
-                    baseColor = vec4(texColor.rgb, 1.0);
+                    baseColor = vec4(uColor.rgb * texColor.rgb, uColor.a * texColor.a);
                 }
 
                 // Directional key light (studio softbox top-right-front)

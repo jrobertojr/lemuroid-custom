@@ -9,7 +9,6 @@ import android.opengl.GLUtils
 import android.opengl.Matrix
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,9 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.swordfish.lemuroid.lib.preferences.PerformanceProfile
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -45,7 +41,6 @@ fun Console3DShowcaseView(
     systemKey: String,
     modifier: Modifier = Modifier,
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
     val appContext = LocalContext.current.applicationContext
     val profile = rememberFrontend3DProfile()
     val renderer = remember { Console3DRenderer(initialSystemKey = systemKey, appContext = appContext) }
@@ -57,21 +52,7 @@ fun Console3DShowcaseView(
     LaunchedEffect(profile) { renderer.setSpinning(profile != PerformanceProfile.PERFORMANCE) }
     Bind3DFrameClock(glSurfaceViewRef, listOf(systemKey, profile))
 
-    DisposableEffect(lifecycleOwner, glSurfaceViewRef) {
-        val observer =
-            LifecycleEventObserver { _, event ->
-                when (event) {
-                    Lifecycle.Event.ON_RESUME -> glSurfaceViewRef?.onResume()
-                    Lifecycle.Event.ON_PAUSE -> glSurfaceViewRef?.onPause()
-                    else -> Unit
-                }
-            }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-            glSurfaceViewRef?.onPause()
-        }
-    }
+    Bind3DSurfaceLifecycle(glSurfaceViewRef)
 
     AndroidView(
         modifier = modifier.fillMaxSize(),
@@ -111,7 +92,6 @@ fun LocadoraRing3DView(
     selectedIndex: Int,
     modifier: Modifier = Modifier,
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
     val appContext = LocalContext.current.applicationContext
     val profile = rememberFrontend3DProfile()
     val renderer = remember { LocadoraRing3DRenderer(appContext, consoleKeys, selectedIndex) }
@@ -123,21 +103,7 @@ fun LocadoraRing3DView(
     LaunchedEffect(profile) { renderer.setSpinning(profile != PerformanceProfile.PERFORMANCE) }
     Bind3DFrameClock(glSurfaceViewRef, listOf(consoleKeys, selectedIndex, profile))
 
-    DisposableEffect(lifecycleOwner, glSurfaceViewRef) {
-        val observer =
-            LifecycleEventObserver { _, event ->
-                when (event) {
-                    Lifecycle.Event.ON_RESUME -> glSurfaceViewRef?.onResume()
-                    Lifecycle.Event.ON_PAUSE -> glSurfaceViewRef?.onPause()
-                    else -> Unit
-                }
-            }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-            glSurfaceViewRef?.onPause()
-        }
-    }
+    Bind3DSurfaceLifecycle(glSurfaceViewRef)
 
     AndroidView(
         modifier = modifier.fillMaxSize(),
@@ -177,7 +143,6 @@ fun ConsoleRoom3DView(
     selectedIndex: Int,
     modifier: Modifier = Modifier,
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
     val appContext = LocalContext.current.applicationContext
     val profile = rememberFrontend3DProfile()
     val renderer = remember { ConsoleRoom3DRenderer(appContext, consoleKeys, selectedIndex) }
@@ -189,21 +154,7 @@ fun ConsoleRoom3DView(
     LaunchedEffect(profile) { renderer.setSpinning(profile != PerformanceProfile.PERFORMANCE) }
     Bind3DFrameClock(glSurfaceViewRef, listOf(consoleKeys, selectedIndex, profile))
 
-    DisposableEffect(lifecycleOwner, glSurfaceViewRef) {
-        val observer =
-            LifecycleEventObserver { _, event ->
-                when (event) {
-                    Lifecycle.Event.ON_RESUME -> glSurfaceViewRef?.onResume()
-                    Lifecycle.Event.ON_PAUSE -> glSurfaceViewRef?.onPause()
-                    else -> Unit
-                }
-            }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-            glSurfaceViewRef?.onPause()
-        }
-    }
+    Bind3DSurfaceLifecycle(glSurfaceViewRef)
 
     AndroidView(
         modifier = modifier.fillMaxSize(),
@@ -468,6 +419,7 @@ internal fun loadBlenderL3dFromAssets(
                     specStrength = specStrength,
                     emissive = emissive,
                     hasUV = hasUV,
+                    hardwareAtlas = hasUV,
                 ),
             )
         }
@@ -1349,6 +1301,7 @@ private fun buildMeshForConsole(key: String): List<MeshPart> {
         val specStrength: Float = 0.35f,
         val emissive: Float = 0f,
         val hasUV: Boolean = false,
+        val hardwareAtlas: Boolean = false,
     )
 
     private class MeshBuilder {
@@ -1957,9 +1910,12 @@ private const val FRAGMENT_SHADER = """
  *   Row 0: [0] 90s Wood Wall Paneling | [1] Oak Floor Planks | [2] Retro Carpet Rug | [3] Hardware Pixel Grain
  *   Row 1: [4] CRT Pixel Game Screen  | [5] Retro Game Poster| [6] Moonlit Window   | [7] Neon Arcade Marquee
  */
-internal fun createPixelArtAtlasTexture(context: Context? = null): Int {
+internal fun createPixelArtAtlasTexture(
+    context: Context? = null,
+    assetPath: String = "textures/pixel_atlas_v2.png",
+): Int {
     val atlas = context?.let {
-        runCatching { it.assets.open("textures/pixel_atlas_v2.png").use { stream ->
+        runCatching { it.assets.open(assetPath).use { stream ->
             BitmapFactory.decodeStream(stream)
         } }.getOrNull()
     }
@@ -2103,6 +2059,7 @@ internal fun createPixelArtAtlasTexture(context: Context? = null): Int {
 private class GlProgramHelper(private val context: Context? = null) {
     private var programId: Int = 0
     private var atlasTextureId: Int = 0
+    private var hardwareTextureId: Int = 0
     private var aPositionLoc: Int = -1
     private var aNormalLoc: Int = -1
     private var aTexCoordLoc: Int = -1
@@ -2131,6 +2088,7 @@ private class GlProgramHelper(private val context: Context? = null) {
         uTextureLoc = GLES20.glGetUniformLocation(programId, "uTexture")
         uUseTextureLoc = GLES20.glGetUniformLocation(programId, "uUseTexture")
         atlasTextureId = createPixelArtAtlasTexture(context)
+        hardwareTextureId = createPixelArtAtlasTexture(context, "textures/hardware_atlas_v3.png")
     }
 
     fun beginFrame(
@@ -2156,6 +2114,7 @@ private class GlProgramHelper(private val context: Context? = null) {
         GLES20.glUniformMatrix4fv(uModelMatrixLoc, 1, false, modelMatrix, 0)
 
         for (part in parts) {
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, if (part.hardwareAtlas) hardwareTextureId else atlasTextureId)
             val buf = part.vertexBuffer
             val minFloats = if (part.hasUV) FLOATS_PER_VERTEX_UV else FLOATS_PER_VERTEX
             if (part.vertexCount <= 0 || buf.limit() < minFloats) continue
@@ -2839,7 +2798,6 @@ fun RetroCrtTv3DView(
     channelIndex: Int,
     modifier: Modifier = Modifier,
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
     val appContext = LocalContext.current.applicationContext
     val renderer = remember { RetroCrtTv3DRenderer(initialChannelIndex = channelIndex, appContext = appContext) }
     var glSurfaceViewRef by remember { mutableStateOf<GLSurfaceView?>(null) }
@@ -2849,21 +2807,7 @@ fun RetroCrtTv3DView(
     }
     Bind3DFrameClock(glSurfaceViewRef, channelIndex)
 
-    DisposableEffect(lifecycleOwner, glSurfaceViewRef) {
-        val observer =
-            LifecycleEventObserver { _, event ->
-                when (event) {
-                    Lifecycle.Event.ON_RESUME -> glSurfaceViewRef?.onResume()
-                    Lifecycle.Event.ON_PAUSE -> glSurfaceViewRef?.onPause()
-                    else -> Unit
-                }
-            }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-            glSurfaceViewRef?.onPause()
-        }
-    }
+    Bind3DSurfaceLifecycle(glSurfaceViewRef)
 
     AndroidView(
         modifier = modifier,

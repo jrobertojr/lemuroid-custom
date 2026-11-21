@@ -249,6 +249,13 @@ def media(key):
     else:box('Game label',(0,h*.06,d*.57),(w*.72,h*.62,.012),COVER)
     return scene
 
+# FAITHFUL_CLI_REDIRECT
+# Historical entry point now builds the current reference-led assets.
+if __name__ == '__main__':
+    import runpy
+    runpy.run_path(str(ROOT / 'tools/art/build_faithful_hardware.py'), run_name='__main__')
+    raise SystemExit(0)
+
 OUT.mkdir(parents=True,exist_ok=True);SOURCE.mkdir(parents=True,exist_ok=True)
 rows=[];scenes=[]
 for key in KEYS:

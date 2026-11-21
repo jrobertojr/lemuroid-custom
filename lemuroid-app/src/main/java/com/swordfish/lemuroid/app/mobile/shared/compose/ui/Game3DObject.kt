@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.opengl.GLSurfaceView
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,10 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -52,9 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.graphics.drawable.toBitmap
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
@@ -75,7 +68,7 @@ import kotlinx.coroutines.withContext
  * - When [isSelected] is `true`, renders a real OpenGL ES 2.0 solid 3D hardware object
  *   ([Hardware3DRenderer]: Cartridge, Jewel Case, or MiniFliper Arcade Cabinet) inside a
  *   single reusable [GLSurfaceView] with UV-mapped cover art and continuous 360° studio rotation.
- * - When [isSelected] is `false`, renders a lightweight high-polish beveled 3D card preview
+ * - When [isSelected] is `false`, renders a lightweight preview baked from the same hardware mesh
  *   with `ContentScale.Fit` cover art and a hardware badge so scrolling grids stay smooth
  *   without spawning dozens of simultaneous GL contexts.
  */
@@ -90,16 +83,6 @@ fun Game3DObject(
     isSelected: Boolean = false,
 ) {
     val hardwareType = remember(game.systemId) { resolveHardware3DType(game.systemId) }
-    val shellColorRgba = remember(game.systemId) { resolveHardwareShellColor(game.systemId) }
-    val shellColor =
-        remember(shellColorRgba) {
-            Color(
-                red = shellColorRgba[0],
-                green = shellColorRgba[1],
-                blue = shellColorRgba[2],
-                alpha = shellColorRgba[3],
-            )
-        }
 
     Column(
         modifier = modifier.padding(horizontal = 6.dp, vertical = 8.dp),
@@ -123,10 +106,8 @@ fun Game3DObject(
                     modifier = Modifier.fillMaxSize(),
                 )
             } else {
-                Beveled3DHardwareThumbnail(
+                MediaThumbnail(
                     game = game,
-                    hardwareType = hardwareType,
-                    shellColor = shellColor,
                     modifier = Modifier.fillMaxSize(),
                 )
             }
@@ -182,7 +163,6 @@ private fun OpenGLHardwareShowcase(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
     val profile = rememberFrontend3DProfile()
     val coverSize = if (profile == PerformanceProfile.PERFORMANCE) 256 else 512
 
@@ -199,12 +179,8 @@ private fun OpenGLHardwareShowcase(
         }
 
     var glSurfaceViewRef by remember { mutableStateOf<GLSurfaceView?>(null) }
-    Bind3DFrameClock(glSurfaceViewRef, game.fileUri)
-
-    LaunchedEffect(profile) {
-        renderer.setSpinning(profile != PerformanceProfile.PERFORMANCE)
-        glSurfaceViewRef?.requestRender()
-    }
+    // The selected medium keeps rotating in every profile, at the clock's bounded cadence.
+    Bind3DFrameClock(glSurfaceViewRef, game.fileUri, animateInPerformance = true)
 
     LaunchedEffect(game.fileUri, game.displayCoverUrl(), coverSize) {
         // Keep the current object and cover until navigation settles and its replacement is ready.
@@ -229,21 +205,7 @@ private fun OpenGLHardwareShowcase(
         }
     }
 
-    DisposableEffect(lifecycleOwner, glSurfaceViewRef) {
-        val observer =
-            LifecycleEventObserver { _, event ->
-                when (event) {
-                    Lifecycle.Event.ON_RESUME -> glSurfaceViewRef?.onResume()
-                    Lifecycle.Event.ON_PAUSE -> glSurfaceViewRef?.onPause()
-                    else -> Unit
-                }
-            }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-            glSurfaceViewRef?.onPause()
-        }
-    }
+    Bind3DSurfaceLifecycle(glSurfaceViewRef)
 
     DisposableEffect(renderer) {
         onDispose {
@@ -360,195 +322,6 @@ private suspend fun loadCoverBitmapForGL(
 }
 
 @Composable
-private fun Beveled3DHardwareThumbnail(
-    game: Game,
-    hardwareType: Hardware3DType,
-    shellColor: Color,
-    modifier: Modifier = Modifier,
-) {
-    val sideBevelColor =
-        remember(hardwareType, shellColor) {
-            when (hardwareType) {
-                Hardware3DType.JEWEL_CASE -> Color(0xFFB5C0D2)
-                Hardware3DType.MINI_ARCADE -> Color(0xFF151924)
-                Hardware3DType.CARTRIDGE -> shellColor.darken(0.70f)
-            }
-        }
-    val bottomBevelColor =
-        remember(hardwareType, shellColor) {
-            when (hardwareType) {
-                Hardware3DType.JEWEL_CASE -> Color(0xFF707A8C)
-                Hardware3DType.MINI_ARCADE -> Color(0xFF0A0C12)
-                Hardware3DType.CARTRIDGE -> shellColor.darken(0.50f)
-            }
-        }
-    val trimAccent =
-        remember(hardwareType, game.systemId) {
-            when (hardwareType) {
-                Hardware3DType.MINI_ARCADE -> Color(0xFFE53935)
-                Hardware3DType.JEWEL_CASE ->
-                    when (game.systemId) {
-                        "psx" -> Color(0xFF2962FF)
-                        "psp" -> Color(0xFF00B0FF)
-                        "3ds" -> Color(0xFFD50000)
-                        "gc" -> Color(0xFF7C4DFF)
-                        else -> Color(0xFF607D8B)
-                    }
-                Hardware3DType.CARTRIDGE -> shellColor.lighten(1.18f)
-            }
-        }
-
-    val cardShape =
-        when (hardwareType) {
-            Hardware3DType.JEWEL_CASE -> RoundedCornerShape(6.dp)
-            Hardware3DType.MINI_ARCADE -> RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 5.dp, bottomEnd = 5.dp)
-            Hardware3DType.CARTRIDGE -> RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
-        }
-
-    val rightPath = remember { Path() }
-    val bottomPath = remember { Path() }
-
-    Box(modifier = modifier.padding(start = 6.dp, end = 4.dp, top = 4.dp, bottom = 6.dp)) {
-        // Soft floor shadow + thick isometric 3D right/bottom bevel
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val depthX = 9.dp.toPx()
-            val depthY = 8.dp.toPx()
-            val faceW = size.width - depthX
-            val faceH = size.height - depthY
-
-            // Ambient drop shadow
-            drawOval(
-                brush =
-                    Brush.radialGradient(
-                        colors = listOf(Color.Black.copy(alpha = 0.45f), Color.Transparent),
-                        center = Offset(size.width * 0.52f, size.height - 2.dp.toPx()),
-                        radius = size.width * 0.50f,
-                    ),
-                topLeft = Offset(size.width * 0.06f, size.height - 9.dp.toPx()),
-                size = androidx.compose.ui.geometry.Size(size.width * 0.88f, 10.dp.toPx()),
-            )
-
-            // Right 3D extruded bevel face
-            rightPath.reset()
-            rightPath.moveTo(faceW, 4.dp.toPx())
-            rightPath.lineTo(size.width, 4.dp.toPx() + depthY * 0.72f)
-            rightPath.lineTo(size.width, size.height - 2.dp.toPx())
-            rightPath.lineTo(faceW, faceH)
-            rightPath.close()
-            drawPath(path = rightPath, color = sideBevelColor)
-
-            // Bottom 3D extruded bevel face
-            bottomPath.reset()
-            bottomPath.moveTo(4.dp.toPx(), faceH)
-            bottomPath.lineTo(faceW, faceH)
-            bottomPath.lineTo(size.width, size.height - 2.dp.toPx())
-            bottomPath.lineTo(4.dp.toPx() + depthX * 0.85f, size.height - 2.dp.toPx())
-            bottomPath.close()
-            drawPath(path = bottomPath, color = bottomBevelColor)
-
-            // Mini arcade T-molding side stripe
-            if (hardwareType == Hardware3DType.MINI_ARCADE) {
-                drawLine(
-                    color = trimAccent.copy(alpha = 0.9f),
-                    start = Offset(size.width - 1.5.dp.toPx(), 10.dp.toPx()),
-                    end = Offset(size.width - 1.5.dp.toPx(), size.height - 4.dp.toPx()),
-                    strokeWidth = 2.dp.toPx(),
-                )
-            }
-        }
-
-        // Front hardware face
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(end = 9.dp, bottom = 8.dp)
-                    .clip(cardShape)
-                    .background(
-                        Brush.verticalGradient(
-                            colors =
-                                when (hardwareType) {
-                                    Hardware3DType.JEWEL_CASE -> listOf(Color(0xFF1A1F2C), Color(0xFF0E1118))
-                                    Hardware3DType.MINI_ARCADE -> listOf(Color(0xFF282E40), Color(0xFF141824))
-                                    Hardware3DType.CARTRIDGE -> listOf(shellColor.lighten(1.12f), shellColor.darken(0.86f))
-                                },
-                        ),
-                    )
-                    .border(1.dp, Color.White.copy(alpha = 0.22f), cardShape),
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                // Top hardware accent header (marquee / jewel lip / cartridge grip)
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(if (hardwareType == Hardware3DType.MINI_ARCADE) 10.dp else 6.dp)
-                            .background(
-                                Brush.horizontalGradient(
-                                    colors =
-                                        listOf(
-                                            trimAccent.copy(alpha = 0.85f),
-                                            trimAccent.copy(alpha = 0.35f),
-                                        ),
-                                ),
-                            ),
-                )
-
-                // Recessed cover art container with ContentScale.Fit
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .padding(
-                                horizontal = if (hardwareType == Hardware3DType.CARTRIDGE) 7.dp else 5.dp,
-                                vertical = 5.dp,
-                            )
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(Color(0xFF0C0F16))
-                            .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(4.dp)),
-                ) {
-                    LemuroidGameImage(
-                        game = game,
-                        contentScale = ContentScale.Fit,
-                        preserveAspect = true,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-
-                    // Subtle diagonal studio specular sheen
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .background(
-                                    Brush.linearGradient(
-                                        colors =
-                                            listOf(
-                                                Color.White.copy(alpha = 0.16f),
-                                                Color.Transparent,
-                                                Color.White.copy(alpha = 0.05f),
-                                            ),
-                                        start = Offset.Zero,
-                                        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
-                                    ),
-                                ),
-                    )
-                }
-            }
-
-            HardwareBadgePill(
-                systemId = game.systemId,
-                hardwareType = hardwareType,
-                modifier =
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(top = 8.dp, end = 6.dp),
-            )
-        }
-    }
-}
-
-@Composable
 private fun HardwareBadgePill(
     systemId: String,
     hardwareType: Hardware3DType,
@@ -578,22 +351,4 @@ private fun HardwareBadgePill(
             maxLines = 1,
         )
     }
-}
-
-private fun Color.darken(factor: Float): Color {
-    return Color(
-        red = (red * factor).coerceIn(0f, 1f),
-        green = (green * factor).coerceIn(0f, 1f),
-        blue = (blue * factor).coerceIn(0f, 1f),
-        alpha = alpha,
-    )
-}
-
-private fun Color.lighten(factor: Float): Color {
-    return Color(
-        red = (red * factor).coerceIn(0f, 1f),
-        green = (green * factor).coerceIn(0f, 1f),
-        blue = (blue * factor).coerceIn(0f, 1f),
-        alpha = alpha,
-    )
 }

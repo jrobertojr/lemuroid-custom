@@ -1,0 +1,182 @@
+{
+  "geometry": "New manually specified flat-shaded procedural geometry in Blender 5.2.2 LTS; no image-to-3D claim. Normalized display proportions, not engineering measurements.",
+  "image_generation": "Native image_gen; original outputs preserved. Technical nearest RGB565 packing with Blender.",
+  "reference_images": [
+    {
+      "reference": 1,
+      "sha256": "735abafe930b38da8a6d77775842547f271d5d2346087e5f3d476df2c44dca66",
+      "usage": "visual reference only; not a runtime bitmap"
+    },
+    {
+      "reference": 2,
+      "sha256": "ebad3f5a3e6d5ad92cbb145e12ed7be7b81ded524a85c6de12eac0ac86b6fbc3",
+      "usage": "visual reference only; not a runtime bitmap"
+    },
+    {
+      "reference": 3,
+      "sha256": "c2206173b2b90f20cd0d0817f3704da2af3f23109973a522477b166696a821cf",
+      "usage": "visual reference only; not a runtime bitmap"
+    },
+    {
+      "reference": 4,
+      "sha256": "c53853d8c891366d3dd6898a771fba4d9c1232512ef8633bcf804e82a4ff8983",
+      "usage": "visual reference only; not a runtime bitmap"
+    },
+    {
+      "reference": 5,
+      "sha256": "16caec3cf0ee51efe081841745cd1082da081a019c6ea8d5b5d19dcddb722d15",
+      "usage": "visual reference only; not a runtime bitmap"
+    },
+    {
+      "reference": 6,
+      "sha256": "8534afad85e05f460f1a94984f32b4bb149f2fb9c79bfda6d01d3b16cd83d35e",
+      "usage": "visual reference only; not a runtime bitmap"
+    },
+    {
+      "reference": 7,
+      "sha256": "e213c409c740f1484970015b8d40f4504ca6c86f158ad656801f4bfa3426f5d5",
+      "usage": "visual reference only; not a runtime bitmap"
+    },
+    {
+      "reference": 8,
+      "sha256": "8eca19d0f6b303f8fe3e7fca01022b2d32a059de085eaf741465cc453be053ce",
+      "usage": "visual reference only; not a runtime bitmap"
+    },
+    {
+      "reference": 9,
+      "sha256": "e256336c159dcf83c22931f7b2e60bbf8cbfbd64139985d01d70c1bada90b7f8",
+      "usage": "visual reference only; not a runtime bitmap"
+    },
+    {
+      "reference": 10,
+      "sha256": "b10d785f4e2572eaa476c5f44a734212f10527cde75b9773e64aeaad9b7023e1",
+      "usage": "visual reference only; not a runtime bitmap"
+    }
+  ],
+  "files": {
+    "art-source/faithful-hardware/atlas-source-faceplates.png": "63c7b0623fd3fdedcbf69d1979ae236e4ec8c413f4ec4ee09a1b0c9f094fb6f9",
+    "art-source/faithful-hardware/atlas-source-revised.png": "45d378aab8f7c1243fc3fd36c378ba8490def24d131fc72da47f15e389d65605",
+    "art-source/faithful-hardware/atlas-source.png": "003840631cb4a00dc9cf72cbe7e3ef4a632578ab37bc6323baa20e8e94a8b27a",
+    "art-source/faithful-hardware/console-contact-sheet.png": "16111291f86a7a3f2994b0598681d17d40cda6419dc0669b7ad16bde284f5d7c",
+    "art-source/faithful-hardware/console-sheet-1.png": "48ed27d9974acac59bc27fd9f007daa5cb7eb8fe93a7ca4d5885bed19ae45141",
+    "art-source/faithful-hardware/console-sheet-2.png": "35d96e5f00f437718fdb8d1d219038422fd92e505c941fda992e34054fa18c72",
+    "art-source/faithful-hardware/decals-source.png": "ada98921ebac74a0df7ed4839ee5d4813f304fd45bdb1db843f57927b3e46bc4",
+    "art-source/faithful-hardware/media-sheet-1.png": "3636c36fcb484272763050606edf6df681efdd2bed7c70bc8bc9106cfbda9e86",
+    "art-source/faithful-hardware/media-sheet-2.png": "1bd6cfbcf5884d65234bc9f0b4a49bd1960b2191acc6f785e6f0e5b6de6dcdfe",
+    "art-source/faithful-hardware/inspection/3ds-front.png": "0e91799d10c1db5a6dd4634a4e7185cbae4167fc9d8bf1d729718fc691936022",
+    "art-source/faithful-hardware/inspection/3ds-three-quarter.png": "c671f472148d5679ff3f988a682684c9793550c97a4695f7b35def10fcb49190",
+    "art-source/faithful-hardware/inspection/arcade-front.png": "c8b3ec96f1b98cd3c7470ec47cddc2cf011dcbdd6a10575b3d53682b2f9160eb",
+    "art-source/faithful-hardware/inspection/arcade-three-quarter.png": "3c68a87e63c79fbbe7e6a9777aab9c7f73662a77647a83de1061b561f1164874",
+    "art-source/faithful-hardware/inspection/atari2600-front.png": "6110ec08d8dd59d09911d9ded90528dfc4e9ed98c8abcc7dc94493dc55425fd7",
+    "art-source/faithful-hardware/inspection/atari2600-three-quarter.png": "d0024329cebb26e8b6705bc766e78aa9e95f1ba0df4f27cae7590d0ba3d1dd05",
+    "art-source/faithful-hardware/inspection/atari7800-front.png": "323e5e2763deca7e560c2ce9f44a8606ff405faf33b841209cb4e59fbae69211",
+    "art-source/faithful-hardware/inspection/atari7800-three-quarter.png": "77cf57ab68a83b02e6b9e2b50e602ed9c587697d56e865b0e2740feeece37518",
+    "art-source/faithful-hardware/inspection/dos-front.png": "34c5e784b31106ecf3adf003bdaeb002cadc5d0b9be1b387e534d2bf5b4b99ae",
+    "art-source/faithful-hardware/inspection/dos-three-quarter.png": "95c088fc0d7d7835c4500d3eaf0aee24e38aba24a68a1b9868bb89e7ede688ec",
+    "art-source/faithful-hardware/inspection/gb-front.png": "70270e6d0bc16aae77dc3397b9065e4ee902b40a033b7c233a0b1c9a508c56a1",
+    "art-source/faithful-hardware/inspection/gb-three-quarter.png": "e4df2e3453bf925ff6379a3ddef1b6b6be049952f06868eca1057a345a298e25",
+    "art-source/faithful-hardware/inspection/gba-front.png": "0bff88a7e5fd4861276ca95bb75f7145d70ee259d3860d6e253a9af0bb9d79eb",
+    "art-source/faithful-hardware/inspection/gba-three-quarter.png": "0887b6b8516bfb53fc0f562d198190eff02962a3b50fad7768903314b5c7f010",
+    "art-source/faithful-hardware/inspection/gbc-front.png": "f421198053a84f59f64ee535ba57ab19d8cfe93ffab3857de60848670cc66de1",
+    "art-source/faithful-hardware/inspection/gbc-three-quarter.png": "a5f8d1111da411fa343d77c7f56c985aec95019e60cd5f51fc9f41385da29cb3",
+    "art-source/faithful-hardware/inspection/gg-front.png": "daa45ba5fd8ac8ee947a37d08a1c068bc734c7c9b1b8a5fa4baa61dcd47bf702",
+    "art-source/faithful-hardware/inspection/gg-three-quarter.png": "a5c95874012ccad122916c52bbd462f87da38a018d0e570af3e72124d10b19a7",
+    "art-source/faithful-hardware/inspection/lynx-front.png": "20dc5486069db59d7bb804221b5ffbdc06eae10b59578014f0880c9e00f01bff",
+    "art-source/faithful-hardware/inspection/lynx-three-quarter.png": "8db84746e042ad1a651084f28a393f42baa5e9f5c3b9cff8ee6d4762fb02fd5c",
+    "art-source/faithful-hardware/inspection/md-front.png": "29fbd80f93cd32624162890836e581280815852dba26f3db6b40ffbdff8cc168",
+    "art-source/faithful-hardware/inspection/md-three-quarter.png": "dc9cb3439de3f325b9dde12461e354c72d29ae2ad9ceb8dec3385aada9ac0a20",
+    "art-source/faithful-hardware/inspection/n64-front.png": "66a64e3a512c5144a345d95ffef7d9e744c9703220ca8a66021b67536de6e8a7",
+    "art-source/faithful-hardware/inspection/n64-three-quarter.png": "8c024264c943edb1bc280c8c7678285fa1c9e1ff47b28eac9338085052b92369",
+    "art-source/faithful-hardware/inspection/nds-front.png": "2c7f609cb9f38a3beed1c06bc8f1b4cb7564a259436e2f212af06ceb5da5646e",
+    "art-source/faithful-hardware/inspection/nds-three-quarter.png": "d1123de701a65b49ae177dbf33884da409997bf6d2bb1fe7e1418abd768b42ce",
+    "art-source/faithful-hardware/inspection/nes-front.png": "4f2f1db388b3b03f24b7acd28fba299e81376da257d425ab6d6f7313010637fc",
+    "art-source/faithful-hardware/inspection/nes-three-quarter.png": "39a27fcf32f4ddcc8486bd54243703cde5c65fc69f920df61afb70e16b169a05",
+    "art-source/faithful-hardware/inspection/ngc-front.png": "fc8ca5d0a24d667b89424c25ce4905054071bab288b48975847be2a29d48d3fd",
+    "art-source/faithful-hardware/inspection/ngc-three-quarter.png": "76433906bab9cce924a1f3e1a886f1b1c53a55d9b5e0502f6640984cd9b561ad",
+    "art-source/faithful-hardware/inspection/ngp-front.png": "86940f7f9827b4c7c34c0a5f68452293992521ce3fc9d57d0c3dd5ffcbb14440",
+    "art-source/faithful-hardware/inspection/ngp-three-quarter.png": "aaad562ada7e9571adab8334cae7b5f51d3301990264e3e2f291ca714f0836f6",
+    "art-source/faithful-hardware/inspection/pce-front.png": "d8c172162e4881f7170900629def0d3de9d6cb410180d612df9c440ff581f03f",
+    "art-source/faithful-hardware/inspection/pce-three-quarter.png": "9110263fa854bbf87fe7e13800f03516f286785afaa4c5d9da40035aded046c4",
+    "art-source/faithful-hardware/inspection/psp-front.png": "5d4e8d99212b106c17d7b94ba8297808d4b64f62ecd8063c54fbae82e0c4b0b7",
+    "art-source/faithful-hardware/inspection/psp-three-quarter.png": "a4399dd8dc21ccd467089c1bbd35d5bfd2b9b8635b35ffc951f80d4c93cbf56c",
+    "art-source/faithful-hardware/inspection/psx-front.png": "60e1fb87641647a1efb1bb2ecfd8cf875e3db513c831d29d79ab82c567112fe0",
+    "art-source/faithful-hardware/inspection/psx-three-quarter.png": "f2c1b51ca502e25e374de21c16dedbfd0b8aeea4fce88e8b986c5a2a29ab44d7",
+    "art-source/faithful-hardware/inspection/segacd-front.png": "e42e1ac5c5295016bc0a7def3640d3ba314bb2a27e362bd9b13d71d308e7c1cb",
+    "art-source/faithful-hardware/inspection/segacd-three-quarter.png": "ed58e37e17ec12e515d42090e3e773306ea0f14bd64bc85e41bf39492be9ce3f",
+    "art-source/faithful-hardware/inspection/sms-front.png": "8e0cac1b9cf419a5b8d1df54cb15363a58ce66f9f10c60d487dec9e9f2160174",
+    "art-source/faithful-hardware/inspection/sms-three-quarter.png": "e246894d651521ce910b352a44e74bbde0f1b9da0390fb1a9199caf222262a96",
+    "art-source/faithful-hardware/inspection/snes-front.png": "c0ea89e29d6a97f2b07129cec15a48867c23cb687753c21841c76b51514b553f",
+    "art-source/faithful-hardware/inspection/snes-three-quarter.png": "d8bbb67012f56f9a6d4510e8955731cd89fae87def90e70c76cb692573c468f1",
+    "art-source/faithful-hardware/inspection/ws-front.png": "7d5ec47e78a1433b5d7ab4ef147e655be7bbec2cfe4499cd7f5791d18ed7dfc8",
+    "art-source/faithful-hardware/inspection/ws-three-quarter.png": "46af454269e2325775356334a533508c2856da23b125055a43e440938676b7f7",
+    "art-source/faithful-hardware/inspection/wsc-front.png": "53183b192053648349953e5b3bb517cf2734d16fde6dc752bb428c5ec45bbc7d",
+    "art-source/faithful-hardware/inspection/wsc-three-quarter.png": "7cbcfa317f48362e35b53dad26cc2e8060fdc188db9005681dacaf56fd8eb6f8",
+    "art-source/faithful-hardware/hardware-library.blend": "b7abdd0f8758cd5285d3b925a60ae8973e6d1ed74be7c84ac672c72f99d59b26",
+    "art-source/faithful-hardware/manifest.json": "10ba8189e721bf237556488ae591b81857f4e8778608bea78e831290dfcef392",
+    "art-source/faithful-hardware/preview-bounds.json": "4906432e7f2a5ad5c882943ef814d1335a257997ca23967640464689209adb84",
+    "art-source/faithful-hardware/generation-prompts.json": "fc0c998651f0b1ed4cc99ce0215ed59c8afbe7e8a779c3cd03bcdbce4fd105c4",
+    "tools/art/build_faithful_hardware.py": "452938575051cface9c2bddfe19232fe0258c28cdb9377352bef477eeb5d5f83",
+    "tools/art/build_lowpoly_hardware.py": "f5b565a2e6690b6e7e462c8818a1f1fb3f968b43716a7ee4d148cb56ba730ed1",
+    "tools/art/normalize_pixel_atlas.py": "e1cca3f84e275ddbcc96cad232087f04d126f871ed3ec061c188345e647ad00c",
+    "tools/art/pack_hardware_atlas.py": "a5ff56eff94c78b8bca9151de6b174200437ef6ec49757d3de782864b7c92e33",
+    "tools/art/render_console_views.py": "1535c65c75bc59fc1441b22d4c4fc9e8eb8a266f6edb10ccd75b72cc29a3fd8a",
+    "tools/art/render_hardware_previews.py": "96a16546263d720029b1fc908a59fe32bba64992131ae85774e2523f7403bdca",
+    "tools/art/validate_l3d.py": "4a07c02a709c1b88dbda3f14de297c0a92646af0ed898bbdcb92d6f56f47b59a",
+    "lemuroid-app/src/main/assets/media_previews/3ds.png": "c899031702f086172e5a1f42acef06338039a58a1b497fba69308f1eaaa2dc81",
+    "lemuroid-app/src/main/assets/media_previews/arcade.png": "66df28cbdea86fc102940323ffce5b6061bd39caf4a594681866a727bf485315",
+    "lemuroid-app/src/main/assets/media_previews/atari2600.png": "bdb57dd6174400ae9343370ef4470dab4348198782809119b5adde87f7cf6db3",
+    "lemuroid-app/src/main/assets/media_previews/atari7800.png": "fa70878f70bd8e45fb843a007d3876f4de019728bc969f692dbe8def0486429a",
+    "lemuroid-app/src/main/assets/media_previews/dos.png": "844fb684f7e0cf4382366de0a80d8c3b49373b0cec50a3e58dd5f6780903e23a",
+    "lemuroid-app/src/main/assets/media_previews/gb.png": "40d2fdf3265905b0942cd258d7b4ccd8b3c59f8f715c65df2f22a4632e62329b",
+    "lemuroid-app/src/main/assets/media_previews/gba.png": "716096fb810abfaee549259a88ba540d972456e28d85c97b82ddba70edff4ee8",
+    "lemuroid-app/src/main/assets/media_previews/gbc.png": "33e35b6034157f23bb47160f0c9a324c08680f108782f074b6e395527e962857",
+    "lemuroid-app/src/main/assets/media_previews/gg.png": "0f414dd5011013e9c0356130baf867b0f704ac6f3069ffbf4415521f67cdc1c7",
+    "lemuroid-app/src/main/assets/media_previews/lynx.png": "b98589a5d589c76368bec52fed1cb21020bd820d400ba7df2a3fc04793701c1c",
+    "lemuroid-app/src/main/assets/media_previews/md.png": "832de248dcae3a43c9cf1ae40b0ca1edad4aa9b62ede6e347b7c8ead2b8fac52",
+    "lemuroid-app/src/main/assets/media_previews/n64.png": "66409b5e30bdb91e48266e62344cc9da53d9f27b5d231fe03892bba3dcb11007",
+    "lemuroid-app/src/main/assets/media_previews/nds.png": "3624f8791ba4ca5b6eb101eaee07d810756fb880ba715f146801351a15de3c66",
+    "lemuroid-app/src/main/assets/media_previews/nes.png": "05a0f0b2075f4c0be8307fa6be2a97c78d74870c45e7003a6f5eb1688be36ca0",
+    "lemuroid-app/src/main/assets/media_previews/ngc.png": "2bbb4f23c1cc6afe03d02e4ee155b661aa00b297c16fcfc7e4ab0ca6ab8f6276",
+    "lemuroid-app/src/main/assets/media_previews/ngp.png": "6425cc6b9af5d732cb7b60f0c83639583f4be330c9ca138d6167e5b159448192",
+    "lemuroid-app/src/main/assets/media_previews/pce.png": "52080d6d1c76e076a71ba7f907c37beb15a8951d123eb5d82202ab47d5ead220",
+    "lemuroid-app/src/main/assets/media_previews/psp.png": "fd85765a92cb08ce6e2600e6f1c868deff4c7edd30fdd6d4476bd6420c2a4bd5",
+    "lemuroid-app/src/main/assets/media_previews/psx.png": "bacd80e7387ae3f4b23beafc2b819d3554028fdbfa27c59ca90f0ff2084b20e6",
+    "lemuroid-app/src/main/assets/media_previews/segacd.png": "25b6513c67e2bd05bd546241e6e0d2bc096ced47696707a5f48587c709fb642a",
+    "lemuroid-app/src/main/assets/media_previews/sms.png": "2e7a95b855b5e7473d9e9b0a5ee14830244a269a9d2d510f70f2c233e878fd44",
+    "lemuroid-app/src/main/assets/media_previews/snes.png": "4b42d2263b03538d5f8118a47f84ddcb1e7038b9e0e2ac03e911644e2d0e87df",
+    "lemuroid-app/src/main/assets/media_previews/ws.png": "7d8b738ef8c1f62e3fff58784a95d367fcfe69584b46056b3f0639d97138aa78",
+    "lemuroid-app/src/main/assets/media_previews/wsc.png": "145d260054b93a4863d0966d0c76112c0849ce7d8dac93b891e5176ce8624257",
+    "lemuroid-app/src/main/assets/textures/hardware_atlas_v3.png": "f302f847de1fb3917f78bf0d6964a29000c2a4ffbaa88591cab466c9dd0266f0",
+    "lemuroid-app/src/main/java/com/swordfish/lemuroid/app/mobile/shared/compose/ui/Console3DRenderer.kt": "021134fbb7c136d857406dd57f307c67f6e28b4edf0ca5c1d38460ca92a72045",
+    "lemuroid-app/src/main/java/com/swordfish/lemuroid/app/mobile/shared/compose/ui/Hardware3DRenderer.kt": "070946383ce05d6e695f53b07017c10f13fa470fffb3e8d6444fe0182d6c70c9",
+    "lemuroid-app/src/main/java/com/swordfish/lemuroid/app/mobile/shared/compose/ui/Game3DObject.kt": "963ac55176add4d67e70dac1a8ddb4811108ec48d90bd873ea3d230dc7d9cda8",
+    "lemuroid-app/src/main/java/com/swordfish/lemuroid/app/mobile/shared/compose/ui/MediaThumbnail.kt": "c652a6e1cad64418a3ad93dc8ec6fe738e67c72ecb796c616778147f6dadf3e9",
+    "lemuroid-app/src/main/java/com/swordfish/lemuroid/app/mobile/shared/compose/ui/MediaPreviewGeometry.kt": "5436ecdc9396761916a66c86db3016ce9d3bcb6e44e37d4138baa9f2a0b4a9e8",
+    "lemuroid-app/src/main/java/com/swordfish/lemuroid/app/mobile/shared/compose/ui/ThreeDFrameClock.kt": "f2403bef9d46924beb0fb778e56ecb8bd94d9b21ab641d5eba7761c1f2fe4d11"
+  },
+  "user_decisions": [
+    "Preserve the approved red/orange arcade cabinet and its texture cells.",
+    "Use Mega Drive I appearance for shared Mega Drive/Genesis aliases.",
+    "GBA rejected twice; latest outline traced against the official AGB-001 launch photograph."
+  ],
+  "photo_audit": "docs/FAITHFUL-HARDWARE-2026-11-20.md and media-reference-audit.md",
+  "runtime_budget": {
+    "meshes": 48,
+    "triangles": 10868,
+    "mesh_bytes": 1051232,
+    "max_triangles_per_mesh": 570,
+    "max_parts_per_mesh": 8,
+    "preview_count": 24,
+    "preview_rgba_dimensions": [
+      256,
+      256
+    ],
+    "preview_png_bytes": 1081473,
+    "hardware_atlas_dimensions": [
+      1024,
+      512
+    ]
+  },
+  "revision_date": "2026-11-21",
+  "validation": "tools/art/validate_l3d.py passes all 48 models including front cover culling normals and 24 thumbnails."
+}

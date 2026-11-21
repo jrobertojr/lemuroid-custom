@@ -35,9 +35,30 @@ fun rememberFrontend3DProfile(): PerformanceProfile {
     return profile
 }
 
+/** Captures this surface so disposing an earlier effect cannot pause its replacement. */
+@Composable
+fun Bind3DSurfaceLifecycle(view: GLSurfaceView?) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle, view) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> view?.onResume()
+                Lifecycle.Event.ON_PAUSE -> view?.onPause()
+                else -> Unit
+            }
+        }
+        lifecycle.addObserver(observer)
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) view?.onResume()
+        onDispose {
+            lifecycle.removeObserver(observer)
+            view?.onPause()
+        }
+    }
+}
+
 /** Requests frames only while resumed; rendering remains owned by the GLSurfaceView's GL thread. */
 @Composable
-fun Bind3DFrameClock(view: GLSurfaceView?, invalidationKey: Any? = Unit) {
+fun Bind3DFrameClock(view: GLSurfaceView?, invalidationKey: Any? = Unit, animateInPerformance: Boolean = false) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val profile = rememberFrontend3DProfile()
     var resumed by remember(lifecycle) { mutableStateOf(lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) }
@@ -48,7 +69,7 @@ fun Bind3DFrameClock(view: GLSurfaceView?, invalidationKey: Any? = Unit) {
         lifecycle.addObserver(observer)
         onDispose { lifecycle.removeObserver(observer) }
     }
-    DisposableEffect(view, invalidationKey, profile, resumed) {
+    DisposableEffect(view, invalidationKey, profile, resumed, animateInPerformance) {
         val surface = view
         if (surface == null || !resumed) {
             onDispose { }
@@ -62,7 +83,8 @@ fun Bind3DFrameClock(view: GLSurfaceView?, invalidationKey: Any? = Unit) {
                     val fps = when (profile) {
                         PerformanceProfile.QUALITY -> 60
                         PerformanceProfile.BALANCED -> 30
-                        PerformanceProfile.PERFORMANCE -> if (SystemClock.uptimeMillis() < activeUntil) 30 else 4
+                        PerformanceProfile.PERFORMANCE ->
+                            if (animateInPerformance) 20 else if (SystemClock.uptimeMillis() < activeUntil) 30 else 4
                     }
                     // Native vsync does not invalidate Compose or redraw the Android view tree.
                     if (fps == 60 || frameTimeNanos - lastFrameNanos >= 1_000_000_000L / fps - 1_000_000L) {
