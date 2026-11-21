@@ -1230,162 +1230,38 @@ private fun Retro8090GameItem(
     }
 }
 
+/** Original record-sleeve treatment for compact library cards. */
 @Composable
 private fun RockstarGameItem(
     game: Game,
     onFavoriteToggle: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(6.dp)
-
     Surface(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .border(width = 2.dp, color = Color(0xFFFFB800), shape = shape),
-        shape = shape,
-        color = Color(0xFF0E0E0E),
-        shadowElevation = 6.dp,
+        modifier = modifier.fillMaxWidth(),
+        color = Color(0xFF100D12),
+        border = BorderStroke(1.dp, Color(0xFFE7A252)),
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFF090909)),
-            ) {
-                LemuroidGameImage(
-                    game = game,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                // Bold gold star emblem badge at top-start
-                Surface(
-                    color = Color(0xFFFFB800),
-                    shape = RoundedCornerShape(3.dp),
-                    border = BorderStroke(1.dp, Color(0xFF111111)),
-                    shadowElevation = 3.dp,
-                    modifier =
-                        Modifier
-                            .align(Alignment.TopStart)
-                            .padding(6.dp),
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = Color(0xFF111111),
-                            modifier = Modifier.size(10.dp),
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            text = game.systemId.uppercase(),
-                            color = Color(0xFF111111),
-                            fontSize = 8.5.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 0.6.sp,
-                        )
-                    }
-                }
-
+        Column {
+            Box {
+                LemuroidGameImage(game = game, contentScale = ContentScale.Fit)
                 if (onFavoriteToggle != null) {
                     CompactFavoriteOverlay(
                         isFavorite = game.isFavorite,
                         onToggle = onFavoriteToggle,
-                        activeColor = Color(0xFFFFB800),
-                        useStarIcon = true,
-                    )
-                } else if (game.isFavorite) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(6.dp)
-                                .size(26.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xCC111111))
-                                .border(1.dp, Color(0xFFFFB800), CircleShape),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = stringResource(R.string.favorites),
-                            tint = Color(0xFFFFB800),
-                            modifier = Modifier.size(15.dp),
-                        )
-                    }
-                }
-            }
-
-            // Angled gold & black poster accent bar
-            Canvas(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(6.dp)
-                        .background(Color(0xFF111111)),
-            ) {
-                val slant = 12.dp.toPx()
-                val goldPath =
-                    Path().apply {
-                        moveTo(0f, 0f)
-                        lineTo(size.width * 0.72f, 0f)
-                        lineTo(size.width * 0.72f - slant, size.height)
-                        lineTo(0f, size.height)
-                        close()
-                    }
-                drawPath(path = goldPath, color = Color(0xFFFFB800))
-
-                val accentPath =
-                    Path().apply {
-                        moveTo(size.width * 0.76f, 0f)
-                        lineTo(size.width * 0.85f, 0f)
-                        lineTo(size.width * 0.85f - slant, size.height)
-                        lineTo(size.width * 0.76f - slant, size.height)
-                        close()
-                    }
-                drawPath(path = accentPath, color = Color(0xFFFFD54F))
-            }
-
-            // High-contrast gold title bar
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .background(
-                            brush =
-                                Brush.horizontalGradient(
-                                    listOf(Color(0xFFFFB800), Color(0xFFFFCA28), Color(0xFFE5A400)),
-                                ),
-                        )
-                        .padding(horizontal = 8.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = game.displayName(),
-                    color = Color(0xFF0E0E0E),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = 0.3.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                )
-                if (game.isFavorite) {
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = null,
-                        tint = Color(0xFF0E0E0E),
-                        modifier = Modifier.size(14.dp),
+                        activeColor = Color(0xFFE7A252),
                     )
                 }
             }
+            Text(
+                text = game.displayName(),
+                color = Color(0xFFF0DCBA),
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.fillMaxWidth().background(Color(0xFF9C334D)).padding(8.dp),
+            )
         }
     }
 }

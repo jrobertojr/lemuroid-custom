@@ -237,7 +237,7 @@ private fun themeAccentColor(theme: FrontendTheme): Color =
         FrontendTheme.CONSOLE -> Color(0xFF00C2FF)
         FrontendTheme.TV -> Color(0xFF9ADF8D)
         FrontendTheme.RETRO_80_90 -> Color(0xFF00F0FF)
-        FrontendTheme.ROCKSTAR -> Color(0xFFFFB800)
+        FrontendTheme.ROCKSTAR -> Color(0xFFE7A252)
         FrontendTheme.THRASH_METAL -> Color(0xFFD84D5B)
         FrontendTheme.THREE_D, FrontendTheme.DEFAULT -> Color(0xFF00E5FF)
     }
@@ -609,8 +609,10 @@ private fun TVThemedFrontendContent(
     val moveLinearIndex: (Int) -> Unit = { delta ->
         val count = filteredEntries.size
         if (count > 0) {
-            val next = ((safeGameIndex + delta) % count + count) % count
-            if (next != safeGameIndex) {
+            // Read live state: consecutive key events can arrive before the next composition.
+            val current = selectedGameIndex.coerceIn(0, count - 1)
+            val next = ((current + delta) % count + count) % count
+            if (next != current) {
                 returnToGameId = null
                 selectedGameIndex = next
                 FrontendSoundEngine.playNavigate(context, theme)
@@ -702,7 +704,7 @@ private fun TVThemedFrontendContent(
                                         }
                                     }
                                     FrontendTheme.RETRO_80_90 -> moveGridVertical(-1, RETRO_8090_GRID_COLUMNS)
-                                    FrontendTheme.ROCKSTAR -> moveGridVertical(-1, ROCKSTAR_GRID_COLUMNS)
+                                    FrontendTheme.ROCKSTAR -> moveLinearIndex(-1)
                                     FrontendTheme.THRASH_METAL -> moveGridVertical(-1, THRASH_METAL_GRID_COLUMNS)
                                     FrontendTheme.LOCADORA -> moveGridVertical(-1, 6)
                                     else -> moveLinearIndex(-1)
@@ -727,7 +729,7 @@ private fun TVThemedFrontendContent(
                                         }
                                     }
                                     FrontendTheme.RETRO_80_90 -> moveGridVertical(+1, RETRO_8090_GRID_COLUMNS)
-                                    FrontendTheme.ROCKSTAR -> moveGridVertical(+1, ROCKSTAR_GRID_COLUMNS)
+                                    FrontendTheme.ROCKSTAR -> moveLinearIndex(+1)
                                     FrontendTheme.THRASH_METAL -> moveGridVertical(+1, THRASH_METAL_GRID_COLUMNS)
                                     FrontendTheme.LOCADORA -> moveGridVertical(+1, 6)
                                     else -> moveLinearIndex(+1)
@@ -2489,98 +2491,6 @@ private fun TVRetro8090Layout(
                 TVFocusableCard(
                     entry = entry,
                     theme = FrontendTheme.RETRO_80_90,
-                    onFocusEntry = onFocusEntry,
-                    onEntryClick = onEntryClick,
-                    focusRequester =
-                        when {
-                            isFirst -> firstItemFocusRequester
-                            isLast && canWrap -> lastFocusRequester
-                            else -> null
-                        },
-                    modifier =
-                        Modifier.tvWrapAroundKeyAction(
-                            isFirst = isFirst,
-                            isLast = isLast,
-                            enabled = canWrap,
-                            onWrapToLast = {
-                                coroutineScope.launch {
-                                    gridState.scrollToItem(entries.lastIndex)
-                                    delay(48)
-                                    runCatching { lastFocusRequester.requestFocus() }
-                                }
-                            },
-                            onWrapToFirst = {
-                                coroutineScope.launch {
-                                    gridState.scrollToItem(0)
-                                    delay(48)
-                                    runCatching { firstItemFocusRequester.requestFocus() }
-                                }
-                            },
-                        ),
-                )
-            }
-        }
-    }
-}
-
-// ---------------------------------------------------------------------------
-// 6. ROCKSTAR (BLACK & GOLD #FFB800 DOSSIER) TV LAYOUT
-// ---------------------------------------------------------------------------
-@Composable
-private fun TVRockstarLayout(
-    focusedGame: Game,
-    versionCount: Int,
-    description: String,
-    entries: List<GroupedGameEntry>,
-    firstItemFocusRequester: FocusRequester,
-    onFocusEntry: (GroupedGameEntry) -> Unit,
-    onEntryClick: (GroupedGameEntry) -> Unit,
-) {
-    val gold = Color(0xFFFFB800)
-    val gridState = rememberLazyGridState()
-    val coroutineScope = rememberCoroutineScope()
-    val lastFocusRequester = remember { FocusRequester() }
-    val canWrap = entries.size > 1
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Top Classified Gold Dossier Stage
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(262.dp)
-                    .padding(horizontal = 32.dp, vertical = 12.dp)
-                    .shadow(16.dp, RoundedCornerShape(12.dp), ambientColor = gold, spotColor = gold)
-                    .border(2.dp, gold, RoundedCornerShape(12.dp))
-                    .background(Color(0xFF121212).copy(alpha = 0.95f), RoundedCornerShape(12.dp))
-                    .padding(16.dp),
-        ) {
-            TVHeroMediaAndInfoPanel(
-                game = focusedGame,
-                description = description,
-                theme = FrontendTheme.ROCKSTAR,
-                versionCount = versionCount,
-                extraBadgeText = "DOSSIER",
-                showStarRating = true,
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
-
-        // Bottom Catalog Grid
-        LazyVerticalGrid(
-            state = gridState,
-            columns = GridCells.Adaptive(minSize = 152.dp),
-            modifier = Modifier.weight(1f).fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 32.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            itemsIndexed(entries, key = { _, e -> e.displayGame.id }) { index, entry ->
-                val isFirst = index == 0
-                val isLast = index == entries.lastIndex
-                TVFocusableCard(
-                    entry = entry,
-                    theme = FrontendTheme.ROCKSTAR,
                     onFocusEntry = onFocusEntry,
                     onEntryClick = onEntryClick,
                     focusRequester =

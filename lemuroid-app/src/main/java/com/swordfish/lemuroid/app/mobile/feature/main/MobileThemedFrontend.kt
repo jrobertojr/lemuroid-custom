@@ -1,5 +1,7 @@
 package com.swordfish.lemuroid.app.mobile.feature.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.HardRockVinylLayout
+
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.displayName
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendMotion
@@ -140,7 +142,7 @@ private val GroupedGameEntry.mobileGame: Game
  *   touch-accessible Settings/Search/Rescan controls (handheld console mode!).
  * - In PORTRAIT: renders touch-native vertical layouts adapted for every single custom theme
  *   (Locadora 3D Ring + Wooden Shelf, Console 3D Bedroom + Brand Dashboards, Netflix Mobile,
- *   Retro CRT Tube TV, Synthwave 80/90, GTA Rockstar, Thrash Metal Spinning Vinyl, and 3D Pedestal).
+ *   Retro CRT Tube TV, Synthwave 80/90, Hard Rock Backstage, Thrash Metal Spinning Vinyl, and 3D Pedestal).
  */
 @Composable
 fun MobileThemedFrontend(
@@ -539,6 +541,21 @@ private fun MobilePortraitThemedFrontend(
                 }
             } else {
                 when (theme) {
+                    FrontendTheme.ROCKSTAR -> {
+                        HardRockVinylLayout(
+                            games = filteredGames,
+                            selectedIndex = safeGameIdx,
+                            systemTitle = activeSystemTitle,
+                            description = description,
+                            onSelectIndex = { idx ->
+                                returnToGameId = null
+                                selectedGameIndex = idx
+                                FrontendSoundEngine.playNavigate(context, theme)
+                            },
+                            onConfirmGame = onConfirmGame,
+                            modifier = Modifier.weight(1f).fillMaxWidth(),
+                        )
+                    }
                     FrontendTheme.NETFLIX -> {
                         val rows =
                             remember(filteredGames, groupedRecents, groupedFavorites, activeSystemTitle) {
@@ -1389,7 +1406,7 @@ private fun MobileShowcaseAndGridPortrait(
                     Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                         if (theme == FrontendTheme.ROCKSTAR) {
                             Text(
-                                text = if (selectedGame.isFavorite) "★ FAVORITO" else "DISTRITO ARCADE",
+                                text = if (selectedGame.isFavorite) "★ FAVORITO" else "LADO B",
                                 color = Color(0xFFFFBD59),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
@@ -1619,7 +1636,7 @@ private fun mobileThemeAccent(theme: FrontendTheme): Color =
         FrontendTheme.CONSOLE -> Color(0xFF00C2FF)
         FrontendTheme.TV -> Color(0xFF9ADF8D)
         FrontendTheme.RETRO_80_90 -> Color(0xFF00F0FF)
-        FrontendTheme.ROCKSTAR -> Color(0xFFFFBD59)
+        FrontendTheme.ROCKSTAR -> Color(0xFFE7A252)
         FrontendTheme.THRASH_METAL -> Color(0xFFFF5252)
         FrontendTheme.THREE_D, FrontendTheme.DEFAULT -> Color(0xFF00E5FF)
     }
