@@ -7,5 +7,14 @@
   "layout": "4 columns x 2 rows: walnut wall, oak floor, teal carpet, neutral ABS; CRT scene, original poster, moonlit window, amber marquee",
   "prompt": "Production-ready square flat UV texture atlas, strict 4x2 equal cells without gaps; crisp 16-bit console pixel art, restrained colors, no antialiasing, no text/logos/copyrighted game imagery. Quiet top-row materials, original geometric lower-row decoration; orthographic bitmap, not perspective concept art. See docs/ART-DIRECTION-POLISH.md for the complete prompt.",
   "normalization": "Blender 5.2 nearest 512x512 sampling; RGB565 color grid; PNG storage. Runtime uses GL_NEAREST/CLAMP_TO_EDGE.",
-  "rights": "Original AI-assisted artwork created for this project; no third-party bitmap samples or logos. No assertion of exclusive rights to AI-generated output."
+  "rights": "Original AI-assisted artwork created for this project; no third-party bitmap samples or logos. No assertion of exclusive rights to AI-generated output.",
+  "current_runtime_override": {
+    "date": "2026-11-21",
+    "source": "art-source/theme-art-20261121/environment-original.png",
+    "generation_id": "exec-67969103-4b55-4eb7-a276-79bafa41dfce",
+    "prompt_set": "art-source/theme-art-20261121/prompts.json",
+    "runtime": "lemuroid-app/src/main/assets/textures/pixel_atlas_v2.png",
+    "runtime_sha256": "10e6de87634e3d9966c902fc3f2d0d2550af70f0cd7bb47beb7390303ef8452d",
+    "method": "Nearest 512x512, RGB565, same 4x2 UV slots; historical original source.png retained"
+  }
 }

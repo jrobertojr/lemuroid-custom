@@ -1,5 +1,10 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
+
+
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
 
@@ -213,49 +218,7 @@ fun ThrashMetalTVLayout(
 
 @Composable
 private fun ThrashMetalBackdrop(modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier) {
-        val w = size.width
-        val h = size.height
-
-        drawRect(
-            brush =
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF140406), MetalCharcoal, Color(0xFF0E0507)),
-                ),
-        )
-
-        // Brushed steel horizontal scratches
-        for (i in 0..18) {
-            val y = h * (i / 18f)
-            drawLine(
-                color = MetalChrome.copy(alpha = 0.03f),
-                start = Offset(0f, y),
-                end = Offset(w, y),
-                strokeWidth = 1.2f,
-            )
-        }
-
-        // Aggressive jagged lightning crack accent
-        val bolt =
-            Path().apply {
-                moveTo(w * 0.44f, 0f)
-                lineTo(w * 0.40f, h * 0.24f)
-                lineTo(w * 0.45f, h * 0.26f)
-                lineTo(w * 0.38f, h * 0.62f)
-                lineTo(w * 0.43f, h * 0.65f)
-                lineTo(w * 0.37f, h)
-            }
-        drawPath(
-            path = bolt,
-            color = MetalCrimson.copy(alpha = 0.28f),
-            style = Stroke(width = 4f),
-        )
-        drawPath(
-            path = bolt,
-            color = MetalFire.copy(alpha = 0.18f),
-            style = Stroke(width = 1.5f),
-        )
-    }
+    GeneratedThemeBackdrop(FrontendTheme.THRASH_METAL, modifier)
 }
 
 @Composable

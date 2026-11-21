@@ -1,5 +1,8 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
+
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
 
@@ -330,7 +333,7 @@ private fun SonyXmbDashboard(
                     Brush.verticalGradient(
                         colors = listOf(Color(0xFF061638), Color(0xFF0D2E6B), Color(0xFF051128)),
                     ),
-                ),
+                ).themeArtwork(FrontendTheme.CONSOLE),
     ) {
         // Signature PlayStation XMB flowing silk ribbon wave
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -637,7 +640,7 @@ private fun NintendoSwitchDashboard(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Color(0xFF1E2127))
+                .background(Color(0xFF1E2127)).themeArtwork(FrontendTheme.CONSOLE)
                 .padding(horizontal = 24.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -897,7 +900,7 @@ private fun SegaDreamcastMegaDashboard(
                     Brush.linearGradient(
                         colors = listOf(Color(0xFF071A3B), Color(0xFF0E3266), Color(0xFF051126)),
                     ),
-                ),
+                ).themeArtwork(FrontendTheme.CONSOLE),
     ) {
         Column(
             modifier =
@@ -1124,7 +1127,7 @@ private fun ArcadeCabinetHallDashboard(
                     Brush.verticalGradient(
                         colors = listOf(Color(0xFF140724), Color(0xFF0A0514), Color(0xFF1A0928)),
                     ),
-                )
+                ).themeArtwork(FrontendTheme.CONSOLE)
                 .padding(horizontal = 22.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -1318,7 +1321,7 @@ private fun RetroWoodgrainTerminalDashboard(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Color(0xFF1A110B))
+                .background(Color(0xFF1A110B)).themeArtwork(FrontendTheme.CONSOLE)
                 .padding(horizontal = 22.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {

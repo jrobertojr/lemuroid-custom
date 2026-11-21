@@ -1,5 +1,10 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
+
+
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendMotion
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
@@ -87,7 +92,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.Game3DObject
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LemuroidGameImage
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendTheme
@@ -1074,73 +1078,8 @@ private fun TVThemedFrontendContent(
 // ---------------------------------------------------------------------------
 @Composable
 private fun TVThemeAmbientBackground(theme: FrontendTheme) {
-    val (baseBrush, glowColor, glowCenterFactor) =
-        remember(theme) {
-            when (theme) {
-                FrontendTheme.NETFLIX ->
-                    Triple(
-                        Brush.verticalGradient(listOf(Color(0xFF141414), Color(0xFF0E0E0E), Color(0xFF080808))),
-                        Color(0xFFF04F5E).copy(alpha = 0.14f),
-                        Offset(0.84f, 0.14f),
-                    )
-                FrontendTheme.LOCADORA ->
-                    Triple(
-                        Brush.verticalGradient(listOf(Color(0xFF211710), Color(0xFF17100B), Color(0xFF0E0906))),
-                        Color(0xFFF5B700).copy(alpha = 0.14f),
-                        Offset(0.22f, 0.16f),
-                    )
-                FrontendTheme.CONSOLE ->
-                    Triple(
-                        Brush.verticalGradient(listOf(Color(0xFF0A1224), Color(0xFF111E38), Color(0xFF050912))),
-                        Color(0xFF00C2FF).copy(alpha = 0.18f),
-                        Offset(0.20f, 0.18f),
-                    )
-                FrontendTheme.TV ->
-                    Triple(
-                        Brush.verticalGradient(listOf(Color(0xFF08120A), Color(0xFF050C06), Color(0xFF030704))),
-                        Color(0xFF9ADF8D).copy(alpha = 0.12f),
-                        Offset(0.65f, 0.45f),
-                    )
-                FrontendTheme.RETRO_80_90 ->
-                    Triple(
-                        Brush.verticalGradient(listOf(Color(0xFF16072E), Color(0xFF280B4F), Color(0xFF0C041A))),
-                        Color(0xFFFF75B5).copy(alpha = 0.22f),
-                        Offset(0.75f, 0.20f),
-                    )
-                FrontendTheme.ROCKSTAR ->
-                    Triple(
-                        Brush.verticalGradient(listOf(Color(0xFF0D0D0D), Color(0xFF080808), Color(0xFF040404))),
-                        Color(0xFFFFB800).copy(alpha = 0.15f),
-                        Offset(0.18f, 0.22f),
-                    )
-                FrontendTheme.THRASH_METAL ->
-                    Triple(
-                        Brush.verticalGradient(listOf(Color(0xFF181A1F), Color(0xFF101216), Color(0xFF090A0C))),
-                        Color(0xFFD84D5B).copy(alpha = 0.20f),
-                        Offset(0.50f, 0.08f),
-                    )
-                FrontendTheme.THREE_D, FrontendTheme.DEFAULT ->
-                    Triple(
-                        Brush.verticalGradient(listOf(Color(0xFF131E38), Color(0xFF0B1224), Color(0xFF050811))),
-                        Color(0xFF00E5FF).copy(alpha = 0.20f),
-                        Offset(0.24f, 0.34f),
-                    )
-            }
-        }
-
-    Box(modifier = Modifier.fillMaxSize().background(baseBrush)) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val center = Offset(size.width * glowCenterFactor.x, size.height * glowCenterFactor.y)
-            val radius = maxOf(size.width, size.height) * 0.65f
-            drawRect(
-                brush =
-                    Brush.radialGradient(
-                        colors = listOf(glowColor, Color.Transparent),
-                        center = center,
-                        radius = radius,
-                    ),
-            )
-        }
+    if (theme == FrontendTheme.CONSOLE || theme == FrontendTheme.THREE_D) {
+        GeneratedThemeBackdrop(theme, Modifier.fillMaxSize())
     }
 }
 

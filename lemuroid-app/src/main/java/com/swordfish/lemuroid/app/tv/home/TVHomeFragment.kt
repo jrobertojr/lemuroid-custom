@@ -98,6 +98,7 @@ class TVHomeFragment : BrowseSupportFragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        view.setBackgroundResource(R.drawable.theme_art_essential)
 
         recreateAdapter(
             includeFavorites = false,

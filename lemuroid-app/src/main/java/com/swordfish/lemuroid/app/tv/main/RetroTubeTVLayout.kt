@@ -1,5 +1,10 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
+
+
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
 
@@ -158,6 +163,7 @@ fun RetroTubeTVLayout(
                         ),
                     ),
         ) {
+            GeneratedThemeBackdrop(FrontendTheme.TV, Modifier.fillMaxSize())
             // Subtle warm vintage wood-panel backdrop & ambient lamp glow
             Canvas(modifier = Modifier.fillMaxSize()) {
                 // Warm radial ambient lamp glow behind the CRT

@@ -1,5 +1,10 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
+
+
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
 
@@ -507,7 +512,7 @@ fun NetflixTVLayout(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(NetflixBg),
+                .themeArtwork(FrontendTheme.NETFLIX),
     ) {
         // Thin left visual rail (52.dp wide, non-focusable)
         NetflixLeftVisualRail(
@@ -524,7 +529,7 @@ fun NetflixTVLayout(
                     Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .background(NetflixBg),
+                        .background(NetflixBg.copy(alpha = 0.52f)),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -540,7 +545,7 @@ fun NetflixTVLayout(
                     Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .background(NetflixBg),
+                        .background(NetflixBg.copy(alpha = 0.52f)),
             ) {
                 // Top Hero Billboard (~46% height)
                 NetflixHeroBillboard(

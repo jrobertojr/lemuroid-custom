@@ -11,7 +11,7 @@
       "triangles": 210,
       "parts": 6,
       "bytes": 20360,
-      "sha256": "6c55c0e307353cdc3a75f27e115150492b1a087407a1e788856e7cd4263a5b33",
+      "sha256": "3fd76bb4dc0716bb8fc7fe705d38360e04e13aa705effda4ff2bd6411cd0fa08",
       "bounds": [
         [
           -0.6399999856948853,
@@ -31,7 +31,7 @@
       "triangles": 284,
       "parts": 7,
       "bytes": 27496,
-      "sha256": "197c34fb6c6b2b298f29527c2cf84c70cadb1337c150b79227ca0fb45dfd4eb7",
+      "sha256": "c98b461618f0ac892f2223d2f5813b726fd9c6b4abeb89a7decf45aa692ab91c",
       "bounds": [
         [
           -0.625,
@@ -51,7 +51,7 @@
       "triangles": 570,
       "parts": 5,
       "bytes": 54888,
-      "sha256": "330ac90601cd65c77cc389a860f27d9c84dfe34d2d29668829fe57b27755d4ac",
+      "sha256": "945d1dabf47d56c6ccb28a91cf7b8f1238345052d5a492d68bb3b27c0c6a91a9",
       "bounds": [
         [
           -0.6399999856948853,
@@ -71,7 +71,7 @@
       "triangles": 512,
       "parts": 7,
       "bytes": 49384,
-      "sha256": "a333a5ef706175d4ebc09b46209256e851518fc6f3f1ba5f497ff3961f04615d",
+      "sha256": "c033d76d0e75fd5fce4c4c082a224d1a3897149f3c6611058c299b122f13a048",
       "bounds": [
         [
           -0.6600000262260437,
@@ -91,7 +91,7 @@
       "triangles": 560,
       "parts": 8,
       "bytes": 54024,
-      "sha256": "4117ad0349d8e090660f117f92139d954fcc78bf61dbad9ab535f25b8121680c",
+      "sha256": "2a810f45873425bde84b738520af3c876b58e0af54ec194608653a0ab45af0e4",
       "bounds": [
         [
           -0.675000011920929,
@@ -111,7 +111,7 @@
       "triangles": 162,
       "parts": 5,
       "bytes": 15720,
-      "sha256": "357348fc0de7e4931dc5fd739a6798ffee3e1f3ea3ed2fa92ae5985c5dbc61a0",
+      "sha256": "64ee09c7ad8fc0e01dd8caa6b2a7fb05cf78133c2c9f0a73c1ddc5a926ec484d",
       "bounds": [
         [
           -0.7099999785423279,
@@ -131,7 +131,7 @@
       "triangles": 186,
       "parts": 7,
       "bytes": 18088,
-      "sha256": "5c29f2c05b62be799297500f46fcdddf914e604466f53f15065e949116051294",
+      "sha256": "2d238f728bc5ab69bb8de58c653175f7e17111725943029f443a725283d42acb",
       "bounds": [
         [
           -0.28600001335144043,
@@ -151,7 +151,7 @@
       "triangles": 240,
       "parts": 7,
       "bytes": 23272,
-      "sha256": "f70b6702666d69c49097203d42ad9df0af22fae5453000c61bfb424e460af70d",
+      "sha256": "c923920d06371132a32246b75e8279aea16fb7c195ea24d875ae8466799f9df4",
       "bounds": [
         [
           -0.2750000059604645,
@@ -171,7 +171,7 @@
       "triangles": 444,
       "parts": 7,
       "bytes": 42856,
-      "sha256": "3c92185b4a2eeb7d7eb56c5d1da5e5ff54a460f72a99a86bc2af9c3569b9692b",
+      "sha256": "28a9368b2657db1e8143c00ad347924589b14403319ee91bb1fad7bab34f252f",
       "bounds": [
         [
           -0.5809999704360962,
@@ -191,7 +191,7 @@
       "triangles": 342,
       "parts": 4,
       "bytes": 32968,
-      "sha256": "353f74e92db64611c2a098fdfeb44dc14287609849e88a980526de7b2b40543a",
+      "sha256": "0bc4b09ddcf672256f53933d24fd578367e3659c39de1f8d8cb4f62cc5d146af",
       "bounds": [
         [
           -0.550000011920929,
@@ -211,7 +211,7 @@
       "triangles": 410,
       "parts": 5,
       "bytes": 39528,
-      "sha256": "791bc407ea15d043f0aed28b84479be673cbb435835fb2f443d3dc41ea9317a4",
+      "sha256": "42b0d5a86fe12d7c828370d33fc36f27bc431fe59c364e1edf74968850fb018c",
       "bounds": [
         [
           -0.5249999761581421,
@@ -231,7 +231,7 @@
       "triangles": 442,
       "parts": 6,
       "bytes": 42632,
-      "sha256": "bea7a7924ff8ed000f01e7ee181010d47dbd576d6faf6c3ace18ece4fd3a71ef",
+      "sha256": "c8d4da84ab67880767e6d1c819f2b4efda0ae50271b1d3c8f5e68d9a04bba7a3",
       "bounds": [
         [
           -0.6349999904632568,
@@ -251,7 +251,7 @@
       "triangles": 278,
       "parts": 7,
       "bytes": 26920,
-      "sha256": "0c6d6c2fa6e2d8c471ad64834985ba6c0d39a45cd1d3ee04abd51735814c1909",
+      "sha256": "c218edc6ec281d83a840db9694889defc0a4d853ac0994f5b77b66ac831e52cc",
       "bounds": [
         [
           -0.6000000238418579,
@@ -271,7 +271,7 @@
       "triangles": 404,
       "parts": 5,
       "bytes": 38952,
-      "sha256": "892c779f8fac766ef5c305d00ab17ba572ddd0faec9e2510ff1b68aa695dda1d",
+      "sha256": "4784dd30e68618e02a7b751aa8464b5b82ae81a8f0a8ec705a942a4d4d43b39d",
       "bounds": [
         [
           -0.7300000190734863,
@@ -291,7 +291,7 @@
       "triangles": 218,
       "parts": 8,
       "bytes": 21192,
-      "sha256": "7a6443e2d5c9c4b42f746f425a10b5c1c7e2e18ab648998594ae42ceb2b276f8",
+      "sha256": "9c7c2b63fcd8896de3160067df6aad696f370dd002a3e01bc64968b2f6ac2e7c",
       "bounds": [
         [
           -0.6499999761581421,
@@ -311,7 +311,7 @@
       "triangles": 250,
       "parts": 7,
       "bytes": 24232,
-      "sha256": "72a5aabb6dcf7d27e9caed92523a2d1a7a6fbd51ae0d886229d7c71a3fd11611",
+      "sha256": "87a7cd0d8f5281e126e16e7c9feed92f5ea05118fbdb8d6d0b0291d44b5629b2",
       "bounds": [
         [
           -0.39500001072883606,
@@ -331,7 +331,7 @@
       "triangles": 316,
       "parts": 4,
       "bytes": 30472,
-      "sha256": "921990965af3e2177bcb8f5b0981e8f2d919d8f10447cf8cfc5badb926aadd84",
+      "sha256": "899e00a9282121f96c9c83a2b09db5ea235c0164b81cb8f7110441f3263878b5",
       "bounds": [
         [
           -0.6299999952316284,
@@ -351,7 +351,7 @@
       "triangles": 252,
       "parts": 3,
       "bytes": 24296,
-      "sha256": "79839b10a430b5bac24688ffa1ffc10b3792d0206996afd751cc7c88cbea669e",
+      "sha256": "c3c013c89817e1db330efbac4062f34f13cce03153eb943604f18cfbfbcf7cdd",
       "bounds": [
         [
           -0.48500001430511475,
@@ -371,7 +371,7 @@
       "triangles": 266,
       "parts": 5,
       "bytes": 25704,
-      "sha256": "cb0370eb3c132039dbe6074b99f661f755868b541b4db0ec0af4a690ae8a2234",
+      "sha256": "d26ec215899ac842e1182b01931d9cd8b918776e6f75da008076ebc218728ff8",
       "bounds": [
         [
           -0.48500001430511475,
@@ -391,7 +391,7 @@
       "triangles": 278,
       "parts": 5,
       "bytes": 26856,
-      "sha256": "480638cee9d7fa5701e687093a864419a5d06e2f6123fd2b4170254b5fcd1ec8",
+      "sha256": "119a9216d95f9f81f977dd101330ab872dd67e682c1754638aa947da3375a5b5",
       "bounds": [
         [
           -0.48500001430511475,
@@ -411,7 +411,7 @@
       "triangles": 304,
       "parts": 7,
       "bytes": 29416,
-      "sha256": "ebfe8ee4e7828f6d0fbedf295856e75ef07aa011d9d749331096d9cc86649bd9",
+      "sha256": "ad050756823b77f68cc47dae18ac70d5f152768c4cc8c1be0387edc2117c7b09",
       "bounds": [
         [
           -0.48500001430511475,
@@ -431,7 +431,7 @@
       "triangles": 392,
       "parts": 8,
       "bytes": 37896,
-      "sha256": "831edf2f1a95002d5e5ab2b639cda884bb8f38e70c1d4982e60746db4bd40bff",
+      "sha256": "420e0319ff5f01ffeb2799eb8912c66765c59ed0219ae3ec864022b119b5fb0f",
       "bounds": [
         [
           -0.5600000023841858,
@@ -451,7 +451,7 @@
       "triangles": 468,
       "parts": 6,
       "bytes": 45128,
-      "sha256": "2c18f64e21ee3c6ac1895785b2de79c96708d4921d0536313a41e33a06f785ec",
+      "sha256": "4cbbb1612074ab2091a696bae6f362ae4adf4a3a0624b279910f949c40f15bf7",
       "bounds": [
         [
           -0.6349999904632568,
@@ -471,7 +471,7 @@
       "triangles": 338,
       "parts": 6,
       "bytes": 32648,
-      "sha256": "e52cec44109f4691ee4d4f3fc40c1138a0dff72ee6b040d23a70a8b5125419b9",
+      "sha256": "9ae3983c98b2c5f867f05fb6b1aaabf2b0068950d022012c3faf89d3b01c58d2",
       "bounds": [
         [
           -0.46000000834465027,
@@ -491,7 +491,7 @@
       "triangles": 44,
       "parts": 3,
       "bytes": 4328,
-      "sha256": "e1a5384a7f6cebc2a115afefeb7f165c2c17eadf7f05d780382a38891ada2186",
+      "sha256": "af268e469a65ce74b1aea2b37c08ffcd46b5899db158239488b40e5c236ebcee",
       "bounds": [
         [
           -0.5,
@@ -511,7 +511,7 @@
       "triangles": 116,
       "parts": 4,
       "bytes": 11272,
-      "sha256": "aaa4898a5cfd34456dd70a3c9a2ad98826113715436d8167f994a0c34fb3a349",
+      "sha256": "1b4c6efb2ca7f90441d2c60b1b97f07bdfa8ca4280314542dd760cd9df060691",
       "bounds": [
         [
           -0.5799999833106995,
@@ -531,7 +531,7 @@
       "triangles": 50,
       "parts": 4,
       "bytes": 4936,
-      "sha256": "08f7d0b861da1d818c217135ac411093053e040049de3687c438c1b9ccbcd004",
+      "sha256": "49c033dd1c931e1202fce58b3f116809f0e6027496a4a8f7c38086ee024735c1",
       "bounds": [
         [
           -0.5799999833106995,
@@ -551,7 +551,7 @@
       "triangles": 54,
       "parts": 3,
       "bytes": 5288,
-      "sha256": "00984e0db80b7e44df55432df0fa4bfb9184d593102537ecbfe954d0599d1b1c",
+      "sha256": "9ef52cdbdbc1920895dfcb470cd05a4cdacb00640cdbacd01a7dbd113116e2b1",
       "bounds": [
         [
           -0.5099999904632568,
@@ -571,7 +571,7 @@
       "triangles": 384,
       "parts": 3,
       "bytes": 36968,
-      "sha256": "bc042749131333522be2a8b04480bf804fb980e1fb4c182e5991d79bef2811ab",
+      "sha256": "e383cea257a605d7ca6f658d24e6db4960e2ff6809794a1cf1121dc33e2f64a2",
       "bounds": [
         [
           -0.699999988079071,
@@ -591,7 +591,7 @@
       "triangles": 34,
       "parts": 3,
       "bytes": 3368,
-      "sha256": "d3eb2e4c9941b81a914cf5c7ada8dc783e902e42ac70de46ab4838ffd2599a67",
+      "sha256": "2909ae5b2b1847a2a7d80ae96b7ee55af7d23ff4cdcf094b2b67d1f2dc1c0410",
       "bounds": [
         [
           -0.550000011920929,
@@ -611,7 +611,7 @@
       "triangles": 54,
       "parts": 3,
       "bytes": 5288,
-      "sha256": "d8b02ab2daeaaece47f50a99eaacf6fac6dbce84a0b45956c30fa33776e85e8a",
+      "sha256": "4a4911efc932c5c4ab2ac68c2f804b4942fbeb87458b64831ed810dd1ea48b95",
       "bounds": [
         [
           -0.36500000953674316,
@@ -631,7 +631,7 @@
       "triangles": 62,
       "parts": 3,
       "bytes": 6056,
-      "sha256": "4a35a25e74f595951ee46cdc7a8aa7f96cf53045bf165d3936f37a291c26a071",
+      "sha256": "c71d142500cf1a703949809184d7524611c3f54775601a859ac74374e3498358",
       "bounds": [
         [
           -0.36500000953674316,
@@ -651,7 +651,7 @@
       "triangles": 80,
       "parts": 4,
       "bytes": 7816,
-      "sha256": "b15a27ae7aee7496d9e48feae76c3ca188e949e5c621912b4640e54bcbb461ce",
+      "sha256": "ee08142fde4106dae4fde4fecb7c723ae382acd9391386efe19e5f52f53d29e6",
       "bounds": [
         [
           -0.47999998927116394,
@@ -671,7 +671,7 @@
       "triangles": 58,
       "parts": 4,
       "bytes": 5704,
-      "sha256": "bea50b049c7d6bbec1d8bc16d6ab47392eef1b4ad28b6c2f92a9b56c1e322fe1",
+      "sha256": "fb9b11f1cdd1c56690c98c4853c9d102d343e0185a3259d2686943f466f343d2",
       "bounds": [
         [
           -0.33000001311302185,
@@ -691,7 +691,7 @@
       "triangles": 62,
       "parts": 4,
       "bytes": 6088,
-      "sha256": "b7d2a747a6da72145b808b51d0b8cf284b463945fc72df89ba6b29da4500cac0",
+      "sha256": "d3586aea2f0edc8294a37aadef7aa5c0ab98389fef2a1a330344989ddc60c9bc",
       "bounds": [
         [
           -0.33000001311302185,
@@ -711,7 +711,7 @@
       "triangles": 254,
       "parts": 5,
       "bytes": 24552,
-      "sha256": "d583f08b73a2e433f2cceafb17a57f9aa2b6340995ec1870e7c301a1b51f4184",
+      "sha256": "6bb6562e8a1b5f64977bffeef987037b6b68c1fcd1ed39c1a6629a124e4c0cdb",
       "bounds": [
         [
           -0.6000000238418579,
@@ -731,7 +731,7 @@
       "triangles": 44,
       "parts": 3,
       "bytes": 4328,
-      "sha256": "c1ad50bc8cc689edb78cc2da2c7f3054761ad532ff27c7e994cca09ac6ffb2af",
+      "sha256": "c41f51f9aa66014f6ba620ef93c15216f323eeae59dca978b46d9368bd96d510",
       "bounds": [
         [
           -0.44999998807907104,
@@ -751,7 +751,7 @@
       "triangles": 42,
       "parts": 3,
       "bytes": 4136,
-      "sha256": "3497e92ee948b47c39e677b742ff0ba0e6e151e6aaa35adac616b2744b999533",
+      "sha256": "0ce2dc915cce95970d820a65c99ffcd929ccf518139482fb891e6a2a4f27b49e",
       "bounds": [
         [
           -0.4099999964237213,
@@ -771,7 +771,7 @@
       "triangles": 42,
       "parts": 3,
       "bytes": 4136,
-      "sha256": "3497e92ee948b47c39e677b742ff0ba0e6e151e6aaa35adac616b2744b999533",
+      "sha256": "0ce2dc915cce95970d820a65c99ffcd929ccf518139482fb891e6a2a4f27b49e",
       "bounds": [
         [
           -0.4099999964237213,
@@ -791,7 +791,7 @@
       "triangles": 108,
       "parts": 4,
       "bytes": 10504,
-      "sha256": "1d5af67247f84a9ad1365f7ba17c56ea977bb97508b860422db126d098981fff",
+      "sha256": "46cbb9f8cee49cb140c1d39f3ce9b918b1ea26ee9b3dc7151a800ec5f7b941f3",
       "bounds": [
         [
           -0.36000001430511475,
@@ -811,7 +811,7 @@
       "triangles": 104,
       "parts": 4,
       "bytes": 10120,
-      "sha256": "c9301e9dff38359978d21db4d3f8070efe80b092681cf52192199a43c887078a",
+      "sha256": "f96170d28854109af5d405826d52877b9e50b9866689b0de15318603f9773d7b",
       "bounds": [
         [
           -0.4000000059604645,
@@ -831,7 +831,7 @@
       "triangles": 48,
       "parts": 3,
       "bytes": 4712,
-      "sha256": "6243e025db799948cf93aee3ea24c60c4529f1a13447bacacc358b5a8660a8ad",
+      "sha256": "6bfccafbaf2b5450d995c71a55f10c92075e51da5bb2374e9238c5657234dcb4",
       "bounds": [
         [
           -0.4300000071525574,
@@ -851,7 +851,7 @@
       "triangles": 48,
       "parts": 3,
       "bytes": 4712,
-      "sha256": "6243e025db799948cf93aee3ea24c60c4529f1a13447bacacc358b5a8660a8ad",
+      "sha256": "6bfccafbaf2b5450d995c71a55f10c92075e51da5bb2374e9238c5657234dcb4",
       "bounds": [
         [
           -0.4300000071525574,
@@ -871,7 +871,7 @@
       "triangles": 122,
       "parts": 5,
       "bytes": 11880,
-      "sha256": "d484bfa755295a556f94f2c1357bd6c02c04de21cddf7d68339e0952da130dad",
+      "sha256": "ceea96a2d67757dbf9fca7df9e09ee805432e2b466b1f480126519d17b330da2",
       "bounds": [
         [
           -0.5,
@@ -891,7 +891,7 @@
       "triangles": 122,
       "parts": 5,
       "bytes": 11880,
-      "sha256": "d484bfa755295a556f94f2c1357bd6c02c04de21cddf7d68339e0952da130dad",
+      "sha256": "ceea96a2d67757dbf9fca7df9e09ee805432e2b466b1f480126519d17b330da2",
       "bounds": [
         [
           -0.5,
@@ -911,7 +911,7 @@
       "triangles": 88,
       "parts": 4,
       "bytes": 8584,
-      "sha256": "5c573d80081420629d269adbab70bd5de59a8694e77d74ac8f662fbf74b86c69",
+      "sha256": "eae015fbe903ad2315cc4cba0140c9bad68656e4a1f6cca6ac72e1931ef7b1ff",
       "bounds": [
         [
           -0.4950000047683716,
@@ -931,7 +931,7 @@
       "triangles": 384,
       "parts": 4,
       "bytes": 37000,
-      "sha256": "4777baf6c2a301802caac6a8c964c97e53cc346fc1c247bfd788ef2166dd407a",
+      "sha256": "ff444a1363c52f6e447cf57cbfd7af83e4506787b8ddbfb41428df61dbc1efc0",
       "bounds": [
         [
           -0.699999988079071,
@@ -951,7 +951,7 @@
       "triangles": 338,
       "parts": 6,
       "bytes": 32648,
-      "sha256": "e1e9f77ce436d406b460601b88c5c8a2db716c95961b1c122f396c1f76593acb",
+      "sha256": "9c9d5d30bf1cf488e92e0a8ff39109902fa4566693b67b90a2d461a4fe189f91",
       "bounds": [
         [
           -0.46000000834465027,

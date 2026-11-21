@@ -777,8 +777,7 @@ def uv_for(v,n,m,bounds):
     tile=int(m['tile'])
     # First generated 4x4 sheet on the left, second 4x4 sheet on the right.
     col=tile%4+(4 if tile>=16 else 0);row=(tile%16)//4
-    # Flat colours sample the clean interior of the white plastic tile, avoiding borders.
-    if tile==0:return (.06,.12)
+    # Pale generated ABS grain spans each face; shader tint retains the original shell colour.
     # Wide wordmarks occupy a narrow strip in their source square. Use its actual
     # bounds so the lettering does not collapse into a hairline on a small plate.
     crops={1:(.03,.35,.97,.70),2:(.025,.35,.975,.57),8:(.025,.30,.975,.70),9:(.025,.30,.975,.72),10:(.04,.30,.96,.71)}

@@ -1,0 +1,10 @@
+{
+  "environment-edit-input": {
+    "archived_path": "art-source/theme-art-20261121/environment-atlas-before.png",
+    "sha256": "9bced46097a3d796f59fe4fa666551a8596c1e8b1c7c35302ddd9cc5d71525a6"
+  },
+  "hardware-unchanged-pixels-baseline": {
+    "archived_path": "art-source/theme-art-20261121/hardware-atlas-before.png",
+    "sha256": "f302f847de1fb3917f78bf0d6964a29000c2a4ffbaa88591cab466c9dd0266f0"
+  }
+}

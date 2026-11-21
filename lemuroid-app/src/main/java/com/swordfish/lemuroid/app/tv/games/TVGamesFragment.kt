@@ -46,6 +46,7 @@ class TVGamesFragment : VerticalGridSupportFragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        view.setBackgroundResource(R.drawable.theme_art_essential)
 
         val factory = TVGamesViewModel.Factory(retrogradeDb)
         val gamesViewModel = ViewModelProvider(this, factory)[TVGamesViewModel::class.java]

@@ -1,5 +1,10 @@
 package com.swordfish.lemuroid.app.mobile.feature.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
+
+
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.HardRockVinylLayout
 
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
@@ -100,7 +105,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.ConsoleRoom3DView
-import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.Game3DObject
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LemuroidGameImage
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendTheme
@@ -1588,45 +1592,7 @@ private fun MobilePlayActionStrip(
 
 @Composable
 private fun MobileThemeBackdrop(theme: FrontendTheme) {
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        val w = size.width
-        val h = size.height
-        when (theme) {
-            FrontendTheme.RETRO_80_90 -> {
-                drawRect(Brush.verticalGradient(listOf(Color(0xFF0A0318), Color(0xFF2B0846), Color(0xFF090214))))
-                val sunR = w * 0.28f
-                val sunCenter = Offset(w * 0.5f, h * 0.24f)
-                val sunPath = Path().apply {
-                    addOval(androidx.compose.ui.geometry.Rect(sunCenter.x - sunR, sunCenter.y - sunR, sunCenter.x + sunR, sunCenter.y + sunR))
-                }
-                clipPath(sunPath) {
-                    drawRect(
-                        Brush.verticalGradient(listOf(Color(0xFFFFE64D), Color(0xFFFF6E27), Color(0xFFFF1F8E))),
-                        Offset(sunCenter.x - sunR, sunCenter.y - sunR),
-                        Size(sunR * 2f, sunR * 2f),
-                    )
-                }
-            }
-            FrontendTheme.ROCKSTAR -> {
-                drawRect(Brush.linearGradient(listOf(Color(0xFF0B0C12), Color(0xFF1D1128), Color(0xFF110F14))))
-            }
-            FrontendTheme.THRASH_METAL -> {
-                drawRect(Brush.verticalGradient(listOf(Color(0xFF1A0406), Color(0xFF0A0A0C), Color(0xFF120506))))
-            }
-            FrontendTheme.LOCADORA -> {
-                drawRect(Brush.verticalGradient(listOf(Color(0xFF1B0E0A), Color(0xFF28150E), Color(0xFF120906))))
-            }
-            FrontendTheme.NETFLIX -> {
-                drawRect(Color(0xFF141414))
-            }
-            FrontendTheme.CONSOLE -> {
-                drawRect(Brush.verticalGradient(listOf(Color(0xFF08142B), Color(0xFF0D1D3B), Color(0xFF060C1A))))
-            }
-            else -> {
-                drawRect(Brush.verticalGradient(listOf(Color(0xFF0A0F1A), Color(0xFF050810))))
-            }
-        }
-    }
+    GeneratedThemeBackdrop(theme, Modifier.fillMaxSize())
 }
 
 private fun mobileThemeAccent(theme: FrontendTheme): Color =

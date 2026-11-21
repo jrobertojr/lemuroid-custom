@@ -1,5 +1,10 @@
 package com.swordfish.lemuroid.app.mobile.feature.home
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
+
+
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -95,6 +100,7 @@ private fun HomeScreen(
     Column(
         modifier =
             modifier
+                .themeArtwork(FrontendTheme.DEFAULT)
                 .verticalScroll(rememberScrollState())
                 .padding(top = 16.dp, bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),

@@ -1,0 +1,112 @@
+[
+  {
+    "key": "essential",
+    "original": "art-source/theme-art-20261121/essential-original.png",
+    "runtime": "lemuroid-app/src/main/res/drawable-nodpi/theme_art_essential.webp",
+    "sha256": "beca574a9eb7ea99412f012863c32f138afb1aab1e3cfcbd779546b701cb5113",
+    "bytes": 38960,
+    "runtime_dimensions": [
+      1280,
+      853
+    ]
+  },
+  {
+    "key": "locadora",
+    "original": "art-source/theme-art-20261121/locadora-original.png",
+    "runtime": "lemuroid-app/src/main/res/drawable-nodpi/theme_art_locadora.webp",
+    "sha256": "ffe4c674fe919ed0bd322f683ac4c350c0922b8c13dd7c7dd0b12fcc94f603dc",
+    "bytes": 121106,
+    "runtime_dimensions": [
+      1280,
+      853
+    ]
+  },
+  {
+    "key": "cinema",
+    "original": "art-source/theme-art-20261121/cinema-original.png",
+    "runtime": "lemuroid-app/src/main/res/drawable-nodpi/theme_art_cinema.webp",
+    "sha256": "b8bc98c319161eb210d4d80f4941b6511fd389a570688433b95f1a1d3c47e7be",
+    "bytes": 47296,
+    "runtime_dimensions": [
+      1280,
+      853
+    ]
+  },
+  {
+    "key": "console",
+    "original": "art-source/theme-art-20261121/console-original.png",
+    "runtime": "lemuroid-app/src/main/res/drawable-nodpi/theme_art_console.webp",
+    "sha256": "3aea004edeb82e9b2c91c1406b2ad22e96f28cc03f1bde77a5e5970091513b35",
+    "bytes": 92348,
+    "runtime_dimensions": [
+      1280,
+      853
+    ]
+  },
+  {
+    "key": "crt",
+    "original": "art-source/theme-art-20261121/crt-original.png",
+    "runtime": "lemuroid-app/src/main/res/drawable-nodpi/theme_art_crt.webp",
+    "sha256": "0f0f6e6bc1cda6d992f030a114da98e4c7f8db2a1c6e0a7e28180cd92a3568e2",
+    "bytes": 96104,
+    "runtime_dimensions": [
+      1280,
+      853
+    ]
+  },
+  {
+    "key": "synthwave",
+    "original": "art-source/theme-art-20261121/synthwave-original.png",
+    "runtime": "lemuroid-app/src/main/res/drawable-nodpi/theme_art_synthwave.webp",
+    "sha256": "d46a5d55f216e968384b92556ba9a071be5260468b361ac7567b7930529df8d6",
+    "bytes": 39482,
+    "runtime_dimensions": [
+      1280,
+      853
+    ]
+  },
+  {
+    "key": "thrash",
+    "original": "art-source/theme-art-20261121/thrash-original.png",
+    "runtime": "lemuroid-app/src/main/res/drawable-nodpi/theme_art_thrash.webp",
+    "sha256": "1a7df644b969f0ec4361965195461acd323444eda9893ea1a48a0a3ca6e81332",
+    "bytes": 144358,
+    "runtime_dimensions": [
+      1280,
+      853
+    ]
+  },
+  {
+    "key": "showcase",
+    "original": "art-source/theme-art-20261121/showcase-original.png",
+    "runtime": "lemuroid-app/src/main/res/drawable-nodpi/theme_art_showcase.webp",
+    "sha256": "11fd4e68e84662001614e749e43204fd9d20d91e66954f87a29d91ef434aff1c",
+    "bytes": 62160,
+    "runtime_dimensions": [
+      1280,
+      853
+    ]
+  },
+  {
+    "key": "hard-rock",
+    "original": "art-source/hard-rock-vinyl/backstage-original.png",
+    "runtime": "lemuroid-app/src/main/res/drawable-nodpi/hard_rock_backstage.webp",
+    "sha256": "b69c1b4f51ebb87f6ab313e420d66a502561bdd7ff1456c9e23ba08bddf06d42",
+    "bytes": 219604,
+    "runtime_dimensions": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "key": "environment",
+    "original": "art-source/theme-art-20261121/environment-original.png",
+    "runtime": "lemuroid-app/src/main/assets/textures/pixel_atlas_v2.png",
+    "sha256": "10e6de87634e3d9966c902fc3f2d0d2550af70f0cd7bb47beb7390303ef8452d",
+    "bytes": 261164,
+    "runtime_dimensions": [
+      512,
+      512
+    ]
+  }
+]

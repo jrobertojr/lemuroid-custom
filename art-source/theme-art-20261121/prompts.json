@@ -1,0 +1,15 @@
+{
+  "textures": [
+    {
+      "key": "environment",
+      "prompt": "Edit this game UV atlas for more polished crisp 16-bit pixel-art material detail. Preserve EXACT flat layout: square image divided into 4 equal columns and 2 equal rows, with no gaps or labels, no perspective and no borders between cells. Top row left to right: dark warm walnut wall planks, honey oak floor boards, dark teal woven rug with small restrained ochre motifs, very light neutral warm gray ABS plastic with barely visible fine square pixel grain. Bottom row left to right: curved vintage CRT bezel with an original blue mountain pixel scene, original retro controller-and-star geometric poster without words, dark blue rainy night window with moon and stars, amber theater marquee light panel without words. Keep every content region and its framing within the same cell as the reference, match its overall palette and contrast so existing 3D UVs remain valid. More material authenticity, simple readable restrained pixel details, no brands, no letters, no copyrighted game graphics. The sheet will be nearest-filtered and downsampled to 512 square, so details should be coherent and chunky enough. No cast shadows across tile edges.",
+      "referenced_image_paths": [
+        "C:/Pessoal/0 - DESENVOLVIMENTO/2 - PROJETOS/0 - SISTEMAS/17 - Lemuroid/lemuroid-app/src/main/assets/textures/pixel_atlas_v2.png"
+      ]
+    },
+    {
+      "key": "abs",
+      "prompt": "Create a single seamless tileable square texture of extremely subtle authentic injection-moulded ABS console plastic, rendered as crisp 16-bit pixel art. Orthographic FLAT albedo texture only, no object, no perspective, no lighting, no directional shadows, no text, no marks, no scratches, no seams, no border. Almost-white neutral grayscale, values mostly 245 to 255 with occasional tiny 1-to-2 pixel off-white grain clusters, very low contrast. This texture will multiply each console's existing original color, so it must remain extremely pale and neutral, never blue or beige. Restrained material grain visible only up close, coherent pixel-art pixels. 1024x1024 square."
+    }
+  ]
+}

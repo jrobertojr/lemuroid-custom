@@ -1,5 +1,10 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
+
+
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendMotion
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.rememberFrontendLoop
 
@@ -211,118 +216,7 @@ fun Retro8090TVLayout(
 
 @Composable
 private fun SynthwaveOutrunBackground(modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier) {
-        val w = size.width
-        val h = size.height
-        val horizonY = h * 0.56f
-
-        // Deep Synthwave Sky
-        drawRect(
-            brush =
-                Brush.verticalGradient(
-                    colors = listOf(SynthSkyTop, SynthSkyMid, SynthHorizon),
-                    startY = 0f,
-                    endY = horizonY,
-                ),
-            size = Size(w, horizonY),
-        )
-
-        // Retro pixel stars
-        val starCoords =
-            listOf(
-                0.08f to 0.12f, 0.15f to 0.25f, 0.24f to 0.09f, 0.36f to 0.18f,
-                0.48f to 0.08f, 0.62f to 0.16f, 0.74f to 0.10f, 0.85f to 0.22f,
-                0.92f to 0.12f, 0.19f to 0.36f, 0.79f to 0.34f, 0.55f to 0.28f,
-            )
-        starCoords.forEachIndexed { idx, (sx, sy) ->
-            drawCircle(
-                color = if (idx % 2 == 0) Color.White.copy(alpha = 0.65f) else SynthCyan.copy(alpha = 0.55f),
-                radius = if (idx % 3 == 0) 2.2f else 1.4f,
-                center = Offset(w * sx, h * sy),
-            )
-        }
-
-        // Iconic Outrun Striped Sunset Sun
-        val sunRadius = h * 0.22f
-        val sunCenter = Offset(w * 0.5f, horizonY - sunRadius * 0.35f)
-        val sunPath =
-            Path().apply {
-                addOval(
-                    androidx.compose.ui.geometry.Rect(
-                        sunCenter.x - sunRadius,
-                        sunCenter.y - sunRadius,
-                        sunCenter.x + sunRadius,
-                        sunCenter.y + sunRadius,
-                    ),
-                )
-            }
-        clipPath(sunPath) {
-            drawRect(
-                brush =
-                    Brush.verticalGradient(
-                        colors = listOf(SynthSunYellow, SynthSunOrange, SynthMagenta),
-                        startY = sunCenter.y - sunRadius,
-                        endY = sunCenter.y + sunRadius,
-                    ),
-                topLeft = Offset(sunCenter.x - sunRadius, sunCenter.y - sunRadius),
-                size = Size(sunRadius * 2f, sunRadius * 2f),
-            )
-            // Horizontal sunset cutout stripes
-            for (i in 0..5) {
-                val stripeY = sunCenter.y + sunRadius * (0.05f + i * 0.16f)
-                val stripeH = (2.5f + i * 2.2f)
-                drawRect(
-                    color = SynthHorizon,
-                    topLeft = Offset(sunCenter.x - sunRadius, stripeY),
-                    size = Size(sunRadius * 2f, stripeH),
-                )
-            }
-        }
-
-        // Floor below horizon
-        drawRect(
-            brush =
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF19062E), Color(0xFF070212)),
-                    startY = horizonY,
-                    endY = h,
-                ),
-            topLeft = Offset(0f, horizonY),
-            size = Size(w, h - horizonY),
-        )
-
-        // Glowing horizon laser line
-        drawLine(
-            color = SynthMagenta.copy(alpha = 0.85f),
-            start = Offset(0f, horizonY),
-            end = Offset(w, horizonY),
-            strokeWidth = 3f,
-        )
-
-        // Perspective neon cyan laser grid
-        val vanishX = w * 0.5f
-        val gridCols = 14
-        for (i in -gridCols..gridCols) {
-            val bottomX = vanishX + i * (w * 0.13f)
-            drawLine(
-                color = SynthCyan.copy(alpha = 0.24f),
-                start = Offset(vanishX + i * (w * 0.015f), horizonY),
-                end = Offset(bottomX, h),
-                strokeWidth = 1.6f,
-            )
-        }
-        val hLines = 8
-        for (j in 1..hLines) {
-            val t = j.toFloat() / hLines
-            val y = horizonY + (h - horizonY) * (t * t)
-            drawLine(
-                color = SynthMagenta.copy(alpha = 0.22f + t * 0.22f),
-                start = Offset(0f, y),
-                end = Offset(w, y),
-                strokeWidth = 1.5f,
-            )
-        }
-    }
+    GeneratedThemeBackdrop(FrontendTheme.RETRO_80_90, modifier)
 }
 
 @Composable
