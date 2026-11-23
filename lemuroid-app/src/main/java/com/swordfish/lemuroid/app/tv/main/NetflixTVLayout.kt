@@ -1,5 +1,6 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GameDescriptionText
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
@@ -547,7 +548,7 @@ fun NetflixTVLayout(
                         .fillMaxHeight()
                         .background(NetflixBg.copy(alpha = 0.52f)),
             ) {
-                // Top Hero Billboard (~46% height)
+                // Hero reserves space for fixed actions and a scrollable synopsis.
                 NetflixHeroBillboard(
                     entry = selectedEntry,
                     systemTitle = systemTitle,
@@ -558,10 +559,10 @@ fun NetflixTVLayout(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .weight(0.46f),
+                            .weight(0.55f),
                 )
 
-                // Bottom Categorized Rows (~54% height)
+                // Categorized rows retain their own independent scrolling.
                 val verticalListState = rememberLazyListState()
                 LaunchedEffect(safeRowIndex, rows.size) {
                     if (rows.isNotEmpty()) {
@@ -574,7 +575,7 @@ fun NetflixTVLayout(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .weight(0.54f),
+                            .weight(0.45f),
                     contentPadding = PaddingValues(top = 4.dp, bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
@@ -811,6 +812,7 @@ private fun NetflixHeroBillboard(
             modifier =
                 Modifier
                     .align(Alignment.BottomStart)
+                    .fillMaxHeight()
                     .fillMaxWidth(0.58f)
                     .padding(start = 28.dp, end = 16.dp, top = 14.dp, bottom = 14.dp),
             verticalArrangement = Arrangement.Bottom,
@@ -840,8 +842,8 @@ private fun NetflixHeroBillboard(
             Text(
                 text = game.displayName(),
                 color = Color.White,
-                fontSize = 27.sp,
-                lineHeight = 31.sp,
+                fontSize = 22.sp,
+                lineHeight = 26.sp,
                 fontWeight = FontWeight.Black,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -896,20 +898,20 @@ private fun NetflixHeroBillboard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Full game description (3–4 lines)
+            // Only the synopsis scrolls; the action row remains outside its viewport.
             val resolvedDescription =
                 if (!description.isNullOrBlank()) {
                     description
                 } else {
                     "Clássico inesquecível de $systemTitle pronto para jogar em tela grande com salvamento instantâneo e suporte completo a controle."
                 }
-            Text(
+            GameDescriptionText(
                 text = resolvedDescription,
+                modifier = Modifier.weight(1f),
                 color = Color(0xFFD8D8D8),
                 fontSize = 13.sp,
                 lineHeight = 18.sp,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
+                visibleLines = 8,
             )
 
             Spacer(modifier = Modifier.height(12.dp))

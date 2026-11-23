@@ -1,5 +1,6 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GameDescriptionText
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
@@ -1331,6 +1332,12 @@ private fun TVConsoleFooterBar(
                 textColor = Color.White.copy(alpha = 0.82f),
             )
         }
+        Text(
+            text = "Analógico direito ↑↓ · Rolar descrição",
+            color = Color.White.copy(alpha = 0.70f),
+            fontSize = 10.sp,
+            modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 3.dp),
+        )
     }
 }
 
@@ -1747,14 +1754,14 @@ private fun TVGameInfoPanel(
         Spacer(modifier = Modifier.height(10.dp))
 
         // Full Description Text
-        Text(
+        GameDescriptionText(
+                    modifier = Modifier.weight(1f),
             text = description.ifBlank { fallbackText },
             color = if (monospaceStyle) Color(0xFFB6FF9E) else Color(0xFFD5DCE8),
             style = MaterialTheme.typography.bodyMedium,
             fontFamily = fontFamily,
             lineHeight = 20.sp,
-            maxLines = 6,
-            overflow = TextOverflow.Ellipsis,
+            visibleLines = 6,
         )
     }
 }

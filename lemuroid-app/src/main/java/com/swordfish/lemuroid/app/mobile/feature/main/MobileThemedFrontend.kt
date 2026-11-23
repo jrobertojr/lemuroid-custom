@@ -1,5 +1,6 @@
 package com.swordfish.lemuroid.app.mobile.feature.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GameDescriptionText
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
@@ -887,13 +888,12 @@ private fun MobileNetflixPortrait(
                             overflow = TextOverflow.Ellipsis,
                         )
                         if (description.isNotBlank()) {
-                            Text(
+                            GameDescriptionText(
                                 text = description,
                                 color = Color.White.copy(alpha = 0.85f),
                                 fontSize = 11.5.sp,
                                 lineHeight = 15.sp,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
+                                visibleLines = 2,
                             )
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -1407,7 +1407,7 @@ private fun MobileShowcaseAndGridPortrait(
 
                 // Right Info + Wanted Stars (Rockstar) + Description
                 Column(modifier = Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.SpaceBetween) {
-                    Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                         if (theme == FrontendTheme.ROCKSTAR) {
                             Text(
                                 text = if (selectedGame.isFavorite) "★ FAVORITO" else "LADO B",
@@ -1425,15 +1425,15 @@ private fun MobileShowcaseAndGridPortrait(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                         )
-                        Text(
+                        GameDescriptionText(
+                            modifier = Modifier.weight(1f),
                             text =
                                 description.takeIf { it.isNotBlank() }
                                     ?: "$systemTitle • Toque em Jogar para iniciar.",
                             color = Color.White.copy(alpha = 0.80f),
                             fontSize = 11.sp,
                             lineHeight = 14.sp,
-                            maxLines = 4,
-                            overflow = TextOverflow.Ellipsis,
+                            visibleLines = 4,
                         )
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -1549,13 +1549,12 @@ private fun MobilePlayActionStrip(
                     overflow = TextOverflow.Ellipsis,
                 )
                 if (description.isNotBlank()) {
-                    Text(
+                    GameDescriptionText(
                         text = description,
                         color = Color.White.copy(alpha = 0.78f),
                         fontSize = 10.5.sp,
                         lineHeight = 14.sp,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
+                        visibleLines = 2,
                     )
                 }
             }

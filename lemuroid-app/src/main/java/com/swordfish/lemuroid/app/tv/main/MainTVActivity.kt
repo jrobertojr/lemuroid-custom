@@ -1,5 +1,7 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.DescriptionScrollHost
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.DescriptionScrollInput
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
@@ -55,7 +57,23 @@ import kotlinx.coroutines.GlobalScope
 import javax.inject.Inject
 
 @OptIn(DelicateCoroutinesApi::class)
-class MainTVActivity : BaseTVActivity(), BusyActivity {
+class MainTVActivity : BaseTVActivity(), BusyActivity, DescriptionScrollHost {
+    override val descriptionScroll = DescriptionScrollInput()
+
+    override fun dispatchGenericMotionEvent(event: android.view.MotionEvent): Boolean =
+        (activeFrontendTheme.value != FrontendTheme.DEFAULT && hasWindowFocus() &&
+            descriptionScroll.dispatch(event)) || super.dispatchGenericMotionEvent(event)
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        if (!hasFocus) descriptionScroll.stop()
+        super.onWindowFocusChanged(hasFocus)
+    }
+
+    override fun onPause() {
+        descriptionScroll.stop()
+        super.onPause()
+    }
+
     @Inject
     lateinit var gameLaunchTaskHandler: GameLaunchTaskHandler
 

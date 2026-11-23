@@ -1,5 +1,6 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GameDescriptionText
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
@@ -393,15 +394,15 @@ private fun SynthwavePreviewDeck(
                     )
                 }
 
-                Text(
+                GameDescriptionText(
+                    modifier = Modifier.weight(1f),
                     text =
                         description?.takeIf { it.isNotBlank() }
                             ?: "Clássico retrô dos anos 80/90 pronto para rodar em $systemTitle. Aperte A para iniciar.",
                     color = Color(0xFFE3D5FF),
                     fontSize = 12.sp,
                     lineHeight = 16.sp,
-                    maxLines = 4,
-                    overflow = TextOverflow.Ellipsis,
+                    visibleLines = 4,
                 )
             }
         }

@@ -18,6 +18,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
+import java.text.Normalizer
+import java.util.Locale
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -31,7 +33,6 @@ object TVGameMetadataHelper {
     private const val NAMED_TITLES = "/Named_Titles/"
     private const val USER_AGENT = "LemuroidCustom/1.0"
     private const val TIMEOUT_SECONDS = 3L
-    private const val MAX_EXTRACT_CHARS = 380
     private const val MIN_EXTRACT_CHARS = 45
     private const val CACHE_SIZE = 200
 
@@ -83,8 +84,8 @@ object TVGameMetadataHelper {
             if (cleanTitle.isNotEmpty()) {
                 withContext(Dispatchers.IO) {
                     currentCoroutineContext().ensureActive()
-                    fetchWikipediaExtractBySearch("pt", "$cleanTitle jogo")
-                        ?: fetchWikipediaExtractBySearch("en", "$cleanTitle video game")
+                    fetchWikipediaExtractBySearch("pt", cleanTitle)
+                        ?: fetchWikipediaExtractBySearch("en", cleanTitle)
                 }
             } else {
                 null
@@ -164,19 +165,20 @@ object TVGameMetadataHelper {
 
     private suspend fun fetchWikipediaExtractBySearch(
         lang: String,
-        searchQuery: String,
+        gameTitle: String,
     ): String? {
-        val exactTitle = searchWikipediaExactTitle(lang, searchQuery) ?: return null
+        val exactTitle = searchWikipediaExactTitle(lang, gameTitle) ?: return null
         return fetchWikipediaSummary(lang, exactTitle)
     }
 
     private suspend fun searchWikipediaExactTitle(
         lang: String,
-        searchQuery: String,
+        gameTitle: String,
     ): String? {
         currentCoroutineContext().ensureActive()
-        val encodedQuery = Uri.encode(searchQuery)
-        val url = "https://$lang.wikipedia.org/w/api.php?action=query&list=search&srsearch=$encodedQuery&srlimit=1&format=json"
+        val suffix = if (lang == "pt") "jogo" else "video game"
+        val encodedQuery = Uri.encode("$gameTitle $suffix")
+        val url = "https://$lang.wikipedia.org/w/api.php?action=query&list=search&srsearch=$encodedQuery&srlimit=5&format=json"
         val request =
             Request.Builder()
                 .url(url)
@@ -187,13 +189,10 @@ object TVGameMetadataHelper {
         return try {
             val body = call.awaitBody() ?: return null
             currentCoroutineContext().ensureActive()
-            val firstResult =
-                JSONObject(body)
-                    .optJSONObject("query")
-                    ?.optJSONArray("search")
-                    ?.optJSONObject(0)
-                    ?: return null
-            firstResult.optString("title", "").trim().takeIf { it.isNotEmpty() }
+            val results = JSONObject(body).optJSONObject("query")?.optJSONArray("search") ?: return null
+            (0 until results.length())
+                .map { results.optJSONObject(it)?.optString("title", "").orEmpty().trim() }
+                .firstOrNull { matchesGameTitle(gameTitle, it) }
         } catch (e: CancellationException) {
             call.cancel()
             throw e
@@ -201,6 +200,20 @@ object TVGameMetadataHelper {
             currentCoroutineContext().ensureActive()
             null
         }
+    }
+
+    /** Full-text search can return unrelated lists; require the actual game's title. */
+    private fun matchesGameTitle(gameTitle: String, articleTitle: String): Boolean {
+        fun words(title: String): Set<String> =
+            Normalizer.normalize(cleanGameTitle(title), Normalizer.Form.NFD)
+                .replace(Regex("\\p{M}+"), "")
+                .lowercase(Locale.ROOT)
+                .split(Regex("[^\\p{L}\\p{N}]+"))
+                .filter { it.isNotEmpty() && it !in setOf("the", "a", "an") }
+                .toSet()
+
+        val expected = words(gameTitle)
+        return expected.isNotEmpty() && expected == words(articleTitle)
     }
 
     private suspend fun fetchWikipediaSummary(
@@ -227,7 +240,7 @@ object TVGameMetadataHelper {
                     .optString("extract", "")
                     .replace(WHITESPACE_REGEX, " ")
                     .trim()
-            if (extract.length < MIN_EXTRACT_CHARS) null else capExtract(extract, MAX_EXTRACT_CHARS)
+            if (extract.length < MIN_EXTRACT_CHARS) null else extract
         } catch (e: CancellationException) {
             call.cancel()
             throw e
@@ -256,20 +269,4 @@ object TVGameMetadataHelper {
         })
     }
 
-    private fun capExtract(
-        text: String,
-        maxLength: Int,
-    ): String {
-        if (text.length <= maxLength) return text
-
-        val slice = text.take(maxLength)
-        val sentenceEnd = maxOf(slice.lastIndexOf('.'), slice.lastIndexOf('!'), slice.lastIndexOf('?'))
-        if (sentenceEnd >= maxLength / 2) {
-            return slice.substring(0, sentenceEnd + 1).trimEnd()
-        }
-
-        val wordEnd = slice.lastIndexOf(' ')
-        val cutIndex = if (wordEnd > 0) wordEnd else maxLength
-        return slice.substring(0, cutIndex).trimEnd() + "..."
-    }
 }

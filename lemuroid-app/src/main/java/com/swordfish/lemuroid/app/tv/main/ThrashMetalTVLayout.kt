@@ -1,5 +1,6 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GameDescriptionText
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
@@ -422,15 +423,15 @@ private fun ThrashVinylShowcase(
                             )
                         }
                         Spacer(Modifier.height(4.dp))
-                        Text(
+                        GameDescriptionText(
+                        modifier = Modifier.weight(1f),
                             text =
                                 description?.takeIf { it.isNotBlank() }
                                     ?: "EDICAO HEAVY METAL EM VINIL PARA $systemTitle. APERTE A PARA SOLTAR O SOM E JOGAR.",
                             color = MetalChrome.copy(alpha = 0.88f),
                             fontSize = 12.sp,
                             lineHeight = 16.sp,
-                            maxLines = 4,
-                            overflow = TextOverflow.Ellipsis,
+                            visibleLines = 4,
                         )
                     }
                 }

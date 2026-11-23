@@ -21,9 +21,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -178,7 +176,7 @@ private fun SleeveNotes(
                 modifier = Modifier.padding(vertical = 8.dp),
             )
             key(entry?.vinylGame?.id) {
-                Text(
+                GameDescriptionText(
                     description?.takeIf {
                         it.isNotBlank()
                     } ?: "Selecione um jogo no vinil para explorar a coleção. " +
@@ -186,7 +184,8 @@ private fun SleeveNotes(
                     color = SleeveCream.copy(alpha = 0.88f),
                     fontSize = 13.sp,
                     lineHeight = 19.sp,
-                    modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                    modifier = Modifier.weight(1f),
+                    visibleLines = 20,
                 )
             }
             Text(

@@ -1,5 +1,6 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GameDescriptionText
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
@@ -629,18 +630,18 @@ private fun LocadoraLeftDetailsStage(
                     }
                 }
 
-                // Full Game Description (up to 5 lines)
+                // Full synopsis in a bounded, scrollable viewport.
                 val resolvedDescription =
                     description?.trim()?.takeIf { it.isNotEmpty() }
                         ?: "Clássico da prateleira $systemTitle pronto para jogar. Pressione A para iniciar."
 
-                Text(
+                GameDescriptionText(
+                    modifier = Modifier.weight(1f),
                     text = resolvedDescription,
                     color = ShelfCream.copy(alpha = 0.90f),
                     fontSize = 14.sp,
                     lineHeight = 19.sp,
-                    maxLines = 5,
-                    overflow = TextOverflow.Ellipsis,
+                    visibleLines = 5,
                 )
             }
         }

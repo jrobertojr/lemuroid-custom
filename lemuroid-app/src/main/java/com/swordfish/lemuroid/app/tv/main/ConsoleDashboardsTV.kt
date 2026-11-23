@@ -1,5 +1,6 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GameDescriptionText
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
 
@@ -564,14 +565,13 @@ private fun SonyXmbDashboard(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
-                            Text(
+                            GameDescriptionText(
                                 text =
                                     description?.takeIf { it.isNotBlank() }
                                         ?: "Disco PlayStation pronto no leitor óptico.",
                                 color = Color(0xFFBDD8F5),
                                 fontSize = 12.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
+                                visibleLines = 3,
                             )
                         }
 
@@ -736,7 +736,7 @@ private fun NintendoSwitchDashboard(
                         .padding(14.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
                         text = selectedEntry?.dashTitle() ?: systemTitle,
                         color = Color.White,
@@ -745,15 +745,15 @@ private fun NintendoSwitchDashboard(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Text(
+                    GameDescriptionText(
+                        modifier = Modifier.weight(1f),
                         text =
                             description?.takeIf { it.isNotBlank() }
                                 ?: "Cartucho Nintendo inserido e pronto para jogar.",
                         color = Color(0xFFB8C2D1),
                         fontSize = 12.sp,
                         lineHeight = 15.sp,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis,
+                        visibleLines = 3,
                     )
                 }
 
@@ -1068,12 +1068,11 @@ private fun SegaDreamcastMegaDashboard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Text(
+                    GameDescriptionText(
                         text = description?.takeIf { it.isNotBlank() } ?: "SEGA 16-BIT / CD READY.",
                         color = Color(0xFF9AC8F5),
                         fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        visibleLines = 3,
                     )
                 }
 
@@ -1267,12 +1266,11 @@ private fun ArcadeCabinetHallDashboard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Text(
+                GameDescriptionText(
                     text = description?.takeIf { it.isNotBlank() } ?: "INSIRA FICHA E PRESSIONE A PARA JOGAR.",
                     color = Color(0xFFD0C2E6),
                     fontSize = 12.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    visibleLines = 3,
                 )
             }
 
@@ -1439,13 +1437,12 @@ private fun RetroWoodgrainTerminalDashboard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Text(
+                GameDescriptionText(
                     text = description?.takeIf { it.isNotBlank() } ?: "READY TO LOAD.",
                     color = Color(0xFFC5B39F),
                     fontFamily = FontFamily.Monospace,
                     fontSize = 12.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    visibleLines = 3,
                 )
             }
 

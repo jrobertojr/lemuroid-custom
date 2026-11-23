@@ -1,5 +1,6 @@
 package com.swordfish.lemuroid.app.tv.main
 
+import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GameDescriptionText
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.GeneratedThemeBackdrop
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme
 import com.swordfish.lemuroid.app.mobile.shared.compose.ui.themeArtwork
@@ -547,14 +548,13 @@ private fun RetroTeletextInfoPanel(
                 } else {
                     "Transmissão direta em $channelLabel — sintonize para jogar $systemTitle na TV de tubo 3D."
                 }
-            Text(
+            GameDescriptionText(
                 text = resolvedDescription,
                 color = Color(0xFFD0D8E4),
                 fontFamily = FontFamily.Monospace,
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+                visibleLines = 2,
             )
         }
     }
