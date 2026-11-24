@@ -1,0 +1,100 @@
+/* Shared console dashboard rhythm. Theme palettes and approved artwork stay intact. */
+html[data-mode="tv"] {
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 12px;
+  --backdrop-blur: none;
+}
+#tv-view .tv-status-bar {
+  min-height: 68px;
+  padding: 12px 24px;
+  gap: 12px;
+  background: rgba(8, 12, 20, .94);
+  backdrop-filter: none;
+}
+#tv-view .tv-status-left, #tv-view .tv-status-right { gap: 8px; min-width: 0; }
+#tv-view .brand-logo-img { width: 32px; height: 32px; border-radius: 8px; }
+#tv-view .brand-name { font: 800 16px/1.15 system-ui, sans-serif; letter-spacing: 1px; white-space: nowrap; }
+#tv-view .brand-name small { display: block; color: var(--accent); font-size: 10px; letter-spacing: 2px; margin-top: 4px; }
+#tv-view .tv-active-console-pill { border-radius: 8px; font-size: 12px; padding: 7px 10px; }
+#tv-view .tv-gamepad-pill { display: none; }
+#tv-view .tv-top-btn { min-height: 40px; padding: 8px 12px; font-size: 14px; white-space: nowrap; }
+#tv-view .tv-stage { min-height: 0; padding: 16px 24px 20px; gap: 18px; scroll-behavior: auto; }
+#tv-view .tv-stage > section { flex-shrink: 0; }
+#tv-view .tv-hero { min-height: 210px; box-shadow: none; }
+#tv-view .tv-hero-inner { padding: 20px 24px; gap: 24px; }
+.dashboard-eyebrow { margin: 0 0 10px; color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: 1.5px; }
+#tv-view .tv-hero-title { font-size: clamp(24px, 2.7vw, 36px); line-height: 1.15; overflow-wrap: anywhere; }
+#tv-view .tv-hero-subtitle { font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; margin-bottom: 14px; }
+#tv-view .tv-hero-badges { gap: 6px; margin-bottom: 8px; }
+#tv-view .tv-hero-cover { height: 156px; width: 124px; box-shadow: none; }
+#tv-view .tv-hero-print { height: 140px; width: 200px; box-shadow: none; }
+#tv-view .tv-primary-btn, #tv-view .tv-secondary-btn { min-height: 42px; padding: 9px 16px; font-size: 14px; }
+#tv-view .tv-section-title { font-size: 18px; }
+#tv-view .tv-section-hint, #tv-view .tv-section-count { font-size: 12px; }
+#tv-view .tv-console-rail { padding: 4px 3px 7px; gap: 8px; }
+#tv-view .tv-console-card { min-height: 42px; padding: 8px 12px; font-size: 14px; }
+#tv-view .tv-game-grid { grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 14px; padding: 4px 3px 16px; }
+#tv-view .tv-game-card { box-shadow: none; }
+#tv-view .tv-game-body { padding: 10px 12px; }
+#tv-view .tv-game-title { font-size: 16px; min-height: 40px; }
+#tv-view .tv-prompt-bar { position: relative; flex: 0 0 auto; min-height: 48px; padding: 10px 24px; background: rgba(8, 12, 20, .96); backdrop-filter: none; }
+#tv-view .tv-prompts-list { gap: 18px; }
+#tv-view .tv-prompt-item { font-size: 12px; gap: 6px; }
+#tv-view [data-focusable="true"].is-focused,
+#tv-view [data-focusable="true"]:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+  transform: none;
+}
+#tv-view .tv-hero-backdrop { transition: none; }
+@media (max-height: 600px) and (min-width: 680px) {
+  #tv-view .tv-hero { min-height: 174px; }
+  #tv-view .tv-hero-inner { padding: 14px 20px; }
+  #tv-view .tv-hero-cover { height: 130px; width: 108px; }
+  #tv-view .tv-stage { gap: 14px; }
+  #tv-view .dashboard-eyebrow { margin-bottom: 6px; }
+}
+@media (max-width: 800px) {
+  #tv-view .tv-active-console-pill { display: none; }
+  #tv-view .tv-status-bar { padding-inline: 16px; }
+  #tv-view .tv-top-btn { font-size: 12px; padding-inline: 8px; }
+  #tv-view .tv-status-right { gap: 5px; }
+  #tv-view .tv-stage { padding-inline: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+
+html[data-mode="tv"] .modal-backdrop,
+html[data-mode="tv"] .sidebar-overlay,
+html[data-mode="tv"] .sidebar { backdrop-filter: none; }
+html[data-mode="tv"] .modal-dialog { border-radius: 12px; }
+html[data-mode="tv"] button:disabled { opacity: .45; cursor: default; }
+
+/* A stable selected-game pane and an independently scrolling catalogue. */
+@media (min-width: 800px) {
+  #tv-view .tv-stage {
+    display: grid;
+    grid-template-columns: minmax(280px, .85fr) minmax(0, 1.4fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+  #tv-view .tv-hero { grid-column: 1; grid-row: 1 / span 2; min-height: 0; align-items: stretch; }
+  #tv-view .tv-hero-inner { min-height: 0; height: 100%; flex-direction: column; align-items: stretch; gap: 12px; padding: 20px; }
+  #tv-view .tv-hero-info { display: flex; flex-direction: column; min-height: 0; }
+  #tv-view .dashboard-game-copy { overflow-y: auto; min-height: 0; flex: 1; padding: 3px; }
+  #tv-view .tv-hero-title { font-size: 24px; }
+  #tv-view .tv-hero-media { order: -1; align-self: center; flex-shrink: 0; }
+  #tv-view .tv-hero-cover { height: 108px; width: 120px; }
+  #tv-view .tv-hero-print { display: none !important; }
+  #tv-view .tv-hero-actions { flex-shrink: 0; padding-top: 12px; }
+  #tv-view .tv-primary-btn { width: 100%; justify-content: center; }
+  #tv-view #tv-hero-secondary-btn { display: none; }
+  #tv-view .tv-rail-section { grid-column: 2; grid-row: 1; min-width: 0; }
+  #tv-view .tv-rail-section .tv-section-hint { display: none; }
+  #tv-view .tv-shelf-section { grid-column: 2; grid-row: 2; min-height: 0; display: flex; flex-direction: column; }
+  #tv-view .tv-game-grid { min-height: 0; overflow-y: auto; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-content: start; grid-auto-rows: max-content; flex: 1; }
+  #tv-view .tv-game-card { min-height: 210px; }
+}

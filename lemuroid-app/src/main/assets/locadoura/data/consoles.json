@@ -1,0 +1,115 @@
+{
+  "generatedAt": "2026-11-23T12:17:19Z",
+  "consoles": [
+    {
+      "id": "mame",
+      "name": "MAME 0.260 (Arcade)",
+      "shortName": "MAME 0.260",
+      "count": 40891,
+      "totalSize": 147464519894,
+      "dataFile": "data/games.json",
+      "isMame": true,
+      "libretroRepo": "MAME"
+    },
+    {
+      "id": "snes",
+      "name": "Super Nintendo (SNES)",
+      "shortName": "SNES",
+      "count": 954,
+      "totalSize": 909382361,
+      "dataFile": "data/consoles/snes.json",
+      "isMame": false,
+      "libretroRepo": "Nintendo_-_Super_Nintendo_Entertainment_System"
+    },
+    {
+      "id": "nes",
+      "name": "NES (Nintendinho)",
+      "shortName": "NES",
+      "count": 2836,
+      "totalSize": 607304592,
+      "dataFile": "data/consoles/nes.json",
+      "isMame": false,
+      "libretroRepo": "Nintendo_-_Nintendo_Entertainment_System"
+    },
+    {
+      "id": "megadrive",
+      "name": "Mega Drive / Genesis",
+      "shortName": "Mega Drive",
+      "count": 1703,
+      "totalSize": 1333875776,
+      "dataFile": "data/consoles/megadrive.json",
+      "isMame": false,
+      "libretroRepo": "Sega_-_Mega_Drive_-_Genesis"
+    },
+    {
+      "id": "gba",
+      "name": "Game Boy Advance",
+      "shortName": "GBA",
+      "count": 3452,
+      "totalSize": 30371129463,
+      "dataFile": "data/consoles/gba.json",
+      "isMame": false,
+      "libretroRepo": "Nintendo_-_Game_Boy_Advance"
+    },
+    {
+      "id": "gbc",
+      "name": "Game Boy Color",
+      "shortName": "GBC",
+      "count": 488,
+      "totalSize": 821329963,
+      "dataFile": "data/consoles/gbc.json",
+      "isMame": false,
+      "libretroRepo": "Nintendo_-_Game_Boy_Color"
+    },
+    {
+      "id": "gb",
+      "name": "Game Boy",
+      "shortName": "Game Boy",
+      "count": 1896,
+      "totalSize": 198245116,
+      "dataFile": "data/consoles/gb.json",
+      "isMame": false,
+      "libretroRepo": "Nintendo_-_Game_Boy"
+    },
+    {
+      "id": "n64",
+      "name": "Nintendo 64",
+      "shortName": "N64",
+      "count": 296,
+      "totalSize": 4861198336,
+      "dataFile": "data/consoles/n64.json",
+      "isMame": false,
+      "libretroRepo": "Nintendo_-_Nintendo_64"
+    },
+    {
+      "id": "mastersystem",
+      "name": "Master System",
+      "shortName": "Master System",
+      "count": 173,
+      "totalSize": 16821683,
+      "dataFile": "data/consoles/mastersystem.json",
+      "isMame": false,
+      "libretroRepo": "Sega_-_Master_System_-_Mark_III"
+    },
+    {
+      "id": "atari2600",
+      "name": "Atari 2600",
+      "shortName": "Atari 2600",
+      "count": 1880,
+      "totalSize": 13046525,
+      "dataFile": "data/consoles/atari2600.json",
+      "isMame": false,
+      "libretroRepo": "Atari_-_2600"
+    },
+    {
+      "id": "nds",
+      "name": "Nintendo DS",
+      "shortName": "Nintendo DS",
+      "count": 312,
+      "totalSize": 17514348672,
+      "dataFile": "data/consoles/nds.json",
+      "isMame": false,
+      "libretroRepo": "Nintendo_-_Nintendo_DS"
+    }
+  ]
+}

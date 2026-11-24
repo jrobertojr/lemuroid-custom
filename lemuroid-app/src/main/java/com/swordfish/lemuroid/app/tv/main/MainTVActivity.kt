@@ -12,13 +12,17 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.ViewModelProvider
 import coil.imageLoader
 import com.swordfish.lemuroid.R
@@ -29,11 +33,16 @@ import com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendTheme
 import com.swordfish.lemuroid.app.shared.GameInteractor
 import com.swordfish.lemuroid.app.shared.game.BaseGameActivity
 import com.swordfish.lemuroid.app.shared.game.GameLauncher
+import com.swordfish.lemuroid.app.shared.hub.HubConfigManager
+import com.swordfish.lemuroid.app.shared.hub.InitialHubScreen
+import com.swordfish.lemuroid.app.shared.hub.LocadoraWebActivity
+import com.swordfish.lemuroid.app.shared.hub.MultiplayerHubScreen
 import com.swordfish.lemuroid.app.shared.library.LibraryIndexScheduler
 import com.swordfish.lemuroid.app.shared.main.BusyActivity
 import com.swordfish.lemuroid.app.shared.main.GameLaunchTaskHandler
 import com.swordfish.lemuroid.app.tv.channel.ChannelUpdateWork
 import com.swordfish.lemuroid.app.tv.favorites.TVFavoritesFragment
+import com.swordfish.lemuroid.app.tv.folderpicker.TVFolderPickerLauncher
 import com.swordfish.lemuroid.app.tv.games.TVGamesFragment
 import com.swordfish.lemuroid.app.tv.home.TVHomeFragment
 import com.swordfish.lemuroid.app.tv.search.TVSearchFragment
@@ -45,6 +54,7 @@ import com.swordfish.lemuroid.common.coroutines.safeCollect
 import com.swordfish.lemuroid.common.coroutines.safeLaunch
 import com.swordfish.lemuroid.lib.injection.PerActivity
 import com.swordfish.lemuroid.lib.injection.PerFragment
+import com.swordfish.lemuroid.lib.library.SystemID
 import com.swordfish.lemuroid.lib.library.covers.CustomCoverManager
 import com.swordfish.lemuroid.lib.library.db.RetrogradeDatabase
 import com.swordfish.lemuroid.lib.preferences.PerformanceProfile
@@ -61,7 +71,9 @@ class MainTVActivity : BaseTVActivity(), BusyActivity, DescriptionScrollHost {
     override val descriptionScroll = DescriptionScrollInput()
 
     override fun dispatchGenericMotionEvent(event: android.view.MotionEvent): Boolean =
-        (activeFrontendTheme.value != FrontendTheme.DEFAULT && hasWindowFocus() &&
+        (activeHubSection.value == TVHubSection.PLAY &&
+            activeFrontendTheme.value != FrontendTheme.DEFAULT &&
+            hasWindowFocus() &&
             descriptionScroll.dispatch(event)) || super.dispatchGenericMotionEvent(event)
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -83,10 +95,13 @@ class MainTVActivity : BaseTVActivity(), BusyActivity, DescriptionScrollHost {
     @Inject
     lateinit var gameInteractor: GameInteractor
 
+    private enum class TVHubSection { HUB, PLAY, MULTIPLAYER }
+
     var mainViewModel: MainTVViewModel? = null
     private var exitDialog: android.app.AlertDialog? = null
     private var themedComposeInitialized = false
     private val activeFrontendTheme = mutableStateOf(FrontendTheme.DEFAULT)
+    private val activeHubSection = mutableStateOf(TVHubSection.HUB)
     private val isForegroundVisible = mutableStateOf(true)
 
     override fun activity(): Activity = this
@@ -98,8 +113,17 @@ class MainTVActivity : BaseTVActivity(), BusyActivity, DescriptionScrollHost {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         // Register before the NavHost so its inner navigation has first refusal.
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() { confirmExit() }
+            override fun handleOnBackPressed() {
+                if (activeHubSection.value != TVHubSection.HUB) {
+                    activeHubSection.value = TVHubSection.HUB
+                    applyFrontendThemeMode()
+                }
+                // On the main Hub screen, Back/B must not exit the app; exit is only via the Sair button.
+            }
         })
+        savedInstanceState?.getString("dashboard-section")?.let { saved ->
+            activeHubSection.value = TVHubSection.entries.firstOrNull { it.name == saved } ?: TVHubSection.HUB
+        }
         setContentView(R.layout.activity_tv_main)
 
         val factory = MainTVViewModel.Factory(applicationContext)
@@ -113,6 +137,11 @@ class MainTVActivity : BaseTVActivity(), BusyActivity, DescriptionScrollHost {
 
         applyFrontendThemeMode()
         ensureLegacyStoragePermissionsIfNeeded()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("dashboard-section", activeHubSection.value.name)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onStart() {
@@ -138,7 +167,7 @@ class MainTVActivity : BaseTVActivity(), BusyActivity, DescriptionScrollHost {
     private fun confirmExit() {
         if (exitDialog?.isShowing == true || isFinishing) return
         val dialog = android.app.AlertDialog.Builder(this)
-            .setTitle("Sair do Lemuroid?")
+            .setTitle("Sair do VideoGame?")
             .setMessage("Deseja voltar à tela principal da TV?")
             .setNegativeButton("Continuar no aplicativo", null)
             .setPositiveButton("Sair") { _, _ -> finish() }
@@ -180,7 +209,10 @@ class MainTVActivity : BaseTVActivity(), BusyActivity, DescriptionScrollHost {
         val navHostView = findViewById<View>(R.id.nav_host_fragment)
         val themedComposeView = findViewById<ComposeView>(R.id.tv_themed_compose)
 
-        if (theme == FrontendTheme.DEFAULT) {
+        val showNativeDefaultPlay =
+            activeHubSection.value == TVHubSection.PLAY && theme == FrontendTheme.DEFAULT
+
+        if (showNativeDefaultPlay) {
             val wasNavHostHidden = navHostView.visibility != View.VISIBLE
             if (themedComposeView.hasFocus()) {
                 themedComposeView.clearFocus()
@@ -214,21 +246,101 @@ class MainTVActivity : BaseTVActivity(), BusyActivity, DescriptionScrollHost {
                 )
                 themedComposeView.setContent {
                     val browserState = rememberSaveableStateHolder()
+                    val allSystemIds = remember { SystemID.entries.map { it.dbname } }
+                    val needsHubData = activeHubSection.value != TVHubSection.PLAY
+                    val systemCounts by remember(needsHubData) {
+                        if (needsHubData) retrogradeDb.gameDao().selectSystemsWithCount()
+                            .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+                        else kotlinx.coroutines.flow.flowOf(emptyList())
+                    }.collectAsState(initial = emptyList())
+                    val allGames by remember(needsHubData) {
+                        if (needsHubData) retrogradeDb.gameDao().selectBySystemsList(allSystemIds)
+                            .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+                        else kotlinx.coroutines.flow.flowOf(emptyList())
+                    }.collectAsState(initial = emptyList())
+
+                    androidx.compose.runtime.LaunchedEffect(allGames) {
+                        if (needsHubData) {
+                            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                                HubConfigManager.updateIndexedGamesSnapshot(allGames)
+                            }
+                        }
+                    }
+
+                    val tvSyncInProgress by remember {
+                        mainViewModel?.inProgress ?: kotlinx.coroutines.flow.flowOf(false)
+                    }.collectAsState(initial = false)
+                    val hubFolderDisplayPath = remember(tvSyncInProgress, activeHubSection.value) {
+                        HubConfigManager.getReadableGlobalRomFolder(this@MainTVActivity)
+                    }
+
                     if (isForegroundVisible.value) {
-                        browserState.SaveableStateProvider("game-browser") {
-                            AppTheme {
-                                CompositionLocalProvider(LocalFrontendTheme provides activeFrontendTheme.value) {
-                                    TVThemedFrontend(
-                                        retrogradeDb = retrogradeDb,
-                                        gameInteractor = gameInteractor,
-                                        onOpenSettings = {
-                                            startActivity(Intent(this@MainTVActivity, TVSettingsActivity::class.java))
-                                        },
-                                        onRequestExit = { confirmExit() },
-                                        onRescan = {
-                                            LibraryIndexScheduler.scheduleLibrarySync(applicationContext)
-                                        },
-                                    )
+                        AppTheme {
+                            CompositionLocalProvider(LocalFrontendTheme provides activeFrontendTheme.value) {
+                                when (activeHubSection.value) {
+                                    TVHubSection.HUB -> browserState.SaveableStateProvider("hub") {
+                                        InitialHubScreen(
+                                            activeTheme = activeFrontendTheme.value,
+                                            totalGames = systemCounts.sumOf { it.count },
+                                            totalSystems = systemCounts.count { it.count > 0 },
+                                            folderDisplayPath = hubFolderDisplayPath,
+                                            onSelectTheme = { chosen ->
+                                                HubConfigManager.setActiveTheme(this@MainTVActivity, chosen)
+                                                activeFrontendTheme.value = chosen
+                                            },
+                                            onPickGlobalFolder = {
+                                                TVFolderPickerLauncher.pickFolder(this@MainTVActivity)
+                                            },
+                                            onSyncLibrary = {
+                                                LibraryIndexScheduler.scheduleLibrarySync(applicationContext)
+                                            },
+                                            isSyncingLibrary = tvSyncInProgress,
+                                            onOpenSettings = {
+                                                startActivity(Intent(this@MainTVActivity, TVSettingsActivity::class.java))
+                                            },
+                                            onOpenPlay = {
+                                                activeHubSection.value = TVHubSection.PLAY
+                                                applyFrontendThemeMode()
+                                            },
+                                            onOpenLocadora = {
+                                                startActivity(Intent(this@MainTVActivity, LocadoraWebActivity::class.java))
+                                            },
+                                            onOpenMultiplayer = {
+                                                activeHubSection.value = TVHubSection.MULTIPLAYER
+                                            },
+                                            onRequestExit = { confirmExit() },
+                                            isTvMode = true,
+                                        )
+                                    }
+
+                                    TVHubSection.PLAY -> if (activeFrontendTheme.value != FrontendTheme.DEFAULT) {
+                                        browserState.SaveableStateProvider("game-browser") {
+                                            TVThemedFrontend(
+                                                retrogradeDb = retrogradeDb,
+                                                gameInteractor = gameInteractor,
+                                                onOpenSettings = {
+                                                    startActivity(Intent(this@MainTVActivity, TVSettingsActivity::class.java))
+                                                },
+                                                onRequestExit = {
+                                                    activeHubSection.value = TVHubSection.HUB
+                                                    applyFrontendThemeMode()
+                                                },
+                                                onRescan = {
+                                                    LibraryIndexScheduler.scheduleLibrarySync(applicationContext)
+                                                },
+                                            )
+                                        }
+                                    }
+
+                                    TVHubSection.MULTIPLAYER -> browserState.SaveableStateProvider("multiplayer") {
+                                        MultiplayerHubScreen(
+                                            activeTheme = activeFrontendTheme.value,
+                                            localGames = allGames,
+                                            onLaunchGame = { game -> gameInteractor.onGamePlay(game) },
+                                            onBackToHub = { activeHubSection.value = TVHubSection.HUB },
+                                            isTvMode = true,
+                                        )
+                                    }
                                 }
                             }
                         }

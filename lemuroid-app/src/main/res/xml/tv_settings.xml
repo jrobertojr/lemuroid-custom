@@ -11,6 +11,7 @@
             android:key="@string/pref_key_frontend_theme"
             android:title="@string/settings_title_frontend_theme"
             app:iconSpaceReserved="false"
+            app:isPreferenceVisible="false"
             app:useSimpleSummaryProvider="true"
             android:entries="@array/pref_key_frontend_theme_display_names"
             app:entryValues="@array/pref_key_frontend_theme_values"

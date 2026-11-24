@@ -849,6 +849,7 @@ private fun TVThemedFrontendContent(
                     availableFilters = availableFilters,
                     selectedFilter = selectedFilter,
                     onSelectFilter = selectFilterDirectly,
+                    onBackToHub = onRequestExit,
                 )
 
                 // Main Content Area (100% state-driven selection — selector never disappears!)
@@ -1094,6 +1095,7 @@ private fun TVTopBar(
     availableFilters: List<TVFilter>,
     selectedFilter: TVFilter,
     onSelectFilter: (TVFilter) -> Unit,
+    onBackToHub: () -> Unit,
 ) {
     val motion = LocalFrontendMotion.current
     val accent = themeAccentColor(theme)
@@ -1122,6 +1124,15 @@ private fun TVTopBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
+            com.swordfish.lemuroid.app.shared.hub.HubDashboardHeader(
+                visuals = com.swordfish.lemuroid.app.shared.hub.HubConfigManager.visualsFor(theme),
+                title = "Jogar",
+                subtitle = "Sua coleção",
+                activeModule = com.swordfish.lemuroid.app.shared.hub.HubModule.PLAY,
+                onBack = onBackToHub,
+                compact = true,
+                modifier = Modifier.width(108.dp),
+            )
             TVBumperBadge(label = "L1", accentColor = accent)
 
             LazyRow(

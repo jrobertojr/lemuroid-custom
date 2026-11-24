@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="nextgen">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0e1a" />
+  <title>Locadoura — Launcher Multi-Console</title>
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/themes.css" />
+  <link rel="stylesheet" href="styles/dashboard.css" />
+</head>
+<body>
+  <!-- Root Native App Shell: data-mode="mobile" | "tv" -->
+  <div id="app" data-mode="mobile">
+    <!-- Launch Splash Screen (Mobile & TV) -->
+    <div id="app-splash" class="app-splash" aria-hidden="true">
+      <img src="assets/img/splash.jpg" alt="" class="app-splash-bg" />
+      <div class="app-splash-scrim"></div>
+      <div class="app-splash-content">
+        <span class="app-splash-title">LOCADOURA</span>
+        <span class="app-splash-sub">Multi-Console &amp; Arcade Launcher</span>
+        <div class="app-splash-bar"><span></span></div>
+      </div>
+    </div>
+
+    <!-- Decorative CRT Scanline Layer (active only in retro80s theme) -->
+    <div id="crt-overlay" aria-hidden="true"></div>
+
+    <!-- =========================================================
+         MOBILE VIEW (Native Android Launcher Style)
+         ========================================================= -->
+    <div id="mobile-view" class="view-shell" aria-label="Modo Mobile">
+      <header id="mobile-header" class="mobile-header">
+        <div class="mobile-brand">
+          <img
+            src="assets/img/logo-locadoura.jpg"
+            alt="Locadoura"
+            class="brand-logo-img"
+          />
+          <div class="mobile-brand-text">
+            <span class="brand-name">VIDEOGAME <small>LOCADORA</small></span>
+            <span id="mobile-header-subtitle" class="mobile-header-subtitle">Todos os Consoles</span>
+          </div>
+        </div>
+
+        <div class="mobile-header-actions">
+          <button
+            id="mobile-search-toggle"
+            class="icon-btn touch-target"
+            type="button"
+            aria-label="Buscar jogos"
+            aria-expanded="false"
+            aria-controls="mobile-search-bar"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
+            </svg>
+          </button>
+
+          <button
+            id="mobile-mode-toggle"
+            class="mode-pill-btn touch-target"
+            type="button"
+            title="Alternar para Modo TV"
+            style="display:none !important"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="14" rx="2"></rect>
+              <path d="M8 21h8"></path>
+              <path d="M12 18v3"></path>
+            </svg>
+            <span class="mode-pill-label">TV</span>
+          </button>
+
+          <button
+            id="mobile-menu-btn"
+            class="icon-btn touch-target"
+            type="button"
+            aria-label="Abrir Menu de Opções"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+              <line x1="4" y1="6" x2="20" y2="6"></line>
+              <line x1="4" y1="12" x2="20" y2="12"></line>
+              <line x1="4" y1="18" x2="20" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Expandable Search Bar (toggled by #mobile-search-toggle) -->
+      <div id="mobile-search-bar" class="mobile-search-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
+            </svg>
+          </span>
+          <input
+            id="mobile-search-input"
+            class="search-input"
+            type="search"
+            placeholder="Buscar jogo, série ou código..."
+            autocomplete="off"
+          />
+          <button
+            id="mobile-search-clear"
+            class="search-clear-btn hidden"
+            type="button"
+            aria-label="Limpar busca"
+          >✕</button>
+        </div>
+      </div>
+
+      <!-- Dedicated Internal Scrollable Container -->
+      <div id="mobile-content-scroll" class="mobile-content-scroll">
+        <nav id="mobile-console-bar" class="mobile-console-bar" aria-label="Consoles">
+          <div id="mobile-console-pills" class="console-pills-track">
+            <!-- Rendered dynamically by views-mobile.js -->
+          </div>
+        </nav>
+
+        <div id="mobile-toolbar" class="mobile-toolbar">
+          <span id="mobile-result-count" class="result-count">0 jogos</span>
+          <label class="art-toggle-label touch-target">
+            <input id="mobile-show-art-toggle" type="checkbox" checked />
+            <span>Capas e Prints</span>
+          </label>
+        </div>
+
+        <main id="mobile-game-list" class="mobile-game-list" aria-live="polite">
+          <!-- Game cards rendered dynamically by views-mobile.js -->
+        </main>
+      </div>
+
+      <!-- Fixed Bottom Native App Navigation Bar -->
+      <nav id="mobile-bottom-nav" class="mobile-bottom-nav" aria-label="Navegação Principal">
+        <button id="mnav-explore" class="mnav-btn is-active" type="button" data-mnav="explore">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="12 2 19 21 12 17 5 21 12 2"></polygon>
+          </svg>
+          <span>Explorar</span>
+        </button>
+
+        <button id="mnav-consoles" class="mnav-btn" type="button" data-mnav="consoles">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="6" width="20" height="12" rx="4"></rect>
+            <path d="M6 12h4"></path>
+            <path d="M8 10v4"></path>
+            <circle cx="15" cy="11" r="1"></circle>
+            <circle cx="18" cy="13" r="1"></circle>
+          </svg>
+          <span>Consoles</span>
+        </button>
+
+        <button id="mnav-library" class="mnav-btn" type="button" data-mnav="library">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span>Biblioteca</span>
+        </button>
+
+        <button id="mnav-downloads" class="mnav-btn" type="button" data-mnav="downloads" style="position:relative;">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Downloads</span>
+          <span id="mnav-dl-badge" class="mnav-badge hidden">0</span>
+        </button>
+
+        <button id="mnav-favorites" class="mnav-btn" type="button" data-mnav="favorites" style="display:none;" aria-hidden="true">
+          <span>Favoritos</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- =========================================================
+         TV VIEW (10-Foot Console Launcher Dashboard)
+         ========================================================= -->
+    <div id="tv-view" class="view-shell" aria-label="Modo TV Console">
+      <!-- Top Status Bar -->
+      <header id="tv-status-bar" class="tv-status-bar">
+        <div class="tv-status-left">
+          <div class="tv-brand">
+            <img
+              src="assets/img/logo-locadoura.jpg"
+              alt="Locadoura"
+              class="brand-logo-img"
+            />
+            <span class="brand-name">VIDEOGAME <small>LOCADORA</small></span>
+          </div>
+          <span id="tv-active-console" class="tv-active-console-pill">Todos os Consoles</span>
+        </div>
+
+        <div class="tv-status-right">
+          <button id="tv-dashboard-back" class="tv-top-btn" type="button" tabindex="-1" aria-label="Voltar à central">‹ Central</button>
+          <div id="tv-gamepad-indicator" class="tv-gamepad-pill" data-connected="false">
+            <span class="gp-dot" aria-hidden="true"></span>
+            <span class="gp-label">Controle: Teclado</span>
+          </div>
+
+          <button
+            id="tv-search-btn"
+            class="tv-top-btn"
+            type="button"
+            tabindex="-1"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
+            </svg>
+            <span>Buscar</span>
+          </button>
+
+          <button
+            id="tv-library-btn"
+            class="tv-top-btn"
+            type="button"
+            tabindex="-1"
+          >
+            <span>📚 Biblioteca</span>
+          </button>
+
+          <button
+            id="tv-downloads-btn"
+            class="tv-top-btn"
+            type="button"
+            tabindex="-1"
+          >
+            <span>⬇ Downloads</span>
+            <span id="tv-dl-badge" class="badge badge-accent hidden">0</span>
+          </button>
+
+          <button
+            id="tv-menu-btn"
+            class="tv-top-btn"
+            type="button"
+            tabindex="-1"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Opções</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main TV Scrollable Stage -->
+      <main id="tv-stage" class="tv-stage">
+        <!-- Dynamic Cinematic Hero Backdrop -->
+        <section id="tv-hero" class="tv-hero" aria-label="Jogo em Destaque">
+          <div id="tv-hero-backdrop" class="tv-hero-backdrop"></div>
+          <div class="tv-hero-scrim" aria-hidden="true"></div>
+
+          <div class="tv-hero-inner">
+            <div class="tv-hero-info">
+              <div class="dashboard-game-copy">
+              <p class="dashboard-eyebrow">EXPLORE SUA PRÓXIMA AVENTURA</p>
+              <div id="tv-hero-badges" class="tv-hero-badges">
+                <!-- Decorative badges (never focusable) -->
+              </div>
+              <h1 id="tv-hero-title" class="tv-hero-title">Selecione um Jogo</h1>
+              <p id="tv-hero-subtitle" class="tv-hero-subtitle">
+                Use o D-Pad ou setas para navegar pela estante.
+              </p>
+              </div>
+              <div class="tv-hero-actions">
+                <button
+                  id="tv-hero-primary-btn"
+                  class="tv-primary-btn"
+                  type="button"
+                  tabindex="-1"
+                >
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>Ver detalhes</span>
+                </button>
+                <button
+                  id="tv-hero-secondary-btn"
+                  class="tv-secondary-btn"
+                  type="button"
+                  tabindex="-1"
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                  <span>Versões & Clones</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="tv-hero-media" class="tv-hero-media">
+              <img id="tv-hero-cover" class="tv-hero-cover hidden" alt="Capa do jogo" decoding="async" />
+              <img id="tv-hero-print" class="tv-hero-print hidden" alt="Captura de tela" decoding="async" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Console Rail -->
+        <section id="tv-console-rail-section" class="tv-rail-section" aria-label="Consoles">
+          <div class="tv-section-header">
+            <h2 class="tv-section-title">Consoles</h2>
+            <span class="tv-section-hint">L1 / R1 para trocar rápido</span>
+          </div>
+          <div id="tv-console-rail" class="tv-console-rail">
+            <!-- Console items with data-focusable="true" data-focus-group="tv-consoles" -->
+          </div>
+        </section>
+
+        <!-- Game Shelf / Grid -->
+        <section id="tv-game-shelf-section" class="tv-shelf-section" aria-label="Estante de Jogos">
+          <div class="tv-section-header">
+            <h2 id="tv-shelf-title" class="tv-section-title">Catálogo</h2>
+            <span id="tv-shelf-count" class="tv-section-count">0 títulos</span>
+          </div>
+          <div id="tv-game-grid" class="tv-game-grid">
+            <!-- Game cards with data-focusable="true" data-focus-group="tv-games" -->
+          </div>
+        </section>
+      </main>
+
+      <!-- Fixed Bottom Console Controller Button Prompts Bar -->
+      <footer id="tv-prompt-bar" class="tv-prompt-bar" aria-label="Atalhos do Controle">
+        <div id="tv-prompts-list" class="tv-prompts-list">
+          <div class="tv-prompt-item">
+            <span class="btn-svg-icon btn-confirm" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <circle cx="12" cy="12" r="10" fill="currentColor"></circle>
+                <text x="12" y="16" text-anchor="middle" font-size="11" font-weight="800" fill="#052e16">A</text>
+              </svg>
+            </span>
+            <span>Confirmar</span>
+          </div>
+          <div class="tv-prompt-item">
+            <span class="btn-svg-icon btn-back" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <circle cx="12" cy="12" r="10" fill="currentColor"></circle>
+                <text x="12" y="16" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">B</text>
+              </svg>
+            </span>
+            <span>Voltar</span>
+          </div>
+          <div class="tv-prompt-item">
+            <span class="btn-svg-icon btn-search" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <circle cx="12" cy="12" r="10" fill="currentColor"></circle>
+                <text x="12" y="16" text-anchor="middle" font-size="11" font-weight="800" fill="#271a03">Y</text>
+              </svg>
+            </span>
+            <span>Buscar</span>
+          </div>
+          <div class="tv-prompt-item">
+            <span class="btn-svg-icon btn-menu" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <circle cx="12" cy="12" r="10" fill="currentColor"></circle>
+                <text x="12" y="16" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">X</text>
+              </svg>
+            </span>
+            <span>Menu</span>
+          </div>
+          <div class="tv-prompt-item">
+            <span class="btn-svg-icon btn-shoulder" aria-hidden="true">
+              <svg viewBox="0 0 46 24" width="42" height="22">
+                <rect x="1" y="2" width="44" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="2"></rect>
+                <text x="23" y="15.5" text-anchor="middle" font-size="10" font-weight="800" fill="currentColor">L1/R1</text>
+              </svg>
+            </span>
+            <span>Trocar Console</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- =========================================================
+         SLIDE-OVER OPTIONS SIDEBAR
+         ========================================================= -->
+    <div id="sidebar-overlay" class="sidebar-overlay hidden" aria-hidden="true"></div>
+    <aside
+      id="sidebar"
+      class="sidebar"
+      aria-label="Menu de Opções"
+      aria-hidden="true"
+      data-focus-scope="sidebar"
+    >
+      <div class="sidebar-header">
+        <div class="sidebar-title-wrap">
+          <img
+            src="assets/img/logo-locadoura.jpg"
+            alt="Locadoura"
+            class="brand-logo-img"
+          />
+          <h2 class="sidebar-title">Opções</h2>
+        </div>
+        <button
+          id="sidebar-close-btn"
+          class="icon-btn touch-target"
+          type="button"
+          tabindex="-1"
+          aria-label="Fechar Opções"
+        >✕</button>
+      </div>
+
+      <nav id="sidebar-tabs" class="sidebar-tabs" aria-label="Seções de Configuração">
+        <span id="sb-tab-l1" class="tv-rail-hint" aria-hidden="true"></span>
+        <button
+          class="sidebar-tab-btn is-active"
+          type="button"
+          tabindex="-1"
+          data-sidebar-tab="pastas"
+        >Pastas</button>
+        <button
+          class="sidebar-tab-btn"
+          type="button"
+          tabindex="-1"
+          data-sidebar-tab="som"
+        >Som</button>
+        <button
+          class="sidebar-tab-btn"
+          type="button"
+          tabindex="-1"
+          data-sidebar-tab="controle"
+        >Controle</button>
+        <span id="sb-tab-r1" class="tv-rail-hint" aria-hidden="true"></span>
+      </nav>
+
+      <div id="sidebar-body" class="sidebar-body">
+        <div id="sidebar-content" class="sidebar-content">
+          <!-- Active section rendered dynamically by sidebar.js -->
+        </div>
+      </div>
+      <div id="sidebar-footer-hints" class="sidebar-footer-hints" aria-hidden="true"></div>
+    </aside>
+
+    <!-- =========================================================
+         SEARCH & FILTER MODAL
+         ========================================================= -->
+    <div id="search-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="search-modal-title" data-focus-scope="modal">
+      <div class="modal-dialog modal-search">
+        <div class="modal-header">
+          <h2 id="search-modal-title" class="modal-title">Buscar no Catálogo</h2>
+          <button
+            id="search-modal-close"
+            class="icon-btn touch-target"
+            type="button"
+            aria-label="Fechar Busca"
+            data-focusable="true"
+            data-focus-group="modal-search"
+          >✕</button>
+        </div>
+
+        <div class="modal-search-controls">
+          <input
+            id="search-modal-input"
+            class="search-input"
+            type="search"
+            placeholder="Digite o nome do jogo..."
+            autocomplete="off"
+            data-focusable="true"
+            data-focus-group="modal-search"
+          />
+          <div id="search-modal-filters" class="modal-filter-pills">
+            <!-- Region / console filter pills -->
+          </div>
+        </div>
+
+        <div id="search-modal-results" class="modal-search-results">
+          <!-- Matching game rows rendered dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         GAME DETAILS / CLONES / DOWNLOAD MODAL
+         ========================================================= -->
+    <div id="game-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="game-modal-title" data-focus-scope="modal">
+      <div class="modal-dialog modal-game">
+        <div class="modal-header">
+          <h2 id="game-modal-title" class="modal-title">Detalhes do Jogo</h2>
+          <button
+            id="game-modal-close"
+            class="icon-btn touch-target"
+            type="button"
+            aria-label="Fechar Detalhes"
+            data-focusable="true"
+            data-focus-group="modal-game"
+          >✕</button>
+        </div>
+
+        <div id="game-modal-body" class="game-modal-body">
+          <!-- Rendered dynamically with art, metadata, clones list, and download button -->
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         UTILITY MODAL (TV Biblioteca & Downloads Ativos)
+         ========================================================= -->
+    <div id="utility-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="utility-modal-title" data-focus-scope="modal">
+      <div class="modal-dialog modal-game">
+        <div class="modal-header">
+          <h2 id="utility-modal-title" class="modal-title">Biblioteca</h2>
+          <button
+            id="utility-modal-close"
+            class="icon-btn touch-target"
+            type="button"
+            aria-label="Fechar"
+            data-focusable="true"
+            data-focus-group="modal-utility"
+          >✕</button>
+        </div>
+
+        <div id="utility-modal-body" class="game-modal-body">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         CONFIRM DELETE MODAL (Mobile & TV)
+         ========================================================= -->
+    <div id="confirm-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title" data-focus-scope="modal" style="z-index:110;">
+      <div class="modal-dialog" style="max-width:440px;">
+        <div class="modal-header">
+          <h2 id="confirm-modal-title" class="modal-title">Excluir jogo?</h2>
+          <button
+            id="confirm-modal-close"
+            class="icon-btn touch-target"
+            type="button"
+            aria-label="Cancelar"
+            data-focusable="true"
+            data-focus-group="modal-confirm"
+          >✕</button>
+        </div>
+        <div class="game-modal-body" style="padding:18px 20px;">
+          <p id="confirm-modal-message" class="sb-desc" style="font-size:0.95rem;line-height:1.5;margin-bottom:18px;"></p>
+          <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;">
+            <button
+              id="confirm-modal-cancel"
+              type="button"
+              class="tv-secondary-btn"
+              data-focusable="true"
+              data-focus-group="modal-confirm"
+            >Cancelar</button>
+            <button
+              id="confirm-modal-ok"
+              type="button"
+              class="tv-primary-btn"
+              style="background:#dc2626;color:#fff;border-color:#ef4444;"
+              data-focusable="true"
+              data-focus-group="modal-confirm"
+            >🗑️ Excluir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOAST NOTIFICATIONS
+         ========================================================= -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

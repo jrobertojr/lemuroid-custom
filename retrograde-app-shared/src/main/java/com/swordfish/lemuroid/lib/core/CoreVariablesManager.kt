@@ -3,8 +3,8 @@ package com.swordfish.lemuroid.lib.core
 import android.content.SharedPreferences
 import com.swordfish.lemuroid.lib.library.SystemCoreConfig
 import com.swordfish.lemuroid.lib.library.SystemID
-import com.swordfish.lemuroid.lib.preferences.PerformanceProfileManager
 import com.swordfish.lemuroid.lib.preferences.PerformanceProfile
+import com.swordfish.lemuroid.lib.preferences.PerformanceProfileManager
 import dagger.Lazy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,7 +16,6 @@ class CoreVariablesManager(private val sharedPreferences: Lazy<SharedPreferences
         systemCoreConfig: SystemCoreConfig,
         performanceProfile: PerformanceProfile? = null,
     ): List<CoreVariable> {
-        val defaultMap = convertCoreVariablesToMap(systemCoreConfig.defaultSettings)
         val profile = performanceProfile ?: PerformanceProfileManager.getProfileFromPreferences(sharedPreferences.get())
         val profileOverrides =
             PerformanceProfileManager.getCoreOverridesForProfile(
@@ -25,19 +24,7 @@ class CoreVariablesManager(private val sharedPreferences: Lazy<SharedPreferences
                 systemCoreConfig.coreID,
             )
         val coreVariables = retrieveCustomCoreVariables(systemID, systemCoreConfig)
-        val coreVariablesMap =
-            defaultMap +
-                convertCoreVariablesToMap(profileOverrides) +
-                convertCoreVariablesToMap(coreVariables)
-        return convertMapToCoreVariables(coreVariablesMap)
-    }
-
-    private fun convertMapToCoreVariables(variablesMap: Map<String, String>): List<CoreVariable> {
-        return variablesMap.entries.map { CoreVariable(it.key, it.value) }
-    }
-
-    private fun convertCoreVariablesToMap(coreVariables: List<CoreVariable>): Map<String, String> {
-        return coreVariables.associate { it.key to it.value }
+        return mergeCoreOptions(systemCoreConfig.defaultSettings, profileOverrides, coreVariables)
     }
 
     private suspend fun retrieveCustomCoreVariables(
@@ -66,6 +53,15 @@ class CoreVariablesManager(private val sharedPreferences: Lazy<SharedPreferences
 
     companion object {
         private const val RETRO_OPTION_PREFIX = "cv"
+
+        /** Later lists win: explicit player preferences always override profile budgets. */
+        fun mergeCoreOptions(
+            defaults: List<CoreVariable>,
+            profile: List<CoreVariable>,
+            manual: List<CoreVariable>,
+        ): List<CoreVariable> =
+            (defaults + profile + manual).associate { it.key to it.value }
+                .map { (key, value) -> CoreVariable(key, value) }
 
         fun computeSharedPreferenceKey(
             retroVariableName: String,

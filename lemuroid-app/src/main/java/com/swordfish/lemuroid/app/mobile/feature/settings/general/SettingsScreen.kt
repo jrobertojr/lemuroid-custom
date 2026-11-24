@@ -144,18 +144,7 @@ private fun GeneralSettings() {
     LemuroidCardSettingsGroup(
         title = { Text(text = stringResource(id = R.string.settings_category_general)) },
     ) {
-        LemuroidSettingsList(
-            state =
-                indexPreferenceState(
-                    R.string.pref_key_frontend_theme,
-                    "default",
-                    stringListResource(R.array.pref_key_frontend_theme_values),
-                ),
-            title = {
-                Text(text = stringResource(id = R.string.settings_title_frontend_theme))
-            },
-            items = stringListResource(R.array.pref_key_frontend_theme_display_names),
-        )
+        // System-wide Frontend Theme lives exclusively in the Initial Hub Settings.
         LemuroidSettingsList(
             state =
                 indexPreferenceState(
@@ -281,12 +270,7 @@ private fun RomsSettings(
         }
 
     LemuroidCardSettingsGroup(title = { Text(text = stringResource(id = R.string.roms)) }) {
-        LemuroidSettingsMenuLink(
-            title = { Text(text = stringResource(id = R.string.directory)) },
-            subtitle = { Text(text = currentDirectoryName) },
-            onClick = { onChangeFolder() },
-            enabled = !indexingInProgress,
-        )
+        // Global ROM Directory & Library Sync now live in the Initial Hub Settings.
         LemuroidSettingsMenuLink(
             title = { Text(text = stringResource(id = R.string.bios_directory)) },
             subtitle = { Text(text = currentBiosDirectoryName) },
@@ -310,12 +294,6 @@ private fun RomsSettings(
             LemuroidSettingsMenuLink(
                 title = { Text(text = stringResource(id = R.string.stop)) },
                 onClick = { LibraryIndexScheduler.cancelLibrarySync(context) },
-            )
-        } else {
-            LemuroidSettingsMenuLink(
-                title = { Text(text = stringResource(id = R.string.rescan)) },
-                onClick = { LibraryIndexScheduler.scheduleLibrarySync(context) },
-                enabled = !indexingInProgress,
             )
         }
     }

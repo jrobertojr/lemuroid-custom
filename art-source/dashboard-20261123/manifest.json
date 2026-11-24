@@ -1,0 +1,32 @@
+[
+  {
+    "module": "play",
+    "source": "art-source\\dashboard-20261123\\play.png",
+    "runtime": "lemuroid-app\\src\\main\\res\\drawable-nodpi\\dashboard_module_play.webp",
+    "sha256": "7f3c5b8f7d08309f87e2aaae1fc2e8a5ddda9e5535c5599295dfe8f84fccbdf7",
+    "bytes": 44884,
+    "width": 768,
+    "height": 512,
+    "origin": "Built-in image_gen, original generated artwork; model version not exposed"
+  },
+  {
+    "module": "locadora",
+    "source": "art-source\\dashboard-20261123\\locadora.png",
+    "runtime": "lemuroid-app\\src\\main\\res\\drawable-nodpi\\dashboard_module_locadora.webp",
+    "sha256": "3a6fda5fe359a0caceee1dac511010165f9739feb51bd1c64384f60a924ddf3e",
+    "bytes": 52904,
+    "width": 768,
+    "height": 512,
+    "origin": "Built-in image_gen, original generated artwork; model version not exposed"
+  },
+  {
+    "module": "multiplayer",
+    "source": "art-source\\dashboard-20261123\\multiplayer.png",
+    "runtime": "lemuroid-app\\src\\main\\res\\drawable-nodpi\\dashboard_module_multiplayer.webp",
+    "sha256": "4e5c4dbfe73856c4190f95647e74c98dd8e44837237bea92e84df19a7108fa7f",
+    "bytes": 32258,
+    "width": 768,
+    "height": 512,
+    "origin": "Built-in image_gen, original generated artwork; model version not exposed"
+  }
+]

@@ -25,6 +25,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
     <queries>
         <intent>
@@ -160,6 +161,12 @@
             android:theme="@style/LemuroidLeanbackPreferencesTheme" />
 
         <activity
+            android:name=".app.shared.hub.LocadoraWebActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|keyboard|navigation|uiMode"
+            android:exported="false"
+            android:theme="@style/LemuroidMaterialTheme.Game" />
+
+        <activity
             android:name=".app.shared.gamecrash.GameCrashActivity"
             android:theme="@style/LemuroidMaterialTheme.Game" />
 
@@ -170,6 +177,16 @@
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.updater.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/updater_file_paths" />
+        </provider>
 
     </application>
 

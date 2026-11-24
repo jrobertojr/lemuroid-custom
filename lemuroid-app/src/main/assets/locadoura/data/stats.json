@@ -1,0 +1,124 @@
+{
+  "version": "0.260",
+  "generatedAt": "2026-11-18T14:14:40Z",
+  "total": 40891,
+  "matched": 40891,
+  "unmatched": 0,
+  "totalSize": 147464519894,
+  "byType": {
+    "bios": 73,
+    "device": 1078,
+    "game": 24148,
+    "mechanical": 15592
+  },
+  "byStatus": {
+    "good": 10732,
+    "imperfect": 3401,
+    "preliminary": 25680,
+    "unknown": 1078
+  },
+  "parents": 14611,
+  "clones": 26280,
+  "topMakers": [
+    {
+      "maker": "BFM",
+      "count": 3607
+    },
+    {
+      "maker": "Barcrest",
+      "count": 3598
+    },
+    {
+      "maker": "Maygay",
+      "count": 1538
+    },
+    {
+      "maker": "Mazooma",
+      "count": 1435
+    },
+    {
+      "maker": "BWB",
+      "count": 1400
+    },
+    {
+      "maker": "bootleg",
+      "count": 1224
+    },
+    {
+      "maker": "Sega",
+      "count": 1145
+    },
+    {
+      "maker": "JPM",
+      "count": 1067
+    },
+    {
+      "maker": "Konami",
+      "count": 988
+    },
+    {
+      "maker": "Qps",
+      "count": 657
+    },
+    {
+      "maker": "IGT - International Game Technology",
+      "count": 633
+    },
+    {
+      "maker": "Ace",
+      "count": 626
+    },
+    {
+      "maker": "Capcom",
+      "count": 605
+    },
+    {
+      "maker": "Aristocrat",
+      "count": 587
+    },
+    {
+      "maker": "Stern",
+      "count": 538
+    },
+    {
+      "maker": "Namco",
+      "count": 510
+    },
+    {
+      "maker": "Avantime?",
+      "count": 501
+    },
+    {
+      "maker": "Electrocoin",
+      "count": 446
+    },
+    {
+      "maker": "<unknown>",
+      "count": 407
+    },
+    {
+      "maker": "Global",
+      "count": 344
+    },
+    {
+      "maker": "Williams",
+      "count": 329
+    },
+    {
+      "maker": "Atari Games",
+      "count": 306
+    },
+    {
+      "maker": "Data East Corporation",
+      "count": 278
+    },
+    {
+      "maker": "Bally",
+      "count": 276
+    },
+    {
+      "maker": "Amcoe",
+      "count": 274
+    }
+  ]
+}

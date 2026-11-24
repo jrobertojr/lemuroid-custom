@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -19,8 +20,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -89,7 +93,15 @@ class MainActivity : RetrogradeComponentActivity(), BusyActivity, DescriptionScr
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         if (!hasFocus) descriptionScroll.stop()
+        if (hasFocus) applyImmersiveFullScreen()
         super.onWindowFocusChanged(hasFocus)
+    }
+
+    private fun applyImmersiveFullScreen() {
+        val controller = androidx.core.view.WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior =
+            androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(androidx.core.view.WindowInsetsCompat.Type.systemBars())
     }
 
     override fun onPause() {
@@ -134,6 +146,7 @@ class MainActivity : RetrogradeComponentActivity(), BusyActivity, DescriptionScr
         )
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        applyImmersiveFullScreen()
 
         GlobalScope.safeLaunch {
             reviewManager.initialize(applicationContext)
@@ -192,9 +205,134 @@ class MainActivity : RetrogradeComponentActivity(), BusyActivity, DescriptionScr
                     .value
 
             val activeFrontendTheme = com.swordfish.lemuroid.app.mobile.shared.compose.ui.LocalFrontendTheme.current
+            var activeHubSection by rememberSaveable { mutableStateOf("HUB") }
+            var pendingRouteAfterHub by remember { mutableStateOf<MainRoute?>(null) }
+            var returnToHubSettingsOnBack by rememberSaveable { mutableStateOf(false) }
+            var openHubSettingsOnEnter by rememberSaveable { mutableStateOf(false) }
+            var visitedHubSettings by rememberSaveable { mutableStateOf(false) }
+            val allSystemIds = remember { SystemID.entries.map { it.dbname } }
+            val systemCounts by remember {
+                retrogradeDb.gameDao().selectSystemsWithCount()
+            }.collectAsState(initial = emptyList())
+            val allGames by remember {
+                retrogradeDb.gameDao().selectBySystemsList(allSystemIds)
+            }.collectAsState(initial = emptyList())
+
+            LaunchedEffect(allGames) {
+                com.swordfish.lemuroid.app.shared.hub.HubConfigManager
+                    .updateIndexedGamesSnapshot(allGames)
+            }
+
+            var showDashboardExit by remember { mutableStateOf(false) }
+            if (showDashboardExit) {
+                androidx.compose.material3.AlertDialog(
+                    onDismissRequest = { showDashboardExit = false },
+                    title = { androidx.compose.material3.Text("Sair do VideoGame?") },
+                    text = { androidx.compose.material3.Text("Deseja fechar o aplicativo?") },
+                    confirmButton = {
+                        androidx.compose.material3.TextButton(onClick = { showDashboardExit = false }) {
+                            androidx.compose.material3.Text("Continuar no aplicativo")
+                        }
+                    },
+                    dismissButton = {
+                        androidx.compose.material3.TextButton(onClick = { finishAndRemoveTask() }) {
+                            androidx.compose.material3.Text("Sair")
+                        }
+                    },
+                )
+            }
+            BackHandler(enabled = activeHubSection == "HUB") { showDashboardExit = true }
+            BackHandler(enabled = activeHubSection != "HUB" && currentRoute == MainRoute.HOME) {
+                activeHubSection = "HUB"
+            }
+
+            if (activeHubSection == "HUB") {
+                com.swordfish.lemuroid.app.shared.hub.InitialHubScreen(
+                    activeTheme = activeFrontendTheme,
+                    totalGames = systemCounts.sumOf { it.count },
+                    totalSystems = systemCounts.count { it.count > 0 },
+                    folderDisplayPath =
+                        com.swordfish.lemuroid.app.shared.hub.HubConfigManager
+                            .getReadableGlobalRomFolder(this@MainActivity),
+                    onSelectTheme = { chosen ->
+                        com.swordfish.lemuroid.app.shared.hub.HubConfigManager
+                            .setActiveTheme(this@MainActivity, chosen)
+                    },
+                    onPickGlobalFolder = {
+                        runCatching { settingsInteractor.changeLocalStorageFolder() }
+                    },
+                    onSyncLibrary = {
+                        runCatching {
+                            com.swordfish.lemuroid.app.shared.library.LibraryIndexScheduler
+                                .scheduleLibrarySync(applicationContext)
+                        }
+                    },
+                    isSyncingLibrary = mainUIState.operationInProgress,
+                    initialOpenSettings = openHubSettingsOnEnter,
+                    onConsumedInitialOpenSettings = { openHubSettingsOnEnter = false },
+                    onOpenSettings = {
+                        returnToHubSettingsOnBack = true
+                        visitedHubSettings = false
+                        pendingRouteAfterHub = MainRoute.SETTINGS
+                        activeHubSection = "PLAY"
+                    },
+                    onOpenPlay = {
+                        returnToHubSettingsOnBack = false
+                        activeHubSection = "PLAY"
+                    },
+                    onOpenLocadora = {
+                        startActivity(
+                            Intent(
+                                this@MainActivity,
+                                com.swordfish.lemuroid.app.shared.hub.LocadoraWebActivity::class.java,
+                            ),
+                        )
+                    },
+                    onOpenMultiplayer = {
+                        activeHubSection = "MULTIPLAYER"
+                    },
+                    onRequestExit = { showDashboardExit = true },
+                    isTvMode = false,
+                )
+                return@AppTheme
+            }
+
+            if (activeHubSection == "MULTIPLAYER") {
+                com.swordfish.lemuroid.app.shared.hub.MultiplayerHubScreen(
+                    activeTheme = activeFrontendTheme,
+                    localGames = allGames,
+                    onLaunchGame = onGameClick,
+                    onBackToHub = { activeHubSection = "HUB" },
+                    isTvMode = false,
+                )
+                return@AppTheme
+            }
+
             val useFullThemedHome =
                 activeFrontendTheme != com.swordfish.lemuroid.app.mobile.shared.compose.ui.FrontendTheme.DEFAULT &&
                     currentRoute == MainRoute.HOME
+
+            LaunchedEffect(pendingRouteAfterHub) {
+                val target = pendingRouteAfterHub ?: return@LaunchedEffect
+                pendingRouteAfterHub = null
+                runCatching { navController.navigateToRoute(target) }
+            }
+
+            LaunchedEffect(currentRoute, returnToHubSettingsOnBack) {
+                if (returnToHubSettingsOnBack && currentRoute != MainRoute.HOME) visitedHubSettings = true
+            }
+            // Return to the hub only after the Settings destination has been observed.
+            LaunchedEffect(activeHubSection, currentRoute, returnToHubSettingsOnBack, pendingRouteAfterHub) {
+                if (activeHubSection == "PLAY" &&
+                    returnToHubSettingsOnBack && visitedHubSettings &&
+                    pendingRouteAfterHub == null &&
+                    currentRoute == MainRoute.HOME
+                ) {
+                    returnToHubSettingsOnBack = false
+                    openHubSettingsOnEnter = true
+                    activeHubSection = "HUB"
+                }
+            }
 
             Scaffold(
                 topBar = {

@@ -91,7 +91,8 @@ object PerformanceProfileManager {
         systemID: SystemID,
         coreID: CoreID,
     ): List<CoreVariable> {
-        // These new cores need explicit, portable defaults in all three modes.
+        CorePerformancePolicies.options(profile, coreID)?.let { return it }
+        // These cores need explicit, portable defaults in all three modes.
         // Manual core preferences are still merged after profile values by CoreVariablesManager.
         when (coreID) {
             CoreID.GPSP -> return listOf(
@@ -176,20 +177,6 @@ object PerformanceProfileManager {
 
     private fun getBalancedOverrides(coreID: CoreID): List<CoreVariable> {
         return when (coreID) {
-            CoreID.PCSX_REARMED ->
-                listOf(
-                    CoreVariable("pcsx_rearmed_drc", "enabled"),
-                    CoreVariable("pcsx_rearmed_neon_enhancement_enable", "disabled"),
-                    CoreVariable("pcsx_rearmed_spu_interpolation", "simple"),
-                )
-            CoreID.MUPEN64_PLUS_NEXT ->
-                listOf(
-                    CoreVariable("mupen64plus-cpucore", "dynamic_recompiler"),
-                    CoreVariable("mupen64plus-43screensize", "320x240"),
-                    CoreVariable("mupen64plus-EnableShadersStorage", "True"),
-                    CoreVariable("mupen64plus-BilinearMode", "standard"),
-                    CoreVariable("mupen64plus-MultiSampling", "0"),
-                )
             CoreID.MELONDS ->
                 listOf(
                     CoreVariable("melonds_threaded_renderer", "enabled"),
@@ -203,23 +190,6 @@ object PerformanceProfileManager {
                     CoreVariable("desmume_internal_resolution", "256x192"),
                     CoreVariable("desmume_frameskip", "1"),
                 )
-            CoreID.PPSSPP ->
-                listOf(
-                    CoreVariable("ppsspp_cpu_core", "JIT"),
-                    CoreVariable("ppsspp_internal_resolution", "480x272"),
-                    CoreVariable("ppsspp_gpu_hardware_transform", "enabled"),
-                    CoreVariable("ppsspp_vertex_cache", "enabled"),
-                    CoreVariable("ppsspp_lazy_texture_caching", "enabled"),
-                )
-            CoreID.FBNEO ->
-                listOf(
-                    CoreVariable("fbneo-fm-interpolation", "2-point"),
-                )
-            CoreID.MAME2003PLUS ->
-                listOf(
-                    CoreVariable("mame2003-plus_skip_disclaimer", "enabled"),
-                    CoreVariable("mame2003-plus_skip_warnings", "enabled"),
-                )
             CoreID.MGBA ->
                 listOf(
                     CoreVariable("mgba_idle_optimization", "Remove Known"),
@@ -231,19 +201,6 @@ object PerformanceProfileManager {
 
     private fun getPerformanceExtraOverrides(coreID: CoreID): List<CoreVariable> {
         return when (coreID) {
-            CoreID.PCSX_REARMED ->
-                listOf(
-                    CoreVariable("pcsx_rearmed_dithering", "disabled"),
-                    CoreVariable("pcsx_rearmed_spu_reverb", "disabled"),
-                )
-            CoreID.MUPEN64_PLUS_NEXT ->
-                listOf(
-                    CoreVariable("mupen64plus-EnableHybridFilter", "False"),
-                    CoreVariable("mupen64plus-txFilterMode", "None"),
-                    CoreVariable("mupen64plus-txEnhancementMode", "None"),
-                    CoreVariable("mupen64plus-EnableLODEmulation", "False"),
-                    CoreVariable("mupen64plus-EnableNoiseEmulation", "False"),
-                )
             CoreID.DESMUME ->
                 listOf(
                     CoreVariable("desmume_frameskip", "2"),
@@ -253,34 +210,9 @@ object PerformanceProfileManager {
                     CoreVariable("desmume_gfx_txthack", "disabled"),
                     CoreVariable("desmume_gfx_highres_interpolate_color", "disabled"),
                 )
-            CoreID.PPSSPP ->
-                listOf(
-                    CoreVariable("ppsspp_texture_scaling_level", "1"),
-                    CoreVariable("ppsspp_spline_quality", "Low"),
-                    CoreVariable("ppsspp_io_timing_method", "Fast"),
-                )
-            CoreID.FBNEO ->
-                listOf(
-                    CoreVariable("fbneo-fm-interpolation", "disabled"),
-                    CoreVariable("fbneo-sample-interpolation", "disabled"),
-                )
-            CoreID.MAME2003PLUS ->
-                listOf(
-                    CoreVariable("mame2003-plus_sample_rate", "22050"),
-                )
             CoreID.MGBA ->
                 listOf(
                     CoreVariable("mgba_color_correction", "OFF"),
-                )
-            CoreID.SNES9X ->
-                listOf(
-                    CoreVariable("snes9x_blargg", "disabled"),
-                )
-            CoreID.GENESIS_PLUS_GX ->
-                listOf(
-                    CoreVariable("genesis_plus_gx_blargg_ntsc_filter", "disabled"),
-                    CoreVariable("genesis_plus_gx_lcd_filter", "disabled"),
-                    CoreVariable("genesis_plus_gx_audio_filter", "disabled"),
                 )
             else -> emptyList()
         }

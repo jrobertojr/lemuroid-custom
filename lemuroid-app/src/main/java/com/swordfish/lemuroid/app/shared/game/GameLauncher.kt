@@ -24,6 +24,8 @@ class GameLauncher(
         leanback: Boolean,
         onPreparationFailed: () -> Unit = {},
     ): Boolean {
+        val mpSession = pendingMultiplayerSession
+        pendingMultiplayerSession = null
         if (GameProcessLock.isHeldByAnotherProcess(activity.applicationContext)) {
             activity.displayToast(R.string.game_process_another_game_running)
             return false
@@ -38,7 +40,7 @@ class GameLauncher(
                 if (activity.isFinishing || activity.isDestroyed) return@launch
                 pendingLaunchProfile = com.swordfish.lemuroid.lib.preferences.PerformanceProfileManager.getActiveProfile(activity, game)
                 gameLaunchTaskHandler.handleGameStart(activity.applicationContext)
-                BaseGameActivity.launchGame(activity, coreConfig, game, loadSave, leanback)
+                BaseGameActivity.launchGame(activity, coreConfig, game, loadSave, leanback, mpSession)
             } catch (error: Exception) {
                 onPreparationFailed()
                 if (activity.isFinishing || activity.isDestroyed) return@launch
@@ -53,6 +55,7 @@ class GameLauncher(
     }
     companion object {
         var pendingLaunchProfile: com.swordfish.lemuroid.lib.preferences.PerformanceProfile? = null
+        var pendingMultiplayerSession: com.swordfish.lemuroid.app.shared.hub.MultiplayerSessionConfig? = null
     }
 
 }
